@@ -1,6 +1,6 @@
 package pl.com.bottega.documentmanagement.domain;
 
-import pl.com.bottega.documentmanagement.infrastructure.DocumentDto;
+import pl.com.bottega.documentmanagement.api.DocumentDto;
 
 /**
  * Created by maciuch on 12.06.16.
@@ -25,11 +25,6 @@ public class Document {
 
     public void confirm(Employee confirmator, Employee forEmployee) {
 
-    }
-
-    public DocumentDto export() {
-        DocumentDto dto = new DocumentDto();
-        return dto;
     }
 
 }

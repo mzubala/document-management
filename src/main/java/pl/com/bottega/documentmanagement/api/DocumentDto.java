@@ -1,4 +1,4 @@
-package pl.com.bottega.documentmanagement.infrastructure;
+package pl.com.bottega.documentmanagement.api;
 
 /**
  * Created by maciuch on 12.06.16.
