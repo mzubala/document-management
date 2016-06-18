@@ -2,16 +2,18 @@ package pl.com.bottega.documentmanagement.domain;
 
 import pl.com.bottega.documentmanagement.infrastructure.DocumentDto;
 
+import java.util.List;
+
 /**
  * Created by Wojciech Winiarski on 12.06.2016.
  */
 public class Document {
 
 
-
     public Document(DocumentNumber documentNumber, String title, String content) {
 
     }
+
 
     public void change(String title, String content) {
 
