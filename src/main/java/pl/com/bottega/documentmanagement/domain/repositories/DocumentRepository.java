@@ -4,7 +4,7 @@ import pl.com.bottega.documentmanagement.domain.Document;
 import pl.com.bottega.documentmanagement.domain.DocumentNumber;
 
 /**
- * Created by maciuch on 12.06.16.
+ * Created by Wojciech Winiarski on 12.06.16.
  */
 public interface DocumentRepository {
 
