@@ -3,14 +3,13 @@ package pl.com.bottega.documentmanagement.api;
 import pl.com.bottega.documentmanagement.domain.Document;
 import pl.com.bottega.documentmanagement.domain.DocumentNumber;
 import pl.com.bottega.documentmanagement.domain.DocumentNumberGenerator;
-import pl.com.bottega.documentmanagement.domain.EmpluyeeId;
+import pl.com.bottega.documentmanagement.domain.EmployeeId;
 import pl.com.bottega.documentmanagement.domain.repositories.DocumentRepository;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Created by anna on 12.06.2016.
+ * Created by maciuch on 12.06.16.
  */
 public class DocumentFlowProcess {
 
@@ -47,7 +46,7 @@ public class DocumentFlowProcess {
         documentRepository.save(document);
     }
 
-    public void publish(DocumentNumber documentNumber, Iterable<EmpluyeeId> ids) {
+    public void publish(DocumentNumber documentNumber, Iterable<EmployeeId> ids) {
         checkNotNull(documentNumber);
     }
 
@@ -55,8 +54,10 @@ public class DocumentFlowProcess {
         checkNotNull(documentNumber);
     }
 
-    public DocumentNumber CreateNewVersion(DocumentNumber documentNumber) {
+    public DocumentNumber createNewVersion(DocumentNumber documentNumber) {
         checkNotNull(documentNumber);
+
         return null;
     }
+
 }
