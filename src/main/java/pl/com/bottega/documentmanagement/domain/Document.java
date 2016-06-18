@@ -1,19 +1,17 @@
 package pl.com.bottega.documentmanagement.domain;
 
-import pl.com.bottega.documentmanagement.infrastructure.DocumentDto;
-
-import javax.print.Doc;
+import pl.com.bottega.documentmanagement.api.DocumentDto;
 
 /**
- * Created by Dell on 2016-06-12.
+ * Created by maciuch on 12.06.16.
  */
 public class Document {
 
-    public Document(DocumentNumber documentNumber, String title, String content) {
+    public Document(DocumentNumber documentNumber, String content, String title) {
 
     }
 
-    public void change(String newTitle, String newContent) {
+    public void change(String title, String content) {
 
     }
 
@@ -21,16 +19,12 @@ public class Document {
 
     }
 
-    public DocumentDto export() {
-        DocumentDto dto = new DocumentDto();
-        return dto;
-    }
-
-    public void confirm(Employee confirmator) {
+    public void confirm(Employee conirmator) {
 
     }
 
     public void confirm(Employee confirmator, Employee forEmployee) {
 
     }
+
 }
