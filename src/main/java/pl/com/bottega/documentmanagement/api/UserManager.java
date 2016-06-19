@@ -4,6 +4,7 @@ import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.com.bottega.documentmanagement.domain.Employee;
 import pl.com.bottega.documentmanagement.domain.EmployeeId;
 import pl.com.bottega.documentmanagement.domain.EmployeeRepository;
@@ -14,6 +15,7 @@ import pl.com.bottega.documentmanagement.domain.EmployeeRepository;
 @Service
 public class UserManager {
     private EmployeeRepository employeeRepository;
+    private Employee currentEmployee;
 
     @Autowired
     public UserManager(EmployeeRepository employeeRepository){
@@ -21,7 +23,7 @@ public class UserManager {
     }
 
 
-
+    @Transactional
     public SignupResultDto signup(String login, String password, EmployeeId employeeId){
 
       Employee employee = employeeRepository.findByEmployee(employeeId);
@@ -58,14 +60,19 @@ public class UserManager {
         return Hashing.sha1().hashString(password, Charsets.UTF_8).toString();
     }
 
-    public void login(String login, String password){
+    public SignupResultDto login(String login, String password){ //wpisuje sie nie zahashowane haslo wiec trzeba hashowac
 
-
+        this.currentEmployee =
+                employeeRepository.findByLoginAndPassword(login, hashedPassword(password));
+        if(this.currentEmployee == null)
+            return failed("login or password incorect");
+        else return success();
     }
 
 
     public Employee currentEmployee() {
-        return null;
+        return this.currentEmployee;
+
     }
 
 }

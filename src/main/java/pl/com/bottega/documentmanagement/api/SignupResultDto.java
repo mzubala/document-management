@@ -34,4 +34,12 @@ public class SignupResultDto {
     public void setSuccess(boolean success) {
         this.success = success;
     }
+
+    @Override
+    public String toString() {
+        return "SignupResultDto{" +
+                "failuer='" + failuer + '\'' +
+                ", success=" + success +
+                '}';
+    }
 }
