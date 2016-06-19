@@ -5,9 +5,10 @@ package pl.com.bottega.documentmanagement.domain;
  */
 public class EmployeeId {
 
-    private long id;
+    private Long id;
 
-    public EmployeeId(long id) {
+    public EmployeeId(Long id) {
         this.id = id;
     }
+
 }

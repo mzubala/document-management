@@ -11,8 +11,8 @@ public class DocumentNumber {
         this.number = number;
     }
 
-    @Override
     public String toString() {
         return number;
     }
+
 }

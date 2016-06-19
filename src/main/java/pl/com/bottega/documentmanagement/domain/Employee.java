@@ -8,14 +8,13 @@ import static com.google.common.base.Preconditions.checkState;
 public class Employee {
 
     private EmployeeId employeeId;
-    private String login;
     private String hashedPassword;
+    private String login;
 
     public Employee(String login, String hashedPassword, EmployeeId employeeId) {
         this.login = login;
         this.hashedPassword = hashedPassword;
         this.employeeId = employeeId;
-
     }
 
     public boolean isRegistered() {
@@ -27,4 +26,5 @@ public class Employee {
         this.login = login;
         this.hashedPassword = password;
     }
+
 }

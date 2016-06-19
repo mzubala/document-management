@@ -6,19 +6,19 @@ import pl.com.bottega.documentmanagement.domain.DocumentNumber;
 import pl.com.bottega.documentmanagement.domain.repositories.DocumentRepository;
 
 /**
- * Created by Dell on 2016-06-18.
+ * Created by maciuch on 18.06.16.
  */
 @Repository
 public class FakeDocumentRepository implements DocumentRepository {
 
     @Override
     public void save(Document document) {
-        System.out.println("save document");
+        System.out.println("Save document");
     }
 
     @Override
     public Document load(DocumentNumber documentNumber) {
-        System.out.println("load document");
+        System.out.println("Load document");
         return null;
     }
 }
