@@ -33,4 +33,12 @@ public class SignupResultDto {
         success = false;
     }
 
+    @Override
+    public String toString() {
+        return "SignupResultDto{" +
+                "success=" + success +
+                ", failureReason='" + failureReason + '\'' +
+                '}';
+    }
+
 }
