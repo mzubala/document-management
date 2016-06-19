@@ -34,11 +34,10 @@ public class DocumentFlowProcess {
     private DocumentRepository documentRepository;
     private UserManager userManager;
 
-    //wstrzykiwanie przez konstruktor
     public DocumentFlowProcess(DocumentRepository documentRepository, UserManager userManager, DocumentNumberGenerator documentNumberGenerator) {
-        this.documentNumberGenerator = documentNumberGenerator;
-        this.userManager = userManager;
         this.documentRepository = documentRepository;
+        this.userManager = userManager;
+        this.documentNumberGenerator = documentNumberGenerator;
     }
 
     public DocumentNumber create(String title, String content) {

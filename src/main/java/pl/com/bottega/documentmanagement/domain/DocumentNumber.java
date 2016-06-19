@@ -14,4 +14,5 @@ public class DocumentNumber {
     public String toString() {
         return number;
     }
+
 }

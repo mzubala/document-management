@@ -17,29 +17,9 @@
     <tx:annotation-driven/>
 
     <context:property-placeholder location="classpath:application.properties,classpath:jdbc.properties"/>
+
     <bean id="documentNumberGenerator" class="${documentNumberGeneratorClass}">
-
     </bean>
-
-    <!--bean id="employeeRepository" class="pl.com.bottega.documentmanagement.infrastructure.FakeEmployeeRepository">
-
-    </bean>
-
-    <bean id="userManager" class="pl.com.bottega.documentmanagement.api.UserManager">
-        <constructor-arg index="0" ref="employeeRepository" />
-    </bean>
-
-    <bean id="documentRepository" class="pl.com.bottega.documentmanagement.infrastructure.FakeDocumentRepository"></bean>
-
-    <bean id="documentNumberGenerator" class="pl.com.bottega.documentmanagement.domain.ISODocumentNumberGenerator"></bean>
-
-    <bean id="documentFlowProcess" class="pl.com.bottega.documentmanagement.api.DocumentFlowProcess">
-        <constructor-arg index="0" ref="documentRepository" />
-        <constructor-arg index="1" ref="userManager" />
-        <constructor-arg index="2" ref="documentNumberGenerator" />
-    </bean-->
-
-    <!--context:property-placeholder location="classpath:jdbc.properties"/-->
 
     <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="${jdbc.driverClassName}"/>

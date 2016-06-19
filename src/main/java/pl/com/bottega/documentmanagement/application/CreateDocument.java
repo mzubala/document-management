@@ -8,18 +8,18 @@ import pl.com.bottega.documentmanagement.domain.DocumentNumber;
 import pl.com.bottega.documentmanagement.domain.EmployeeId;
 
 /**
- * Created by anna on 18.06.2016.
+ * Created by maciuch on 18.06.16.
  */
 public class CreateDocument {
 
     public static void main(String[] args) {
-        ApplicationContext applicationContext = new ClassPathXmlApplicationContext(new String[] {"application.xml"});
+        ApplicationContext applicationContext = new ClassPathXmlApplicationContext(new String[]{"application.xml"});
         UserManager userManager = applicationContext.getBean("userManager", UserManager.class);
         userManager.signup("mietek", "123456", new EmployeeId(666L));
         userManager.login("mietek", "123456");
-
         DocumentFlowProcess documentFlowProcess = applicationContext.getBean("documentFlowProcess", DocumentFlowProcess.class);
         DocumentNumber number = documentFlowProcess.create("my first doc", "trala la");
         System.out.println(number);
     }
+
 }

@@ -11,7 +11,6 @@ public class Employee {
     private String hashedPassword;
     private String login;
 
-
     public Employee(String login, String hashedPassword, EmployeeId employeeId) {
         this.login = login;
         this.hashedPassword = hashedPassword;
@@ -27,4 +26,5 @@ public class Employee {
         this.login = login;
         this.hashedPassword = password;
     }
+
 }

@@ -8,8 +8,6 @@ import pl.com.bottega.documentmanagement.domain.Employee;
 import pl.com.bottega.documentmanagement.domain.EmployeeId;
 import pl.com.bottega.documentmanagement.domain.EmployeeRepository;
 
-import java.nio.charset.Charset;
-
 /**
  * Created by maciuch on 12.06.16.
  */
@@ -18,14 +16,13 @@ public class UserManager {
 
     private EmployeeRepository employeeRepository;
 
-    //wstrzykiwanie przez konstruktor
     public UserManager(EmployeeRepository employeeRepository) {
         this.employeeRepository = employeeRepository;
     }
 
     public SignupResultDto signup(String login, String password, EmployeeId employeeId) {
         Employee employee = employeeRepository.findByEmployeeId(employeeId);
-        if(employee == null)
+        if (employee == null)
             return setupNewAccount(login, password, employeeId);
         else if (employee.isRegistered())
             return failed("employee registered");
@@ -37,7 +34,7 @@ public class UserManager {
     }
 
     private SignupResultDto setupNewAccount(String login, String password, EmployeeId employeeId) {
-        if(employeeRepository.isLoginOccupied(login))
+        if (employeeRepository.isLoginOccupied(login))
             return failed("login is occupied");
         else {
             Employee employee = new Employee(login, hashedPassword(password), employeeId);
@@ -49,6 +46,7 @@ public class UserManager {
     private SignupResultDto failed(String reason) {
         return new SignupResultDto(reason);
     }
+
     private SignupResultDto success() {
         return new SignupResultDto();
     }
