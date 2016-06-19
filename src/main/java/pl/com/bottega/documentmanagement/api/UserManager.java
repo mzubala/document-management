@@ -4,6 +4,7 @@ import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.com.bottega.documentmanagement.domain.Employee;
 import pl.com.bottega.documentmanagement.domain.EmployeeId;
 import pl.com.bottega.documentmanagement.domain.repositories.EmployeeRepository;
@@ -15,13 +16,14 @@ import pl.com.bottega.documentmanagement.domain.repositories.EmployeeRepository;
 public class UserManager {
 
     private EmployeeRepository employeeRepository;
+    private Employee currentEmployee;
 
     @Autowired
     public UserManager(EmployeeRepository employeeRepository){
         this.employeeRepository = employeeRepository;
     }
 
-
+    @Transactional//przed rozpoczęciem metody jest otwierana tranzakcja po zakończeniu metody tranzakcja jest zatwierdzana
     public SignupResultDto signup(String login, String password, EmployeeId employeeId)  {
         Employee employee =  employeeRepository.findByEmployeeId(employeeId);
         if (employee == null)
@@ -35,12 +37,18 @@ public class UserManager {
         }
     }
 
-    public void login(String login, String password){
+
+    public SignupResultDto login (String login, String password){
+        Employee employee = employeeRepository.findByLoginAndPassword(login, hashedPassword(password));
+        if (employee==null)
+            return failed("Login or pass incorect");
+        else
+            return success();
 
     }
 
     public Employee currentEmployee() {
-        return null;
+        return this.currentEmployee;
     }
 
     private SignupResultDto setupNewAccount(String login, String password, EmployeeId employeeId) {
@@ -65,5 +73,6 @@ public class UserManager {
     private SignupResultDto success(){
         return  new SignupResultDto();
     }
+
 
 }

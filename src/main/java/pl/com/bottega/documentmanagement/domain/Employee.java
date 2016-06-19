@@ -1,16 +1,22 @@
 package pl.com.bottega.documentmanagement.domain;
 
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+
 import static com.google.common.base.Preconditions.checkState;
 
 /**
  * Created by maciuch on 12.06.16.
  */
+@Entity
 public class Employee {
 
-
+    @EmbeddedId // to id nie będzie traktowana jako osobna tabelka tylkozostanie wstawione do tabelki employee
     private EmployeeId employeeId;
     private String hashedPassword;
     private String login;
+
+    private Employee(){}
 
     public Employee(String login, String hashedPassword, EmployeeId employeeId) {
         this.login = login;
