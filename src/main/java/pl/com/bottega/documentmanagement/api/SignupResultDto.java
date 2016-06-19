@@ -11,6 +11,7 @@ public class SignupResultDto {
         success = true;
     }
 
+
     public SignupResultDto(String failureReason){
         this.failureReason = failureReason;
         success = false;
@@ -31,4 +32,12 @@ public class SignupResultDto {
     public void setFailureReason(String failureReason) {
         this.failureReason = failureReason;
     }
+    @Override
+    public String toString() {
+        return "SignupResultDto{" +
+                "success=" + success +
+                ", failureReason='" + failureReason + '\'' +
+                '}';
+    }
 }
+

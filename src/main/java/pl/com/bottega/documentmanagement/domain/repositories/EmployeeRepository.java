@@ -11,4 +11,6 @@ public interface EmployeeRepository {
     Employee findByEmployeeId(EmployeeId employeeId);
 
     boolean isLoginOccupied(String login);
+
+    Employee findByLoginAndPassword(String login, String hashedPassword);
 }
