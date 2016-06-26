@@ -1,6 +1,7 @@
 package pl.com.bottega.documentmanagement.infrastructure;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import pl.com.bottega.documentmanagement.domain.Employee;
 import pl.com.bottega.documentmanagement.domain.EmployeeId;
 import pl.com.bottega.documentmanagement.domain.repositories.EmployeeRepository;
@@ -12,6 +13,7 @@ import javax.persistence.PersistenceContext;
  * Created by paulina.pislewicz on 2016-06-19.
  */
 @Repository
+@Transactional
 public class JPAEmployeeRepository implements EmployeeRepository {
     @PersistenceContext
     private EntityManager entityManager;

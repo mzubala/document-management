@@ -22,6 +22,9 @@ public class CreateDocument {
         DocumentFlowProcess documentFlowProcess = applicationContext.getBean("documentFlowProcess", DocumentFlowProcess.class);
         DocumentNumber number = documentFlowProcess.create("my first doc", "trala la");
         System.out.println(number);
+        documentFlowProcess.change(number, "new title", "sia la la");
+        System.out.println(number);
+
     }
 
     @Override
