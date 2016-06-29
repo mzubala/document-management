@@ -1,7 +1,7 @@
 package pl.com.bottega.documentmanagement.api;
 
 /**
- * Created by maciuch on 18.06.16.
+ * Created by Dell on 2016-06-18.
  */
 public class SignupResultDto {
 
@@ -10,6 +10,11 @@ public class SignupResultDto {
 
     public SignupResultDto() {
         success = true;
+    }
+
+    public SignupResultDto(String failureReason) {
+        this.failureReason = failureReason;
+        success = false;
     }
 
     public boolean isSuccess() {
@@ -26,18 +31,5 @@ public class SignupResultDto {
 
     public void setFailureReason(String failureReason) {
         this.failureReason = failureReason;
-    }
-
-    public SignupResultDto(String failureReason) {
-        this.failureReason = failureReason;
-        success = false;
-    }
-
-    @Override
-    public String toString() {
-        return "SignupResultDto{" +
-                "success=" + success +
-                ", failureReason='" + failureReason + '\'' +
-                '}';
     }
 }
