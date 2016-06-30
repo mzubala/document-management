@@ -10,8 +10,8 @@ import static com.google.common.base.Preconditions.checkState;
  */
 @Entity
 public class Employee {
-
-    @EmbeddedId // to id nie będzie traktowana jako osobna tabelka tylkozostanie wstawione do tabelki employee
+                // nie będzie traktowana jako nowa tabelka tylko mapowane na kolumny w employee
+    @EmbeddedId // to id nie będzie traktowana jako osobna tabelka tylko zostanie wstawione do tabelki employee
     private EmployeeId employeeId;
     private String hashedPassword;
     private String login;

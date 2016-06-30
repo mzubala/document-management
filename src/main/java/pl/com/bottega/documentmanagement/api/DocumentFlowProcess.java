@@ -2,6 +2,7 @@ package pl.com.bottega.documentmanagement.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.com.bottega.documentmanagement.domain.Document;
 import pl.com.bottega.documentmanagement.domain.DocumentNumber;
 import pl.com.bottega.documentmanagement.domain.DocumentNumberGenerator;
@@ -22,12 +23,14 @@ public class DocumentFlowProcess {
     //@Autowired
     private UserManager userManager;
 
+    @Autowired
     public DocumentFlowProcess(DocumentNumberGenerator documentNumberGenerator, DocumentRepository documentRepository, UserManager userManager) {
         this.documentNumberGenerator = documentNumberGenerator;
         this.documentRepository = documentRepository;
         this.userManager = userManager;
     }
 
+    @Transactional //przed rozpoczęciem metody jest otwierana tranzakcja po zakończeniu metody tranzakcja jest zatwierdzana
     public DocumentNumber create(String title, String content) {
         checkNotNull(title);
         checkNotNull(content);
@@ -39,6 +42,7 @@ public class DocumentFlowProcess {
         return documentNumber;
     }
 
+    @Transactional
     public void change(DocumentNumber documentNumber, String newTitle, String newContent) {
         checkNotNull(documentNumber);
         checkNotNull(newTitle);

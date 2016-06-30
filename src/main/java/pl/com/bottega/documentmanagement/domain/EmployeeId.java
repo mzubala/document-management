@@ -8,7 +8,7 @@ import java.io.Serializable;
 /**
  * Created by maciuch on 12.06.16.
  */
-@Embeddable// inne encjemoga jej urzywać
+@Embeddable// inne encje moga jej urzywać
 public class EmployeeId implements Serializable{
 
 
