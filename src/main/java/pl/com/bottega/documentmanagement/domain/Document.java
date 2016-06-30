@@ -17,7 +17,7 @@ public class Document {
     String title;
     @Id
     @GeneratedValue
-    long id;
+    Long id;
 
     public Document(DocumentNumber documentNumber, String content, String title) {
         this.documentNumber = documentNumber;
