@@ -59,7 +59,7 @@ public class UserManager {
         return Hashing.sha1().hashString(password, Charsets.UTF_8).toString();
     }
 
-
+    @Transactional
     public SignupResultDto login(String login, String password){
        this.currentEmployee = employeeRepository.findByLoginAndPassword(login, hashedPassword(password));
         if (this.currentEmployee == null)
