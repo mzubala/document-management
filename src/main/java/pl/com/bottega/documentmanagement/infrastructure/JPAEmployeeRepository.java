@@ -13,7 +13,6 @@ import javax.persistence.PersistenceContext;
  * Created by paulina.pislewicz on 2016-06-19.
  */
 @Repository
-@Transactional
 public class JPAEmployeeRepository implements EmployeeRepository {
     @PersistenceContext
     private EntityManager entityManager;
