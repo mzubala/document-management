@@ -2,6 +2,7 @@ package pl.com.bottega.documentmanagement.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.com.bottega.documentmanagement.domain.Document;
 import pl.com.bottega.documentmanagement.domain.DocumentNumber;
 import pl.com.bottega.documentmanagement.domain.DocumentNumberGenerator;
@@ -30,6 +31,7 @@ public class DocumentFlowProcess {
         this.userManager = userManager;
     }
 
+    @Transactional
     public DocumentNumber create(String title, String content) {
         checkNotNull(title);
         checkNotNull(content);
@@ -40,7 +42,7 @@ public class DocumentFlowProcess {
 
         return documentNumber;
     }
-
+    @Transactional
     public void change(DocumentNumber documentNumber, String newTitle, String newContent) {
         checkNotNull(documentNumber);
         checkNotNull(newTitle);

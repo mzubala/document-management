@@ -2,16 +2,39 @@ package pl.com.bottega.documentmanagement.domain;
 
 import pl.com.bottega.documentmanagement.api.DocumentDto;
 
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.print.Doc;
+
 /**
  * Created by Wojciech Winiarski on 12.06.16.
  */
+@Entity
 public class Document {
 
+    @Id
+    @GeneratedValue
+    private Long documentId;
+    @Embedded
+    private DocumentNumber documentNumber;
+    private String content;
+    private String title;
+
+    private Document(){}
+
     public Document(DocumentNumber documentNumber, String content, String title) {
+
+        this.documentNumber = documentNumber;
+        this.content = content;
+        this.title = title;
 
     }
 
     public void change(String title, String content) {
+        this.title = title;
+        this.content = content;
 
     }
 

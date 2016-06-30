@@ -18,7 +18,7 @@
     <context:property-placeholder location="classpath*:application.properties,classpath:jdbc.properties"/>
     <bean id="documentNumberGenerator" class= "${documentNumberGeneratorClass}"/>
 
-
+    <!-- tworzenie deklaracji zaleznosci-->
     <!--bean id="employeeRepository" class="pl.com.bottega.documentmanagement.infrastructure.FakeEmployeeRepository" />
     <bean id="documentRepository" class="pl.com.bottega.documentmanagement.infrastructure.FakeDocumentRepository"/>
     <bean id="documentNumberGenerator" class="pl.com.bottega.documentmanagement.domain.ISODocumentNumberGenerator"/>
