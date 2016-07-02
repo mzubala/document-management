@@ -19,9 +19,13 @@ public class CreateDocument {
         userManager.signup("janek", "qwerty", new EmployeeId(50L));
         SignupResultDto result = userManager.login("mietek", "23456");
         System.out.println(result);
+
         DocumentFlowProcess documentFlowProcess = applicationContext.getBean("documentFlowProcess", DocumentFlowProcess.class);
         DocumentNumber number = documentFlowProcess.create("my first doc", "trala la");
-        System.out.println(number);
-    }
 
+        documentFlowProcess.change(number, "new title", "new content");
+
+        System.out.println(documentFlowProcess.load(number));
+
+    }
 }
