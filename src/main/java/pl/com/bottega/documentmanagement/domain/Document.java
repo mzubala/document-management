@@ -1,6 +1,5 @@
 package pl.com.bottega.documentmanagement.domain;
 
-import pl.com.bottega.documentmanagement.api.DocumentDto;
 
 import javax.persistence.*;
 
@@ -12,7 +11,7 @@ public class Document {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private Long id;
     private String title;
     private String content;
     @Embedded

@@ -6,7 +6,6 @@ import pl.com.bottega.documentmanagement.domain.EmployeeId;
 import pl.com.bottega.documentmanagement.domain.EmployeeRepository;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
 
 /**
