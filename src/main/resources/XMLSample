@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document>
+
+    <Title>Tytul</Title>
+    <Content>Zawartosc</Content>
+    <Emploee>
+        <name>Janek</name>
+        <LastName>Nowak</LastName>
+        <Telephone>70003455</Telephone>
+        <Adress>Budowlana 20</Adress>
+    </Emploee>
+
+</Document>

@@ -13,6 +13,11 @@ public class DocumentNumber {
 
     @NaturalId
     private String number;
+
+    public String getNumber() {
+        return number;
+    }
+
     private DocumentNumber(){}
 
     public DocumentNumber(String number) {

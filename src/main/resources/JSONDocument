@@ -1,0 +1,13 @@
+{
+  "Document": {
+    "Title": "John",
+    "Content": "Content",
+    "Employee": {
+      "FirstName": "John",
+      "LastName": "Snow",
+      "Telephone": 423553,
+      "Address": "Black Wall"
+    }
+  }
+}
+

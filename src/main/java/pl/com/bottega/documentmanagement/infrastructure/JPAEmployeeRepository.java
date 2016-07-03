@@ -10,6 +10,7 @@ import pl.com.bottega.documentmanagement.domain.EmployeeRepository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.List;
 
 /**
  * Created by Wojciech Winiarski on 19.06.2016.
@@ -44,8 +45,15 @@ public class JPAEmployeeRepository implements EmployeeRepository{
 
     @Override
     public Employee findByLoginAndPassword(String login, String hashedPassword) {
-        return entityManager.createQuery("from Employee " +
+        List<Employee> employees = entityManager.createQuery("from Employee " +
                         "where login =:login and hashedPassword=:hashedPassword",
-                Employee.class).setParameter("login", login).setParameter("hashedPassword", hashedPassword).getSingleResult();
+                Employee.class).setParameter("login", login)
+                .setParameter("hashedPassword", hashedPassword)
+                .getResultList();
+        if (employees.size() == 0)
+            return null;
+        else
+            return employees.get(0);
+
     }
 }

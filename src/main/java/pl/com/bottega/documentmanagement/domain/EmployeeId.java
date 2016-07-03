@@ -20,7 +20,7 @@ public class EmployeeId implements Serializable{
 
     }
 
-    public EmployeeId(long id) {
+    public EmployeeId(Long id) {
         this.id = id;
 
     }
