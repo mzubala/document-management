@@ -1,13 +1,13 @@
 package pl.com.bottega.documentmanagement.infrastructure;
 
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import pl.com.bottega.documentmanagement.domain.Employee;
 import pl.com.bottega.documentmanagement.domain.EmployeeId;
 import pl.com.bottega.documentmanagement.domain.repositories.EmployeeRepository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.List;
 
 /**
  * Created by paulina.pislewicz on 2016-06-19.
@@ -37,8 +37,17 @@ public class JPAEmployeeRepository implements EmployeeRepository {
 
     @Override
     public Employee findByLoginAndPassword(String login, String hashedPassword) {
-        return entityManager.createQuery("SELECT e " +
+        List<Employee> employees = entityManager.
+        createQuery("SELECT e " +
                 "FROM Employee e "+
-                "WHERE login =:login AND hashedPassword =:hashedPassword", Employee.class).setParameter("login", login).setParameter("hashedPassword", hashedPassword).getSingleResult();
+                "WHERE login =:login AND hashedPassword =:hashedPassword",
+                Employee.class).
+                setParameter("login", login).
+                setParameter("hashedPassword", hashedPassword).
+                getResultList();
+        if(employees.size() ==0)
+            return null;
+        else
+            return employees.get(0);
     }
 }

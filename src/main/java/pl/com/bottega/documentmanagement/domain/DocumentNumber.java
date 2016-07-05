@@ -21,4 +21,11 @@ public class DocumentNumber {
     public String toString(){
         return number;
     }
+    public String getNumber() {
+        return number;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
+    }
 }

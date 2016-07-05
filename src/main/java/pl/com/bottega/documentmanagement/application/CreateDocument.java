@@ -17,7 +17,7 @@ public class CreateDocument {
         ApplicationContext applicationContext = new ClassPathXmlApplicationContext(new String [] {"application.xml"});//  param - scieżka do pliku konfiguracji Springa
         UserManager userManager = applicationContext.getBean("userManager", UserManager.class);
         userManager.signup("janek", "qwerty", new EmployeeId(50l));
-        SignupResultDto result = userManager.login("mietek", "123456");
+        SignupResultDto result = userManager.login("janek", "qwerty");
         System.out.println(result);
         DocumentFlowProcess documentFlowProcess = applicationContext.getBean("documentFlowProcess", DocumentFlowProcess.class);
         DocumentNumber number = documentFlowProcess.create("my first doc", "trala la");

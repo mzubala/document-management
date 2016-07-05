@@ -1,9 +1,6 @@
 package pl.com.bottega.documentmanagement.domain;
 
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
  * Created by maciuch on 12.06.16.
@@ -18,11 +15,14 @@ public class Document {
     @Id
     @GeneratedValue
     Long id;
+    @ManyToOne
+    private Employee creator;
 
-    public Document(DocumentNumber documentNumber, String content, String title) {
+    public Document(DocumentNumber documentNumber, String content, String title, Employee creator) {
         this.documentNumber = documentNumber;
         this.content = content;
         this.title = title;
+        this.creator = creator;
     }
     private Document(){}
 

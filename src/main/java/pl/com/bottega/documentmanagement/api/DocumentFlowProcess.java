@@ -28,12 +28,13 @@ public class DocumentFlowProcess {
         this.userManager = userManager;
     }
 
+    @Transactional
     public DocumentNumber create(String title, String content) {
         checkNotNull(title);
         checkNotNull(content);
 
         DocumentNumber documentNumber = documentNumberGenerator.generate();
-        Document document = new Document(documentNumber, title, content);
+        Document document = new Document(documentNumber, title, content, userManager.currentEmployee());
         documentRepository.save(document);
 
         return documentNumber;
