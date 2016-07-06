@@ -16,13 +16,16 @@ public class Document {
     private String content;
     @Embedded
     private DocumentNumber number;
+    @ManyToOne
+    private Employee creator;
 
     private Document() {}
 
-    public Document(DocumentNumber documentNumber, String content, String title) {
-        number = documentNumber;
+    public Document(DocumentNumber documentNumber, String content, String title, Employee creator) {
+        this.number = documentNumber;
         this.content = content;
         this.title = title;
+        this.creator = creator;
     }
 
     public void change(String title, String content) {

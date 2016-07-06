@@ -35,7 +35,7 @@ public class DocumentFlowProcess {
         checkNotNull(content);
 
         DocumentNumber documentNumber = documentNumberGenerator.generate();
-        Document document = new Document(documentNumber, content, title);
+        Document document = new Document(documentNumber, content, title, userManager.currentEmployee());
         documentRepository.save(document);
 
         return documentNumber;
