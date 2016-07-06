@@ -1,7 +1,8 @@
 package pl.com.bottega.documentmanagement.controller;
 
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import pl.com.bottega.documentmanagement.api.DocumentFlowProcess;
 
@@ -14,11 +15,12 @@ public class VerificationsController {
     DocumentFlowProcess documentFlowProcess;
 
     public VerificationsController(DocumentFlowProcess documentFlowProcess){
-        this.documentFlowProcess = documentFlowProcess;
+         this.documentFlowProcess = documentFlowProcess;
+
     }
 
-    @RequestMapping(path = "/verification", method = RequestMethod.PUT)
-    public void verify(VerificationRequest verificationRequest){
-        documentFlowProcess.verify(verificationRequest.getDocumentNumber());
-    }
+    @PutMapping(path = "/verification", headers = "myHeader=myValue")
+    public void verify(@PathVariable String nr,  VerificationRequest verificationRequest){
+        documentFlowProcess.verify(documentFlowProcess.create(verificationRequest.getTitle(), verificationRequest.getContent()));
+        }
 }
