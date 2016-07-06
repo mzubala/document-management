@@ -26,6 +26,6 @@ public class JPADocumentRepository implements DocumentRepository {
     public Document load(DocumentNumber documentNumber) {
         return entityManager.createQuery("SELECT d " +
             "FROM Document d " +
-            "WHERE documentNumber =:documentNumber", Document.class).setParameter("documentNumber", documentNumber).getSingleResult();
+            "WHERE documentNumber = :documentNumber", Document.class).setParameter("documentNumber", documentNumber).getSingleResult();
     }
 }
