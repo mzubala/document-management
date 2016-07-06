@@ -21,9 +21,9 @@ public class DocumentController {
         return documentFlowProcess.create(documentRequest.getTitle(), documentRequest.getContent());
     }
 
-    @RequestMapping (value ="/{nr}", method = RequestMethod.POST)
-    public void change (@PathVariable DocumentNumber nr, @RequestBody DocumentRequest documentRequest){
-         documentFlowProcess.change(nr ,documentRequest.getTitle(), documentRequest.getContent());
+    @RequestMapping (path="/{nr}", method = RequestMethod.POST)
+    public void change (@PathVariable String nr, @RequestBody DocumentRequest documentRequest){
+        documentFlowProcess.change(new DocumentNumber(nr) ,documentRequest.getTitle(), documentRequest.getContent());
     }
 
 }

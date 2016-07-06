@@ -3,10 +3,7 @@ package pl.com.bottega.documentmanagement.api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.com.bottega.documentmanagement.domain.Document;
-import pl.com.bottega.documentmanagement.domain.DocumentNumber;
-import pl.com.bottega.documentmanagement.domain.DocumentNumberGenerator;
-import pl.com.bottega.documentmanagement.domain.EmployeeId;
+import pl.com.bottega.documentmanagement.domain.*;
 import pl.com.bottega.documentmanagement.domain.repositories.DocumentRepository;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -34,7 +31,7 @@ public class DocumentFlowProcess {
         checkNotNull(content);
 
         DocumentNumber documentNumber = documentNumberGenerator.generate();
-        Document document = new Document(documentNumber, title, content, userManager.currentEmployee());
+        Document document = new Document(documentNumber, title, content, userManager.currentEmployee(), DocumentStatus.DRAFT, null);
         documentRepository.save(document);
 
         return documentNumber;
