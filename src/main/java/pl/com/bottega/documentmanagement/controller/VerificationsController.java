@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.com.bottega.documentmanagement.api.DocumentFlowProcess;
+import pl.com.bottega.documentmanagement.domain.DocumentNumber;
 
 /**
  * Created by paulina.pislewicz on 2016-07-05.
@@ -20,7 +21,7 @@ public class VerificationsController {
     }
 
     @PutMapping(path = "/verification", headers = "myHeader=myValue")
-    public void verify(@PathVariable String nr,  VerificationRequest verificationRequest){
-        documentFlowProcess.verify(documentFlowProcess.create(verificationRequest.getTitle(), verificationRequest.getContent()));
+    public void verify(@PathVariable String nr){
+        documentFlowProcess.verify(new DocumentNumber(nr));
         }
 }
