@@ -3,6 +3,8 @@ package pl.com.bottega.documentmanagement.api;
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.com.bottega.documentmanagement.domain.Employee;
@@ -13,6 +15,7 @@ import pl.com.bottega.documentmanagement.domain.EmployeeRepository;
  * Created by maciuch on 12.06.16.
  */
 @Service
+@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class UserManager {
 
     private EmployeeRepository employeeRepository;

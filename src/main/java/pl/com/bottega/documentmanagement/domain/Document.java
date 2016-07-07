@@ -7,45 +7,45 @@ import javax.persistence.*;
  */
 @Entity
 public class Document {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Embedded
     private DocumentNumber documentNumber;
     private String title;
     private String content;
 
-    public Document(DocumentNumber documentNumber, String content, String title) {
+    @ManyToOne
+    private Employee creator;
+
+    @ManyToOne
+    private Employee verificator;
+
+    @Enumerated(EnumType.ORDINAL)
+    private DocumentStatus documentStatus;
+
+    public Document(DocumentNumber documentNumber, String content, String title, Employee creator) {
         this.documentNumber = documentNumber;
         this.content = content;
         this.title = title;
+        this.creator = creator;
+        this.documentStatus = DocumentStatus.DRAFT;
     }
 
-    public Document(){}
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
+    private Document() {
     }
 
     public void change(String title, String content) {
-        setTitle(title);
-        setContent(content);
+        this.title = title;
+        this.content = content;
+        this.documentStatus = DocumentStatus.DRAFT;
     }
 
-    public void verify(Employee employee) {
-
+    public void verify(Employee verificator) {
+        this.verificator = verificator;
+        this.documentStatus = DocumentStatus.VERIFIED;
     }
 
     public void confirm(Employee conirmator) {
