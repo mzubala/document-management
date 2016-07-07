@@ -12,6 +12,7 @@ public class Document {
     DocumentNumber documentNumber;
     String content;
     String title;
+    @Enumerated(EnumType.STRING)
     DocumentStatus documentStatus;
     @Id
     @GeneratedValue
@@ -22,21 +23,14 @@ public class Document {
     private Employee verificator;
 
 
-    public Document(DocumentNumber documentNumber, String content, String title, Employee creator, DocumentStatus documentStatus, Employee verificator) {
+    public Document(DocumentNumber documentNumber, String content, String title, Employee creator) {
         this.documentNumber = documentNumber;
         this.content = content;
         this.title = title;
         this.creator = creator;
-        this.documentStatus = documentStatus;
-        this.verificator = verificator;
     }
 
     private Document(){}
-
-    @Enumerated(EnumType.STRING)
-    public DocumentStatus getDocumentStatus() {
-        return documentStatus;
-    }
 
     public void change(String title, String content) {
         this.title = title;
