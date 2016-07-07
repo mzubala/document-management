@@ -50,6 +50,7 @@ public class DocumentFlowProcess {
         documentRepository.save(document);
     }
 
+    @Transactional
     public void verify(DocumentNumber documentNumber) {
         checkNotNull(documentNumber);
 
