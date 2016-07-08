@@ -36,7 +36,7 @@ public class DocumentFlowProcess {
         checkNotNull(content);
 
         DocumentNumber documentNumber = documentNumberGenerator.generate();
-        Document document = new Document(documentNumber, title, content);
+        Document document = new Document(documentNumber, title, content, userManager.currentEmployee());
         documentRepository.save(document);
 
         return documentNumber;
@@ -52,7 +52,7 @@ public class DocumentFlowProcess {
         document.change(newTitle, newContent);
         documentRepository.save(document);
     }
-
+    @Transactional
     public void verify(DocumentNumber documentNumber) {
         checkNotNull(documentNumber);
 
@@ -60,15 +60,17 @@ public class DocumentFlowProcess {
         document.verify(userManager.currentEmployee());
         documentRepository.save(document);
     }
-
+    @Transactional
     public void publish(DocumentNumber documentNumber, Iterable<EmployeeId> ids) {
         checkNotNull(documentNumber);
     }
 
+    @Transactional
     public void archive(DocumentNumber documentNumber) {
         checkNotNull(documentNumber);
     }
 
+    @Transactional
     public DocumentNumber createNewVersion(DocumentNumber documentNumber) {
         checkNotNull(documentNumber);
 

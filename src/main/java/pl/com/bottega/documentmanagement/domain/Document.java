@@ -1,11 +1,7 @@
 package pl.com.bottega.documentmanagement.domain;
 
-import pl.com.bottega.documentmanagement.api.DocumentDto;
+import javax.persistence.*;
 
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 
 /**
  * Created by maciuch on 12.06.16.
@@ -20,23 +16,38 @@ public class Document {
     private DocumentNumber documentNumber;
     private String content;
     private String title;
+    @Enumerated(EnumType.STRING)
+    private DocumentStatus documentStatus;
+
+
+    @ManyToOne
+    private Employee creator;
+
+    @ManyToOne
+    private Employee verifier;
+
 
     private Document(){}
 
-    public Document(DocumentNumber documentNumber, String content, String title) {
+    public Document(DocumentNumber documentNumber, String content, String title, Employee creator) {
         this.documentNumber = documentNumber;
         this.content = content;
         this.title = title;
+        this.creator = creator;
+        this.documentStatus = DocumentStatus.DRAFT;
 
     }
 
     public void change(String title, String content) {
         this.title = title;
         this.content = content;
+        this.documentStatus = DocumentStatus.DRAFT;
 
     }
 
     public void verify(Employee employee) {
+        this.verifier = employee;
+        this.documentStatus = DocumentStatus.VERIFIED;
 
     }
 

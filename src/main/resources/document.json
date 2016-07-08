@@ -1,0 +1,13 @@
+{
+  "document":{
+    "title": "MyFirstTitle",
+    "employee":{
+      "firstName": "Jonh",
+      "lastName": "Snow",
+      "city": "Beverly Hills",
+      "zipCode": "90210",
+      "telephone":"111222333"
+    },
+    "content": "My very first content"
+  }
+}

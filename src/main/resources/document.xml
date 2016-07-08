@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+    <title>
+        MyFirstTitle
+    </title>
+    <content>My very first content</content>
+    <employees>
+        <employee>
+            <firstName>John</firstName>
+            <lastName>Snow</lastName>
+            <city>Beverly Hills</city>
+            <zipCode>90210</zipCode>
+            <telephone>111222333</telephone>
+        </employee>
+    </employees>
+
+</document>
