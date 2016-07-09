@@ -52,6 +52,13 @@
 
             <aop:before pointcut-ref="authClass" method="checkAuth" />
         </aop:aspect-->
+
+        <aop:aspect id="profilingAspect" ref="profilingAspect">
+            <aop:pointcut id="allApiMethods" expression="execution(* pl.com.bottega.documentmanagement.api.*.*(..))" />
+
+            <aop:around pointcut-ref="allApiMethods" method="profile" />
+        </aop:aspect>
+
     </aop:config>
 
 </beans>

@@ -8,6 +8,7 @@ import pl.com.bottega.documentmanagement.domain.DocumentNumber;
  * Created by maciuch on 03.07.16.
  */
 @RestController
+@RequestMapping("/documents")
 public class DocumentsController {
 
     private DocumentFlowProcess documentFlowProcess;
