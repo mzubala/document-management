@@ -14,6 +14,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Created by Wojciech Winiarski on 12.06.16.
  */
+
 @Service
 public class DocumentFlowProcess {
 
@@ -24,7 +25,7 @@ public class DocumentFlowProcess {
 
     private UserManager userManager;
 
-    @Autowired
+
     public DocumentFlowProcess(DocumentNumberGenerator documentNumberGenerator, DocumentRepository documentRepository, UserManager userManager) {
         this.documentNumberGenerator = documentNumberGenerator;
         this.documentRepository = documentRepository;
@@ -32,6 +33,7 @@ public class DocumentFlowProcess {
     }
 
     @Transactional
+    @RequiresAuth
     public DocumentNumber create(String title, String content) {
         checkNotNull(title);
         checkNotNull(content);
@@ -43,6 +45,7 @@ public class DocumentFlowProcess {
         return documentNumber;
     }
     @Transactional
+    @RequiresAuth
     public void change(DocumentNumber documentNumber, String newTitle, String newContent) {
         checkNotNull(documentNumber);
         checkNotNull(newTitle);
@@ -53,6 +56,7 @@ public class DocumentFlowProcess {
         documentRepository.save(document);
     }
     @Transactional
+    @RequiresAuth
     public void verify(DocumentNumber documentNumber) {
         checkNotNull(documentNumber);
 

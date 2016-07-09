@@ -20,7 +20,8 @@ public class UserManager {
     private EmployeeRepository employeeRepository;
     private Employee currentEmployee;
 
-    @Autowired
+
+
     public UserManager(EmployeeRepository employeeRepository){
         this.employeeRepository = employeeRepository;
     }
@@ -68,7 +69,7 @@ public class UserManager {
         this.currentEmployee =
                 employeeRepository.findByLoginAndPassword(login, hashedPassword(password));
         if(this.currentEmployee == null)
-            return failed("login or password incorect");
+            return failed("login or password incorrect");
         else return success();
     }
 
@@ -78,4 +79,9 @@ public class UserManager {
 
     }
 
+    public boolean isAuthenticated() {
+
+        return currentEmployee!= null;
+
+    }
 }

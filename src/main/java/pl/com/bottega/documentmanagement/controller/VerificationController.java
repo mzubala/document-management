@@ -14,6 +14,7 @@ public class VerificationController {
 
     private DocumentFlowProcess documentFlowProcess;
 
+
     public VerificationController(DocumentFlowProcess documentFlowProcess){
 
         this.documentFlowProcess = documentFlowProcess;
@@ -25,5 +26,7 @@ public class VerificationController {
         documentFlowProcess.verify(new DocumentNumber(documentNumber));
 
     }
+
+
 
 }

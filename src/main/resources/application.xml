@@ -16,7 +16,7 @@
     <context:component-scan base-package="pl.com.bottega.documentmanagement"/>
     <tx:annotation-driven/>
     <context:property-placeholder location="classpath*:application.properties,classpath:jdbc.properties"/>
-    <bean id="documentNumberGenerator" class= "${documentNumberGeneratorClass}"/>
+    <bean id="documentNumberGenerator" class="${documentNumberGeneratorClass}"/>
 
     <!-- tworzenie deklaracji zaleznosci-->
     <!--bean id="employeeRepository" class="pl.com.bottega.documentmanagement.infrastructure.FakeEmployeeRepository" />
@@ -53,5 +53,22 @@
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
         <property name="entityManagerFactory" ref="entityManagerFactory"/>
     </bean>
+
+
+    <aop:config>
+
+        <aop:aspect ref="authAspect">
+
+            <aop:pointcut id="authPointCut" expression="@annotation(pl.com.bottega.documentmanagement.api.RequiresAuth)"/>
+            <aop:before pointcut-ref="authPointCut" method="checkAuth"/>
+        </aop:aspect>
+
+        <aop:aspect id="profilingAspect" ref="profilingAspect">
+            <aop:pointcut id="allApiMethod" expression="execution(* pl.com.bottega.documentmanagement.api.*.*(..))"/>
+            <aop:around pointcut-ref="allApiMethod" method="profile"/>
+        </aop:aspect>
+
+    </aop:config>
+
 
 </beans>

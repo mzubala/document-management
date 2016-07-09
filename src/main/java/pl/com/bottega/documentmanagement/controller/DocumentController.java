@@ -1,10 +1,13 @@
 package pl.com.bottega.documentmanagement.controller;
 
+import org.springframework.http.HttpRequest;
 import org.springframework.web.bind.annotation.*;
 import pl.com.bottega.documentmanagement.api.DocumentFlowProcess;
 import pl.com.bottega.documentmanagement.api.UserManager;
 import pl.com.bottega.documentmanagement.domain.DocumentNumber;
 import pl.com.bottega.documentmanagement.domain.repositories.DocumentRepository;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Created by Wojciech Winiarski on 03.07.2016.
