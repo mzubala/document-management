@@ -42,4 +42,24 @@
         <property name="entityManagerFactory" ref="entityManagerFactory"/>
     </bean>
 
+    <aop:config>
+        <aop:aspect id="authMethodAspect" ref="authAspect">
+            <aop:pointcut id="authMethod" expression="@annotation(pl.com.bottega.documentmanagement.api.RequiresAuth)"/>
+
+            <aop:before pointcut-ref="authMethod" method="checkAuth"/>
+        </aop:aspect>
+
+        <aop:aspect id="profilingAspect" ref="profilingAspect">
+            <aop:pointcut id="allApiMethods" expression="execution(* pl.com.bottega.documentmanagement.api.*.*(..))" />
+
+            <aop:around pointcut-ref="allApiMethods" method="profile" />
+        </aop:aspect>
+
+        <!--<aop:aspect id="authClassAspect" ref="authAspect">-->
+            <!--<aop:pointcut id="authClass" expression="@target(pl.com.bottega.documentmanagement.api.RequiresAuth)"/>-->
+<!---->
+            <!--<aop:before pointcut-ref="authClass" method="checkAuth"/>-->
+        <!--</aop:aspect>-->
+    </aop:config>
+
 </beans>

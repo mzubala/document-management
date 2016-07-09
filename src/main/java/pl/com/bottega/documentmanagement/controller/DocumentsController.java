@@ -25,7 +25,6 @@ public class DocumentsController {
 
     @PostMapping ("/{documentNumber}")
     public void change(@PathVariable String documentNumber, @RequestBody DocumentRequest documentRequest) {
-        DocumentNumber number = new DocumentNumber(documentNumber);
-        documentFlowProcess.change(number, documentRequest.getTitle(), documentRequest.getContent());
+        documentFlowProcess.change(new DocumentNumber(documentNumber), documentRequest.getTitle(), documentRequest.getContent());
     }
 }

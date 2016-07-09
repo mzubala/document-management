@@ -73,4 +73,7 @@ public class UserManager {
         return this.currentEmployee;
     }
 
+    public boolean isAuthenticated() {
+        return currentEmployee != null;
+    }
 }
