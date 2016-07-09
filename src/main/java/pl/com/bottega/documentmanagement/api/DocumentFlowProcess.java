@@ -28,6 +28,7 @@ public class DocumentFlowProcess {
     }
 
     @Transactional
+    @RequiresAuth
     public DocumentNumber create(String title, String content) {
         checkNotNull(title);
         checkNotNull(content);
@@ -35,11 +36,11 @@ public class DocumentFlowProcess {
         DocumentNumber documentNumber = documentNumberGenerator.generate();
         Document document = new Document(documentNumber, title, content, userManager.currentEmployee());
         documentRepository.save(document);
-
         return documentNumber;
     }
 
     @Transactional
+    @RequiresAuth
     public void change(DocumentNumber documentNumber, String newTitle, String newContent) {
         checkNotNull(documentNumber);
         checkNotNull(newTitle);
@@ -51,6 +52,7 @@ public class DocumentFlowProcess {
     }
 
     @Transactional
+    @RequiresAuth
     public void verify(DocumentNumber documentNumber) {
         checkNotNull(documentNumber);
 

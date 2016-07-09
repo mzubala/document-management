@@ -40,4 +40,12 @@
         <property name="entityManagerFactory" ref="entityManagerFactory"/>
     </bean>
 
+    <aop:config>
+        <aop:aspect ref="misio">
+            <aop:pointcut id="authPointcut" expression="@annotation(pl.com.bottega.documentmanagement.api.RequiresAuth)" />
+
+            <aop:before pointcut-ref="authPointcut" method="checkAuth" />
+        </aop:aspect>
+    </aop:config>
+
 </beans>
