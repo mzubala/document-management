@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import pl.com.bottega.documentmanagement.domain.Employee;
 import pl.com.bottega.documentmanagement.domain.EmployeeId;
@@ -27,7 +28,7 @@ public class UserManager {
     }
 
 
-    @Transactional
+    @Transactional(isolation = Isolation.REPEATABLE_READ) //poziom izolacji aby nie dalo sie utworzyc 2 userow z takim samym loginem
     public SignupResultDto signup(String login, String password, EmployeeId employeeId){
 
       Employee employee = employeeRepository.findByEmployee(employeeId);

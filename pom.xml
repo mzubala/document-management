@@ -10,10 +10,8 @@
     <name>document-management</name>
 
 
-
-
     <dependencyManagement>
-    <dependencies>
+        <dependencies>
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-framework-bom</artifactId>
@@ -95,17 +93,25 @@
             <version>2.5</version>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-jpamodelgen</artifactId>
+            <version>5.2.1.Final</version>
+        </dependency>
+
     </dependencies>
 
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.5.1</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
+                    <compilerArguments>
+                        <processor>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</processor>
+                    </compilerArguments>
                 </configuration>
             </plugin>
         </plugins>

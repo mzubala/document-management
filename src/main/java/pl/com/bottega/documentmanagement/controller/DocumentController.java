@@ -1,13 +1,10 @@
 package pl.com.bottega.documentmanagement.controller;
 
-import org.springframework.http.HttpRequest;
 import org.springframework.web.bind.annotation.*;
+import pl.com.bottega.documentmanagement.api.DocumentDto;
 import pl.com.bottega.documentmanagement.api.DocumentFlowProcess;
-import pl.com.bottega.documentmanagement.api.UserManager;
+import pl.com.bottega.documentmanagement.api.DocumentsCatalog;
 import pl.com.bottega.documentmanagement.domain.DocumentNumber;
-import pl.com.bottega.documentmanagement.domain.repositories.DocumentRepository;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * Created by Wojciech Winiarski on 03.07.2016.
@@ -17,11 +14,13 @@ import javax.servlet.http.HttpServletRequest;
 public class DocumentController {
 
     private DocumentFlowProcess documentFlowProcess;
+    private DocumentsCatalog documentsCatalog;
 
 
-    public DocumentController(DocumentFlowProcess documentFlowProcess) {
+    public DocumentController(DocumentFlowProcess documentFlowProcess, DocumentsCatalog documentsCatalog) {
 
         this.documentFlowProcess = documentFlowProcess;
+        this.documentsCatalog = documentsCatalog;
     }
 
     @PutMapping
@@ -38,6 +37,13 @@ public class DocumentController {
                 documentRequest.getContent());
 
     }
+    @GetMapping("/{documentNumber}")
+    public DocumentDto show(@PathVariable String documentNumber){
+
+        return documentsCatalog.get(new DocumentNumber(documentNumber));
+
+    }
+
 }
 
 

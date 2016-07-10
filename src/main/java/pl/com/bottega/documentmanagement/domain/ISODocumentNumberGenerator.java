@@ -1,10 +1,7 @@
 package pl.com.bottega.documentmanagement.domain;
 
-import com.sun.xml.internal.ws.developer.Serialization;
-import org.springframework.stereotype.Service;
-import pl.com.bottega.documentmanagement.domain.repositories.DocumentRepository;
 
-import java.util.Random;
+
 import java.util.UUID;
 
 /**

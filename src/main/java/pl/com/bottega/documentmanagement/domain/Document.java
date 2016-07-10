@@ -1,6 +1,7 @@
 package pl.com.bottega.documentmanagement.domain;
 
 import javax.persistence.*;
+import java.util.Date;
 
 import static pl.com.bottega.documentmanagement.domain.DocumentStatus.DRAFT;
 import static pl.com.bottega.documentmanagement.domain.DocumentStatus.VERIFIED;
@@ -28,6 +29,12 @@ public class Document {
 
     @ManyToOne
     private Employee veryficator;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createAt;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedAt;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date verificatedAt;
 
 
 
@@ -40,6 +47,7 @@ public class Document {
         this.title = title;
         this.creator = creator;
         this.documentStatus = DRAFT;
+        this.createAt = new Date();
 
 
     }
@@ -48,6 +56,7 @@ public class Document {
         this.title = title;
         this.content = content;
         this.documentStatus = DRAFT;
+        this.updatedAt = new Date();
 
 
     }
@@ -56,6 +65,8 @@ public class Document {
 
        this.veryficator = employee;
        this.documentStatus = VERIFIED;
+       this.verificatedAt = new Date();
+
 
 
     }
