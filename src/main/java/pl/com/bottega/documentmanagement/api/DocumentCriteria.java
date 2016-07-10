@@ -1,11 +1,7 @@
 package pl.com.bottega.documentmanagement.api;
 
-import pl.com.bottega.documentmanagement.domain.Document;
 import pl.com.bottega.documentmanagement.domain.DocumentStatus;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import java.util.Date;
 
 
@@ -17,7 +13,7 @@ public class DocumentCriteria {
     private DocumentStatus status;
     private Long verifiedBy;
     private Long createdBy;
-    private Date createdForm, createdUntil;
+    private Date createdFrom, createdUntil;
     private Date verifiedFrom, verifiedUntil;
     private String query;
 
@@ -50,11 +46,11 @@ public class DocumentCriteria {
     }
 
     public Date getCreatedFrom() {
-        return createdForm;
+        return createdFrom;
     }
 
     public void setCreatedFrom(Date createdForm) {
-        this.createdForm = createdForm;
+        this.createdFrom = createdForm;
     }
 
     public Date getCreatedUntil() {
@@ -98,12 +94,12 @@ public class DocumentCriteria {
     }
 
 
-    public boolean isCreatedDetesDefined() {
-        return createdForm != null || createdUntil != null;
+    public boolean isCreatedDatesDefined() {
+        return createdFrom != null || createdUntil != null;
     }
 
     public boolean isCreatedFromDefined() {
-        return createdForm != null;
+        return createdFrom != null;
     }
 
     public boolean isCreatedUntilDefined() {
