@@ -52,6 +52,17 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
         CriteriaQuery<DocumentDto> query = builder.createQuery(DocumentDto.class);
         Root<Document> root = query.from(Document.class);
         Collection<Predicate> predicates = new HashSet<>();
+        query.select(builder.construct(DocumentDto.class,
+                root.get(Document_.documentNumber).get(DocumentNumber_.number),
+                root.get(Document_.title),
+                root.get(Document_.content),
+                root.get(Document_.status),
+                root.get(Document_.createdAt),
+                root.get(Document_.verifiedAt),
+                root.get(Document_.updatedAt),
+                root.get(Document_.creator).get(Employee_.employeeId).get(EmployeeId_.id),
+                root.get(Document_.verificator).get(Employee_.employeeId).get(EmployeeId_.id)
+        ));
 
         if (documentCriteria.isStatusDefined()) {
             predicates.add(builder.equal(root.get(Document_.status), documentCriteria.getStatus()));
