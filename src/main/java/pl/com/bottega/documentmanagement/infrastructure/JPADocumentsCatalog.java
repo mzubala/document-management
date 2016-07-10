@@ -33,6 +33,10 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
     @Transactional
     @RequiresAuth
     public DocumentDto get(DocumentNumber documentNumber) {
+
+//        "SELECT new pl.com.bottega.documentmanagement.api.DocumentDto(' d.title, d.content, d.status, d.employee.employeeId.id
+//        ') + FROM Document d WHERE ()" -> do HQL, tu: symulacja tworzenia konstruktora
+
         checkNotNull(documentNumber);
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<DocumentDto> query = builder.createQuery(DocumentDto.class);
@@ -61,6 +65,17 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
         CriteriaQuery<DocumentDto> query = builder.createQuery(DocumentDto.class);
         Root<Document> root = query.from(Document.class);
         Collection<Predicate> predicates = new HashSet<>();
+        query.select(builder.construct(DocumentDto.class,
+                root.get(Document_.number).get(DocumentNumber_.number),
+                root.get(Document_.title),
+                root.get(Document_.content),
+                root.get(Document_.documentStatus),
+                root.get(Document_.createAt),
+                root.get(Document_.verifiedAt),
+                root.get(Document_.updatedAt),
+                root.get(Document_.creator).get(Employee_.employeeId).get(EmployeeId_.id),
+                root.get(Document_.verificator).get(Employee_.employeeId).get(EmployeeId_.id)
+        ));
 
         if(documentCriteria.isStatusDefinied()) {
             predicates.add(builder.equal(root.get(Document_.documentStatus), documentCriteria.getDocumentStatus()));
@@ -77,7 +92,7 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
             if(documentCriteria.isCreatedFromDefined())
                 predicates.add(builder.greaterThanOrEqualTo(root.get(Document_.createAt), documentCriteria.getCreatedFrom()));
             if(documentCriteria.isCreatedUntilDefined())
-                predicates.add(builder.greaterThanOrEqualTo(root.get(Document_.createAt), documentCriteria.getCreatedUntil()));
+                predicates.add(builder.lessThanOrEqualTo(root.get(Document_.createAt), documentCriteria.getCreatedUntil()));
         }
 
         if(documentCriteria.isQueryDefined()) {
