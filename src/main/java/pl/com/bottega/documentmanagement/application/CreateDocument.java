@@ -5,6 +5,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import pl.com.bottega.documentmanagement.api.*;
 import pl.com.bottega.documentmanagement.domain.DocumentNumber;
 import pl.com.bottega.documentmanagement.domain.EmployeeId;
+import pl.com.bottega.documentmanagement.infrastructure.JPADocumentsCatalog;
 
 /**
  * Created by maciuch on 18.06.16.
@@ -22,7 +23,7 @@ public class CreateDocument {
         System.out.println(number);
 
         //uploaduje document i wyświetlam w postaci DTO
-        DocumentsCatalog documentsCatalog = applicationContext.getBean("documentsCatalog", DocumentsCatalog.class);
+        DocumentsCatalog documentsCatalog = applicationContext.getBean("documentsCatalog", JPADocumentsCatalog.class);
 //        DocumentNumber documentNumber = new DocumentNumber("ISO-0717b880-c799-4f17-92b3-9429759f8265");
         DocumentDto documentDto = documentsCatalog.get(number);
         System.out.println("number: " + documentDto.getNumber() + "/title: " + documentDto.getTitle() + "/content: " + documentDto.getContent());
