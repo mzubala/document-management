@@ -1,5 +1,7 @@
 package pl.com.bottega.documentmanagement.domain;
 
+import org.hibernate.annotations.NaturalId;
+
 import javax.persistence.Embedded;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
@@ -15,6 +17,7 @@ public class Employee {
     @EmbeddedId
     private EmployeeId employeeId;
     private String hashedPassword;
+    @NaturalId
     private String login;
 
     private Employee() {}
