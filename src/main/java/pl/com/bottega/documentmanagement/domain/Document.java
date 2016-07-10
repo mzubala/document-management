@@ -28,6 +28,7 @@ public class Document {
         this.content = content;
         this.title = title;
         this.creator = creator;
+        this.documentStatus = DocumentStatus.DRAFT;
     }
 
     private Document(){}
@@ -35,7 +36,7 @@ public class Document {
     public void change(String title, String content) {
         this.title = title;
         this.content = content;
-        documentStatus = documentStatus.DRAFT;
+        this.documentStatus = documentStatus.DRAFT;
     }
 
     public void verify(Employee employee) {

@@ -11,7 +11,7 @@ import pl.com.bottega.documentmanagement.domain.DocumentNumber;
  * Created by paulina.pislewicz on 2016-07-05.
  */
 @RestController
-@RequestMapping("/documents/{nr}")
+@RequestMapping("/documents/{nr}/verifications")
 public class VerificationsController {
     DocumentFlowProcess documentFlowProcess;
 
@@ -20,8 +20,9 @@ public class VerificationsController {
 
     }
 
-    @PutMapping(path = "/verification", headers = "myHeader=myValue")
-    public void verify(@PathVariable String nr){
+    //@PutMapping(path = "/verification", headers = "myHeader=myValue")
+    @PutMapping
+    public void create(@PathVariable String nr){
         documentFlowProcess.verify(new DocumentNumber(nr));
         }
 }

@@ -17,11 +17,13 @@ public class DocumentController {
     }
 
     @PutMapping
+    //@RequestMapping (path="/documents", method = RequestMethod.PUT)- jak usuwamy @RequestMapping nad klasą
     public DocumentNumber create(@RequestBody DocumentRequest documentRequest){
         return documentFlowProcess.create(documentRequest.getTitle(), documentRequest.getContent());
     }
 
-    @RequestMapping (path="/{nr}", method = RequestMethod.POST)
+    @PostMapping("/{documentNumber}")
+   // @RequestMapping (path="/documents/{nr}", method = RequestMethod.POST) tak może być jak usuwamy @RequestMapping nad klasą
     public void change (@PathVariable String nr, @RequestBody DocumentRequest documentRequest){
         documentFlowProcess.change(new DocumentNumber(nr) ,documentRequest.getTitle(), documentRequest.getContent());
     }
