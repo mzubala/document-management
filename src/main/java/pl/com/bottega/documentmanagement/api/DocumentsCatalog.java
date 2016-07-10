@@ -2,23 +2,11 @@ package pl.com.bottega.documentmanagement.api;
 
 import pl.com.bottega.documentmanagement.domain.DocumentNumber;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
- * Created by maciuch on 12.06.16.
+ * Created by anna on 10.07.2016.
  */
-public class DocumentsCatalog {
+public interface DocumentsCatalog {
+    DocumentDto get(DocumentNumber documentNumber);
 
-    public DocumentDto get(DocumentNumber documentNumber) {
-        checkNotNull(documentNumber);
-
-        return null;
-    }
-
-    public Iterable<DocumentDto> find(DocumentCriteria documentCriteria) {
-        checkNotNull(documentCriteria);
-
-        return null;
-    }
-
+    Iterable<DocumentDto> find(DocumentCriteria documentCriteria);
 }

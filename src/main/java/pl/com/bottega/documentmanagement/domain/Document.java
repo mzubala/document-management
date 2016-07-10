@@ -3,6 +3,7 @@ package pl.com.bottega.documentmanagement.domain;
 import pl.com.bottega.documentmanagement.api.DocumentDto;
 
 import javax.persistence.*;
+import java.util.Date;
 
 /**
  * Created by maciuch on 12.06.16.
@@ -23,6 +24,19 @@ public class Document {
     @Enumerated(EnumType.STRING)
     private DocumentStatus status;
 
+    /*
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedAt;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date verifiedAt;
+    równoważne z poniższym
+    */
+    @Temporal(value = TemporalType.TIMESTAMP)
+    private Date createdAt, updatedAt, verifiedAt;
+
+
     @ManyToOne
     private Employee creator;
 
@@ -38,17 +52,20 @@ public class Document {
         this.title = title;
         this.creator = creator;
         this.status = DocumentStatus.DRAFT;
+        this.createdAt = new Date();
     }
 
     public void change(String title, String content) {
         this.title = title;
         this.content = content;
         this.status = DocumentStatus.DRAFT;
+        this.updatedAt = new Date();
     }
 
     public void verify(Employee employee) {
         this.verificator = employee;
         this.status = DocumentStatus.VERIFIED;
+        this.verifiedAt = new Date();
     }
 
     public void confirm(Employee conirmator) {
