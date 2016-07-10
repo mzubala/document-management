@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import pl.com.bottega.documentmanagement.domain.Employee;
 import pl.com.bottega.documentmanagement.domain.EmployeeId;
@@ -26,7 +27,7 @@ public class UserManager {
         this.employeeRepository = employeeRepository;
     }
 
-    @Transactional//przed rozpoczęciem metody jest otwierana tranzakcja po zakończeniu metody tranzakcja jest zatwierdzana
+    @Transactional (isolation = Isolation.REPEATABLE_READ)//przed rozpoczęciem metody jest otwierana tranzakcja po zakończeniu metody tranzakcja jest zatwierdzana
     public SignupResultDto signup(String login, String password, EmployeeId employeeId)  {
         Employee employee =  employeeRepository.findByEmployeeId(employeeId);
         if (employee == null)
@@ -78,4 +79,7 @@ public class UserManager {
     }
 
 
+    public boolean isAuthenticated() {
+        return currentEmployee != null;
+    }
 }

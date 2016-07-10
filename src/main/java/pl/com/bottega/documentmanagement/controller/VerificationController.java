@@ -22,7 +22,7 @@ public class VerificationController {
     }
 
     @PutMapping
-    public void verify(@PathVariable String documentNumber){
+    public void create(@PathVariable String documentNumber){
         documentFlowProcess.verify(new DocumentNumber(documentNumber));
     }
 }

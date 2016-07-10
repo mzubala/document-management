@@ -1,5 +1,7 @@
 package pl.com.bottega.documentmanagement.domain;
 
+import org.hibernate.annotations.NaturalId;
+
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 
@@ -14,6 +16,7 @@ public class Employee {
     @EmbeddedId // to id nie będzie traktowana jako osobna tabelka tylko zostanie wstawione do tabelki employee
     private EmployeeId employeeId;
     private String hashedPassword;
+    @NaturalId
     private String login;
 
     private Employee(){}

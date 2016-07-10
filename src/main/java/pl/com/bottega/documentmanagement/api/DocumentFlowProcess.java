@@ -15,6 +15,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Created by maciuch on 12.06.16.
  */
 @Service
+
 public class DocumentFlowProcess {
     //@Autowired
     private DocumentNumberGenerator documentNumberGenerator;
@@ -31,6 +32,7 @@ public class DocumentFlowProcess {
     }
 
     @Transactional //przed rozpoczęciem metody jest otwierana tranzakcja po zakończeniu metody tranzakcja jest zatwierdzana
+    @RequiresAuth
     public DocumentNumber create(String title, String content) {
         checkNotNull(title);
         checkNotNull(content);
@@ -43,6 +45,7 @@ public class DocumentFlowProcess {
     }
 
     @Transactional
+    @RequiresAuth
     public void change(DocumentNumber documentNumber, String newTitle, String newContent) {
         checkNotNull(documentNumber);
         checkNotNull(newTitle);
@@ -53,6 +56,7 @@ public class DocumentFlowProcess {
         documentRepository.save(document);
     }
     @Transactional
+    @RequiresAuth
     public void verify(DocumentNumber documentNumber) {
         checkNotNull(documentNumber);
 
