@@ -28,7 +28,7 @@ public class UserManager {
     public UserManager (EmployeeRepository employeeRepository){
         this.employeeRepository = employeeRepository;
     }
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Transactional (isolation = Isolation.REPEATABLE_READ)
     public SignupResultDto signup(String login, String password, EmployeeId employeeId){
        Employee employee = employeeRepository.findByEmployeeId(employeeId);
         if (employee == null)

@@ -49,7 +49,8 @@ public class DocumentFlowProcess {
         document.change(newTitle, newContent);
         documentRepository.save(document);
     }
-
+    @Transactional
+    @RequiresAuth
     public void verify(DocumentNumber documentNumber) {
         checkNotNull(documentNumber);
 

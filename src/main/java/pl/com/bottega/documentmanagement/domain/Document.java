@@ -1,6 +1,7 @@
 package pl.com.bottega.documentmanagement.domain;
 
 import javax.persistence.*;
+import java.util.Date;
 
 /**
  * Created by maciuch on 12.06.16.
@@ -9,18 +10,20 @@ import javax.persistence.*;
 public class Document {
 
     @Embedded
-    DocumentNumber documentNumber;
-    String content;
-    String title;
+    private DocumentNumber documentNumber;
+    private String content;
+    private String title;
     @Enumerated(EnumType.STRING)
-    DocumentStatus documentStatus;
+    private  DocumentStatus documentStatus;
     @Id
     @GeneratedValue
-    Long id;
+    private Long id;
     @ManyToOne
     private Employee creator;
     @ManyToOne
     private Employee verificator;
+    @Temporal(value = TemporalType.TIMESTAMP)
+    private Date createdAt, updatedAt, verificatedAt;
 
 
     public Document(DocumentNumber documentNumber, String content, String title, Employee creator) {
@@ -29,6 +32,7 @@ public class Document {
         this.title = title;
         this.creator = creator;
         this.documentStatus = DocumentStatus.DRAFT;
+        this.createdAt = new Date();
     }
 
     private Document(){}
@@ -37,11 +41,13 @@ public class Document {
         this.title = title;
         this.content = content;
         this.documentStatus = documentStatus.DRAFT;
+        this.updatedAt = new Date();
     }
 
     public void verify(Employee employee) {
         this.verificator = employee;
         documentStatus = documentStatus.VERIFIED;
+        this.verificatedAt = new Date();
 
     }
 
