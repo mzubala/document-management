@@ -1,5 +1,6 @@
 package pl.com.bottega.documentmanagement.api;
 
+import pl.com.bottega.documentmanagement.domain.DocumentNumber;
 import pl.com.bottega.documentmanagement.domain.DocumentStatus;
 
 import java.util.Date;
@@ -8,12 +9,27 @@ import java.util.Date;
  * Created by maciuch on 12.06.16.
  */
 public class DocumentCriteria {
+    private DocumentNumber documentNumber;
+    private String title;
+    private String content;
     private DocumentStatus status;
     private Long verifiedBy;
     private Long createdBy;
     private Date createdFrom, createdUntil;
     private Date verifiedFrom, verifiedUntil;
     private String query;
+
+    public DocumentNumber getDocumentNumber() {
+        return documentNumber;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getContent() {
+        return content;
+    }
 
     public Long getCreatedBy() {
         return createdBy;
