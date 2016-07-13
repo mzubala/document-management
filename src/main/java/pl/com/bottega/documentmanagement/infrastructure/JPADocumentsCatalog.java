@@ -53,52 +53,19 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
         CriteriaQuery <DocumentDto> query = builder.createQuery(DocumentDto.class);
         Root<Document> root = query.from(Document.class);
         Collection<Predicate> predicates = new HashSet<>(); //tworzę zbiór predykatów
-        if(documentCriteria.isStatusDefined()){
-            predicates.add(builder.equal(root.get(Document_.documentStatus), documentCriteria.getStatus())); //dodajemy predykat sprawdzający status dokumentu
-        }
-        if (documentCriteria.isCreatedByDefined()){
-            predicates.add(builder.equal(
-                    root.get(Document_.creator).get(Employee_.employeeId).get(EmployeeId_.id),
-                    documentCriteria.getCreatedBy())
-            );
-        }
-        if (documentCriteria.isCreatesDatesDefined()){
-            if(documentCriteria.isCreatedFromDefined()) {
-                predicates.add(builder.greaterThanOrEqualTo(
-                        root.get(Document_.createdAt), documentCriteria.getCreatedFrom()
-                ));
-            }
-            if (documentCriteria.isCreatedUntilDefined()){
-                predicates.add((builder.lessThanOrEqualTo(
-                        root.get(Document_.createdAt), documentCriteria.getCreatedUntil()
-                )));
-            }
-        }
-        if (documentCriteria.isQueryDefined()) {
-            //w SQL byłoby (content like "%que  ry%" OR title like "%query%") AND () AND ()
-            predicates.add(builder.or(
-                    builder.like(root.get(Document_.content), "%" + documentCriteria.getQuery() + "%"), //pierwszy człon
-                    builder.like(root.get(Document_.title), "%" + documentCriteria.getQuery() + "%") //drugi człon dołączony spójnikiem OR (bo taką mamy metodę)
-            ));
-        }
-        if (documentCriteria.isVerifiedByDefined()){
-            predicates.add(builder.equal(
-                    root.get(Document_.verificator).get(Employee_.employeeId).get(EmployeeId_.id),
-                    documentCriteria.getVerifiedBy()
-            ));
-        }
-        if (documentCriteria.isVerifiesDatesDefined()){
-            if (documentCriteria.isVerifiedFromDefined()) {
-                predicates.add(builder.greaterThanOrEqualTo(
-                        root.get(Document_.verificatedAt), documentCriteria.getVerifiedFrom()
-                ));
-            }
-            if(documentCriteria.isVerifiedUntilDefined()){
-                predicates.add(builder.lessThanOrEqualTo(
-                        root.get(Document_.verificatedAt), documentCriteria.getVerifiedUntil()
-                ));
-            }
-        }
+
+        getStatus(documentCriteria, builder, root, predicates);
+
+        getCreatedBy(documentCriteria, builder, root, predicates);
+
+        getCreatesDatesDefined(documentCriteria, builder, root, predicates);
+
+        getTitleOrContentQuery(documentCriteria, builder, root, predicates);
+
+        getVerifiedBy(documentCriteria, builder, root, predicates);
+
+        getVerifiesDatesDefined(documentCriteria, builder, root, predicates);
+
         query.where(predicates.toArray(new Predicate[]{}));
         query.select(builder.construct(DocumentDto.class,  // mówimy co chcemy wyciągnąć przy użyciu metamodelu- jest to możliwe bo stworzyliśmy konstrkutor wyciagamy rzeczy z konstruktora
                 root.get(Document_.documentNumber).get(DocumentNumber_.number), //idziemy zgodnie z polami z konstruktora
@@ -112,6 +79,85 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
                 root.get(Document_.verificator).get(Employee_.employeeId).get(EmployeeId_.id)
         ));
         return entityManager.createQuery(query).getResultList(); //z entitymanagera tworzymy query i zwracamy listę wyników
+    }
+
+    private void getVerifiesDatesDefined(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
+        if (documentCriteria.isVerifiesDatesDefined()){
+            getVerifiedFrom(documentCriteria, builder, root, predicates);
+            getVerifiedUntil(documentCriteria, builder, root, predicates);
+        }
+    }
+
+    private void getVerifiedUntil(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
+        if(documentCriteria.isVerifiedUntilDefined()){
+            predicates.add(builder.lessThanOrEqualTo(
+                    root.get(Document_.verificatedAt), documentCriteria.getVerifiedUntil()
+            ));
+        }
+    }
+
+    private void getVerifiedFrom(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
+        if (documentCriteria.isVerifiedFromDefined()) {
+            predicates.add(builder.greaterThanOrEqualTo(
+                    root.get(Document_.verificatedAt), documentCriteria.getVerifiedFrom()
+            ));
+        }
+    }
+
+    private void getVerifiedBy(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
+        if (documentCriteria.isVerifiedByDefined()){
+            predicates.add(builder.equal(
+                    root.get(Document_.verificator).get(Employee_.employeeId).get(EmployeeId_.id),
+                    documentCriteria.getVerifiedBy()
+            ));
+        }
+    }
+
+    private void getTitleOrContentQuery(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
+        if (documentCriteria.isQueryDefined()) { //w SQL byłoby (content like "%que  ry%" OR title like "%query%") AND () AND ()
+            predicates.add(builder.or(
+                    builder.like(root.get(Document_.content), "%" + documentCriteria.getQuery() + "%"), //pierwszy człon
+                    builder.like(root.get(Document_.title), "%" + documentCriteria.getQuery() + "%") //drugi człon dołączony spójnikiem OR (bo taką mamy metodę)
+            ));
+        }
+    }
+
+    private void getCreatesDatesDefined(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
+        if (documentCriteria.isCreatesDatesDefined()){
+            getCreatedFrom(documentCriteria, builder, root, predicates);
+            getCreatedUntil(documentCriteria, builder, root, predicates);
+        }
+    }
+
+    private void getCreatedUntil(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
+        if (documentCriteria.isCreatedUntilDefined()){
+            predicates.add((builder.lessThanOrEqualTo(
+                    root.get(Document_.createdAt), documentCriteria.getCreatedUntil()
+            )));
+        }
+    }
+
+    private void getCreatedFrom(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
+        if(documentCriteria.isCreatedFromDefined()) {
+            predicates.add(builder.greaterThanOrEqualTo(
+                    root.get(Document_.createdAt), documentCriteria.getCreatedFrom()
+            ));
+        }
+    }
+
+    private void getCreatedBy(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
+        if (documentCriteria.isCreatedByDefined()){
+            predicates.add(builder.equal(
+                    root.get(Document_.creator).get(Employee_.employeeId).get(EmployeeId_.id), //predykat weryfikujący id
+                    documentCriteria.getCreatedBy())
+            );
+        }
+    }
+
+    private void getStatus(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
+        if(documentCriteria.isStatusDefined()){
+            predicates.add(builder.equal(root.get(Document_.documentStatus), documentCriteria.getStatus())); //dodajemy predykat sprawdzający status dokumentu
+        }
     }
 
 }
