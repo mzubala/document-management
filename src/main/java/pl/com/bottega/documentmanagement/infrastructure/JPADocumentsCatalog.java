@@ -1,12 +1,10 @@
 package pl.com.bottega.documentmanagement.infrastructure;
 
-import org.springframework.stereotype.Component;
 import pl.com.bottega.documentmanagement.api.DocumentCriteria;
 import pl.com.bottega.documentmanagement.api.DocumentsCatalog;
 import pl.com.bottega.documentmanagement.domain.*;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -20,10 +18,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Created by maciuch on 12.06.16.
  */
-@Component
+//@Component
 public class JPADocumentsCatalog implements DocumentsCatalog {
 
-    @PersistenceContext
+    //@PersistenceContext
     private EntityManager entityManager;
 
     @Override
@@ -60,7 +58,7 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
         }
         if (documentCriteria.isCreatedByDefined()){
             predicates.add(builder.equal(
-                    root.get(Document_.creator).get(Employee_.employeeId).get(EmployeeId_.id), //predykat weryfikujący id
+                    root.get(Document_.creator).get(Employee_.employeeId).get(EmployeeId_.id),
                     documentCriteria.getCreatedBy())
             );
         }
@@ -77,7 +75,7 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
             }
         }
         if (documentCriteria.isQueryDefined()) {
-            //w SQL byłoby (content like "%query%" OR title like "%query%") AND () AND ()
+            //w SQL byłoby (content like "%que  ry%" OR title like "%query%") AND () AND ()
             predicates.add(builder.or(
                     builder.like(root.get(Document_.content), "%" + documentCriteria.getQuery() + "%"), //pierwszy człon
                     builder.like(root.get(Document_.title), "%" + documentCriteria.getQuery() + "%") //drugi człon dołączony spójnikiem OR (bo taką mamy metodę)
