@@ -2,6 +2,7 @@ package pl.com.bottega.documentmanagement.infrastructure;
 
 import org.springframework.stereotype.Component;
 import pl.com.bottega.documentmanagement.api.AuthRequiredException;
+import pl.com.bottega.documentmanagement.api.RequiresAuth;
 import pl.com.bottega.documentmanagement.api.UserManager;
 
 /**
@@ -14,7 +15,8 @@ public class AuthAspect {
     public AuthAspect(UserManager userManager){
         this.userManager = userManager;
     }
-    public void checkAuthentication(){
+    public void checkAuthentication(RequiresAuth requiresAuth){
+        requiresAuth.roles();
         if (!userManager.isAuthenticated())
             throw new AuthRequiredException();
     }

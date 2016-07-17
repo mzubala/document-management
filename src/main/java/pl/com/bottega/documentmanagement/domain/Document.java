@@ -58,5 +58,4 @@ public class Document {
     public void confirm(Employee confirmator, Employee forEmployee) {
 
     }
-
 }

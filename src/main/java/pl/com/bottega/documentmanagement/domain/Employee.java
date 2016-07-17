@@ -2,9 +2,11 @@ package pl.com.bottega.documentmanagement.domain;
 
 import org.hibernate.annotations.NaturalId;
 
+import javax.persistence.Embedded;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
+import java.util.Collection;
 
 import static com.google.common.base.Preconditions.checkState;
 
@@ -20,7 +22,8 @@ public class Employee {
     private String login;
     private String hashedPassword;
     @ManyToMany
-    private Role role;
+    @Embedded
+    private Collection<Role> role;
 
     public Employee (String login, String hashedPassword, EmployeeId employeeId){
         this.login = login;
@@ -47,6 +50,6 @@ public class Employee {
     }
 
     private boolean hasTheRole(String role_name) {
-        return role.name.equals(role_name);
+        return ((role.contains(new Role(role_name))) || role.size() == 0);
     }
 }
