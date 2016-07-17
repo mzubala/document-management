@@ -17,6 +17,7 @@ public class DocumentCriteria {
     private Long createdBy;
     private Date createdFrom, createdUntil;
     private Date verifiedFrom, verifiedUntil;
+    private Date updatedFrom, updatedUntil;
     private String query;
 
     public DocumentNumber getDocumentNumber() {
@@ -87,6 +88,14 @@ public class DocumentCriteria {
         this.verifiedUntil = verifiedUntil;
     }
 
+    public Date getUpdatedFrom() {
+        return updatedFrom;
+    }
+
+    public Date getUpdatedUntil() {
+        return updatedUntil;
+    }
+
     public String getQuery() {
         return query;
     }
@@ -136,4 +145,22 @@ public class DocumentCriteria {
     public boolean isVerifiedUntilDefined() {
         return verifiedUntil!=null;
     }
+
+    public boolean isDocumentNumberDefined() {
+        return documentNumber!=null;
+    }
+
+    public boolean isUpdatedDatesDefined() {
+        return updatedFrom!=null || updatedUntil!=null;
+    }
+
+    public boolean isUpdatedFromDefined() {
+        return updatedFrom!=null;
+    }
+
+    public boolean isUpdatedUntilDefined() {
+        return updatedUntil!=null;
+    }
+
+
 }
