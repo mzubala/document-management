@@ -30,6 +30,12 @@ public class Document {
     private Date updatedAt;
     @Temporal(TemporalType.TIMESTAMP)
     private Date verifiedAt;
+    /**
+     * 'true' if document is deleted
+     */
+    private boolean deleted;
+    @ManyToOne
+    private Employee deletedBy;
 
     private Document() {}
 
@@ -40,6 +46,7 @@ public class Document {
         this.creator = creator;
         this.documentStatus = DRAFT;
         this.createAt = new Date();
+        this.deleted = false;
     }
 
     public void change(String title, String content) {
@@ -101,5 +108,18 @@ public class Document {
 
     public Date getVerifiedAt() {
         return verifiedAt;
+    }
+
+    public void archive(Employee employee) {
+        this.deleted = true;
+        this.deletedBy = employee;
+    }
+
+    public boolean getDeleted() {
+        return deleted;
+    }
+
+    public Employee getDeletedBy() {
+        return deletedBy;
     }
 }

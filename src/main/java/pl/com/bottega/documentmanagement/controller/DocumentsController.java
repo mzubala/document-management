@@ -25,7 +25,7 @@ public class DocumentsController {
         return documentFlowProcess.create(documentRequest.getTitle(), documentRequest.getContent());
     }
 
-    @PostMapping ("/{documentNumber}")
+    @PostMapping("/{documentNumber}")
     public void change(@PathVariable String documentNumber, @RequestBody DocumentRequest documentRequest) {
         documentFlowProcess.change(new DocumentNumber(documentNumber), documentRequest.getTitle(), documentRequest.getContent());
     }
@@ -39,5 +39,10 @@ public class DocumentsController {
     @GetMapping
     public Iterable<DocumentDto> index(DocumentCriteria documentCriteria) {
         return documentsCatalog.find(documentCriteria);
+    }
+
+    @DeleteMapping("/{documentNumber}")
+    public void delete(@PathVariable String documentNumber) {
+        documentFlowProcess.archive(new DocumentNumber(documentNumber));
     }
 }

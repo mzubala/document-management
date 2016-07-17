@@ -41,7 +41,13 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<DocumentDto> query = builder.createQuery(DocumentDto.class);
         Root<Document> root = query.from(Document.class);
-        query.where(builder.equal(root.get(Document_.number), documentNumber));
+        query.where(builder.and(builder.equal(root.get(Document_.number), documentNumber), builder.isFalse(root.get(Document_.deleted))));
+        uploadDocumentDto(builder, query, root);
+        return entityManager.createQuery(query).getSingleResult();
+
+    }
+
+    private void uploadDocumentDto(CriteriaBuilder builder, CriteriaQuery<DocumentDto> query, Root<Document> root) {
         query.select(builder.construct(DocumentDto.class,
                 root.get(Document_.number).get(DocumentNumber_.number),
                 root.get(Document_.title),
@@ -53,57 +59,85 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
                 root.get(Document_.creator).get(Employee_.employeeId).get(EmployeeId_.id),
                 root.get(Document_.verificator).get(Employee_.employeeId).get(EmployeeId_.id)
                 ));
-        return entityManager.createQuery(query).getSingleResult();
-
     }
 
 
     @Override
+    @Transactional
+    @RequiresAuth
     public Iterable<DocumentDto> find(DocumentCriteria documentCriteria) {
         checkNotNull(documentCriteria);
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<DocumentDto> query = builder.createQuery(DocumentDto.class);
         Root<Document> root = query.from(Document.class);
         Collection<Predicate> predicates = new HashSet<>();
-        query.select(builder.construct(DocumentDto.class,
-                root.get(Document_.number).get(DocumentNumber_.number),
-                root.get(Document_.title),
-                root.get(Document_.content),
-                root.get(Document_.documentStatus),
-                root.get(Document_.createAt),
-                root.get(Document_.verifiedAt),
-                root.get(Document_.updatedAt),
-                root.get(Document_.creator).get(Employee_.employeeId).get(EmployeeId_.id),
-                root.get(Document_.verificator).get(Employee_.employeeId).get(EmployeeId_.id)
-        ));
+        uploadDocumentDto(builder, query, root);
 
-        if(documentCriteria.isStatusDefinied()) {
-            predicates.add(builder.equal(root.get(Document_.documentStatus), documentCriteria.getDocumentStatus()));
-        }
+        addDocumentsIfAreNotDeleted(documentCriteria, builder, root, predicates);
+        addDocumentsIfStatusDefined(documentCriteria, builder, root, predicates);
+        addDocumentsIfCreatedByDefined(documentCriteria, builder, root, predicates);
+        addDocumentsIfVerifiedByDefined(documentCriteria, builder, root, predicates);
+        addDocumentsIfCreatedDatesDefined(documentCriteria, builder, root, predicates);
+        addDocumentsIfVerifiedDatesDefined(documentCriteria, builder, root, predicates);
+        addDocumentsifQueryDefined(documentCriteria, builder, root, predicates);
 
-        if(documentCriteria.isCreatedByDefined()) {
-            predicates.add(builder.equal(
-                    root.get(Document_.creator).get(Employee_.employeeId).get(EmployeeId_.id),
-                    documentCriteria.getCreatedBy())
-            );
-        }
+        query.where(predicates.toArray(new Predicate[] {}));
+        return entityManager.createQuery(query).getResultList();
+    }
 
-        if(documentCriteria.isCreatedDatesDefined()) {
-            if(documentCriteria.isCreatedFromDefined())
-                predicates.add(builder.greaterThanOrEqualTo(root.get(Document_.createAt), documentCriteria.getCreatedFrom()));
-            if(documentCriteria.isCreatedUntilDefined())
-                predicates.add(builder.lessThanOrEqualTo(root.get(Document_.createAt), documentCriteria.getCreatedUntil()));
-        }
+    private void addDocumentsIfAreNotDeleted(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
+        predicates.add((builder.isFalse(root.get(Document_.deleted))));
+    }
 
+    private void addDocumentsifQueryDefined(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
         if(documentCriteria.isQueryDefined()) {
             predicates.add(builder.or(
                     builder.like(root.get(Document_.content), "%" + documentCriteria.getQuery() + "%"),
                     builder.like(root.get(Document_.title), "%" + documentCriteria.getQuery() + "%")
             ));
         }
+    }
 
-        query.where(predicates.toArray(new Predicate[] {}));
-        return entityManager.createQuery(query).getResultList();
+    private void addDocumentsIfVerifiedDatesDefined(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
+        if(documentCriteria.isVerifiedDatesDefined()) {
+            if(documentCriteria.isVerfiedFromDefined())
+                predicates.add(builder.greaterThanOrEqualTo(root.get(Document_.verifiedAt), documentCriteria.getVerifiedFrom()));
+            if(documentCriteria.isVerifiedUntilDefined())
+                predicates.add(builder.lessThanOrEqualTo(root.get(Document_.verifiedAt), documentCriteria.getVerifiedUntil()));
+        }
+    }
+
+    private void addDocumentsIfCreatedDatesDefined(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
+        if(documentCriteria.isCreatedDatesDefined()) {
+            if(documentCriteria.isCreatedFromDefined())
+                predicates.add(builder.greaterThanOrEqualTo(root.get(Document_.createAt), documentCriteria.getCreatedFrom()));
+            if(documentCriteria.isCreatedUntilDefined())
+                predicates.add(builder.lessThanOrEqualTo(root.get(Document_.createAt), documentCriteria.getCreatedUntil()));
+        }
+    }
+
+    private void addDocumentsIfVerifiedByDefined(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
+        if(documentCriteria.isVerifiedByDefined()) {
+            predicates.add(builder.equal(
+                    root.get(Document_.verificator).get(Employee_.employeeId).get(EmployeeId_.id),
+                    documentCriteria.getVerifiedBy()
+            ));
+        }
+    }
+
+    private void addDocumentsIfCreatedByDefined(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
+        if(documentCriteria.isCreatedByDefined()) {
+            predicates.add(builder.equal(
+                    root.get(Document_.creator).get(Employee_.employeeId).get(EmployeeId_.id),
+                    documentCriteria.getCreatedBy())
+            );
+        }
+    }
+
+    private void addDocumentsIfStatusDefined(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
+        if(documentCriteria.isStatusDefinied()) {
+            predicates.add(builder.equal(root.get(Document_.documentStatus), documentCriteria.getDocumentStatus()));
+        }
     }
 
 }
