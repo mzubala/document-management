@@ -5,7 +5,7 @@ import pl.com.bottega.documentmanagement.api.DocumentCriteria;
 import pl.com.bottega.documentmanagement.api.DocumentFlowProcess;
 import pl.com.bottega.documentmanagement.api.DocumentsCatalog;
 import pl.com.bottega.documentmanagement.domain.DocumentNumber;
-import pl.com.bottega.documentmanagement.infrastructure.DocumentDto;
+import pl.com.bottega.documentmanagement.api.DocumentDto;
 
 /**
  * Created by paulina.pislewicz on 2016-07-03.
@@ -42,5 +42,10 @@ public class DocumentController {
     @GetMapping
     public Iterable <DocumentDto> index(DocumentCriteria documentCriteria){ //metoda zwraca kilka dokumentów a nie 1
         return documentsCatalog.find(documentCriteria);
+    }
+
+    @DeleteMapping ("/{documentNumber}")
+    public void delete(@PathVariable String documentNumber){
+        documentFlowProcess.archive(new DocumentNumber(documentNumber));
     }
 }
