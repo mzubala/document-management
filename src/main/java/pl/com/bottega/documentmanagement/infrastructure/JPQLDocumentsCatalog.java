@@ -1,12 +1,12 @@
 package pl.com.bottega.documentmanagement.infrastructure;
 
+import org.hibernate.query.Query;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.com.bottega.documentmanagement.api.DocumentCriteria;
-import pl.com.bottega.documentmanagement.api.DocumentDto;
-import pl.com.bottega.documentmanagement.api.DocumentsCatalog;
-import pl.com.bottega.documentmanagement.api.RequiresAuth;
+import pl.com.bottega.documentmanagement.api.*;
 import pl.com.bottega.documentmanagement.domain.*;
+import pl.com.bottega.documentmanagement.domain.DocumentCriteria;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -14,37 +14,31 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-
 import java.util.Collection;
 import java.util.HashSet;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Created by maciuch on 12.06.16.
+ * Created by Dell on 2016-07-18.
  */
-//@Service
-public class JPADocumentsCatalog implements DocumentsCatalog {
+@Service
+public class JPQLDocumentsCatalog implements DocumentsCatalog {
 
-//    @PersistenceContext
+    @PersistenceContext
     private EntityManager entityManager;
 
     @Override
     @Transactional
-    @RequiresAuth
+//    @RequiresAuth
     public DocumentDto get(DocumentNumber documentNumber) {
 
-//        "SELECT new pl.com.bottega.documentmanagement.api.DocumentDto(' d.title, d.content, d.status, d.employee.employeeId.id
-//        ') + FROM Document d WHERE ()" -> do HQL, tu: symulacja tworzenia konstruktora
-
         checkNotNull(documentNumber);
-        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<DocumentDto> query = builder.createQuery(DocumentDto.class);
-        Root<Document> root = query.from(Document.class);
-        query.where(builder.and(builder.equal(root.get(Document_.number), documentNumber), builder.isFalse(root.get(Document_.deleted))));
-        uploadDocumentDto(builder, query, root);
-        return entityManager.createQuery(query).getSingleResult();
+        String query = "SELECT NEW pl.com.bottega.documentmanagement.api.DocumentDto(d.number.number, d.title, d.content, " +
+                "d.documentStatus, d.createAt, d.verifiedAt, d.updatedAt, d.creator.employeeId.id, d.verificator.employeeId.id) FROM Document d " +
+                "WHERE d.number = ?1";
 
+        return entityManager.createQuery(query, DocumentDto.class).setParameter(1, documentNumber.getNumber()).getSingleResult();
     }
 
     private void uploadDocumentDto(CriteriaBuilder builder, CriteriaQuery<DocumentDto> query, Root<Document> root) {
@@ -58,14 +52,14 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
                 root.get(Document_.updatedAt),
                 root.get(Document_.creator).get(Employee_.employeeId).get(EmployeeId_.id),
                 root.get(Document_.verificator).get(Employee_.employeeId).get(EmployeeId_.id)
-                ));
+        ));
     }
 
 
     @Override
     @Transactional
-    @RequiresAuth
-    public Iterable<DocumentDto> find(DocumentCriteria documentCriteria) {
+//    @RequiresAuth
+    public Iterable<DocumentDto> find(pl.com.bottega.documentmanagement.api.DocumentCriteria documentCriteria) {
         checkNotNull(documentCriteria);
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<DocumentDto> query = builder.createQuery(DocumentDto.class);
@@ -85,11 +79,11 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
         return entityManager.createQuery(query).getResultList();
     }
 
-    private void addDocumentsIfAreNotDeleted(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
+    private void addDocumentsIfAreNotDeleted(pl.com.bottega.documentmanagement.api.DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
         predicates.add((builder.isFalse(root.get(Document_.deleted))));
     }
 
-    private void addDocumentsifQueryDefined(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
+    private void addDocumentsifQueryDefined(pl.com.bottega.documentmanagement.api.DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
         if(documentCriteria.isQueryDefined()) {
             predicates.add(builder.or(
                     builder.like(root.get(Document_.content), "%" + documentCriteria.getQuery() + "%"),
@@ -98,7 +92,7 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
         }
     }
 
-    private void addDocumentsIfVerifiedDatesDefined(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
+    private void addDocumentsIfVerifiedDatesDefined(pl.com.bottega.documentmanagement.api.DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
         if(documentCriteria.isVerifiedDatesDefined()) {
             if(documentCriteria.isVerfiedFromDefined())
                 predicates.add(builder.greaterThanOrEqualTo(root.get(Document_.verifiedAt), documentCriteria.getVerifiedFrom()));
@@ -107,7 +101,7 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
         }
     }
 
-    private void addDocumentsIfCreatedDatesDefined(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
+    private void addDocumentsIfCreatedDatesDefined(pl.com.bottega.documentmanagement.api.DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
         if(documentCriteria.isCreatedDatesDefined()) {
             if(documentCriteria.isCreatedFromDefined())
                 predicates.add(builder.greaterThanOrEqualTo(root.get(Document_.createAt), documentCriteria.getCreatedFrom()));
@@ -116,7 +110,7 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
         }
     }
 
-    private void addDocumentsIfVerifiedByDefined(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
+    private void addDocumentsIfVerifiedByDefined(pl.com.bottega.documentmanagement.api.DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
         if(documentCriteria.isVerifiedByDefined()) {
             predicates.add(builder.equal(
                     root.get(Document_.verificator).get(Employee_.employeeId).get(EmployeeId_.id),
@@ -125,7 +119,7 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
         }
     }
 
-    private void addDocumentsIfCreatedByDefined(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
+    private void addDocumentsIfCreatedByDefined(pl.com.bottega.documentmanagement.api.DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
         if(documentCriteria.isCreatedByDefined()) {
             predicates.add(builder.equal(
                     root.get(Document_.creator).get(Employee_.employeeId).get(EmployeeId_.id),
@@ -134,10 +128,9 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
         }
     }
 
-    private void addDocumentsIfStatusDefined(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
+    private void addDocumentsIfStatusDefined(pl.com.bottega.documentmanagement.api.DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
         if(documentCriteria.isStatusDefinied()) {
             predicates.add(builder.equal(root.get(Document_.documentStatus), documentCriteria.getDocumentStatus()));
         }
     }
-
 }
