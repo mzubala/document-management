@@ -47,9 +47,9 @@
 
     <aop:config>
         <aop:aspect id="authMethodAspect" ref="authAspect">
-            <aop:pointcut id="authMethod" expression="@annotation(pl.com.bottega.documentmanagement.api.RequiresAuth)"/>
+            <aop:pointcut id="authMethod" expression="@annotation(pl.com.bottega.documentmanagement.api.RequiresAuth) and @annotation(requiresAuth)"/>
 
-            <aop:before pointcut-ref="authMethod" method="checkAuth"/>
+            <aop:before arg-names="requiresAuth" pointcut-ref="authMethod" method="checkAuth"/>
         </aop:aspect>
 
         <aop:aspect id="profilingAspect" ref="profilingAspect">

@@ -2,9 +2,9 @@ package pl.com.bottega.documentmanagement.domain;
 
 import org.hibernate.annotations.NaturalId;
 
-import javax.persistence.Embedded;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
+import javax.persistence.*;
+
+import java.util.Collection;
 
 import static com.google.common.base.Preconditions.checkState;
 
@@ -19,6 +19,8 @@ public class Employee {
     private String hashedPassword;
     @NaturalId
     private String login;
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Collection<Role> role;
 
     private Employee() {}
 
@@ -36,6 +38,16 @@ public class Employee {
         checkState(!isRegistered());
         this.login = login;
         this.hashedPassword = password;
+    }
+
+    public boolean hasRoles(String ...roleNames) {
+        for (String er : roleNames) {
+            if (roleNames.length == 0)
+                break;
+            if (!role.contains(new Role(er)))
+                return false;
+        }
+        return true;
     }
 
 }

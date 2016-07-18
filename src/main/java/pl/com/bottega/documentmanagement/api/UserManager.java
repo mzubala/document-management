@@ -74,7 +74,7 @@ public class UserManager {
         return this.currentEmployee;
     }
 
-    public boolean isAuthenticated() {
-        return currentEmployee != null;
+    public boolean isAuthenticated(String ...roleNames) {
+        return currentEmployee != null && currentEmployee.hasRoles(roleNames);
     }
 }

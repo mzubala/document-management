@@ -8,7 +8,8 @@ import java.lang.annotation.Target;
 /**
  * Created by Dell on 2016-07-09.
  */
-//@Retention(RetentionPolicy.RUNTIME) //konieczna adnotacja do stworzenia klasy
+@Retention(RetentionPolicy.RUNTIME) //konieczna adnotacja do stworzenia klasy
 //@Target({ElementType.METHOD, ElementType.TYPE}) //opcjonalne (gdzie dostępne)
 public @interface RequiresAuth {
+    String[] roles() default {};
 }

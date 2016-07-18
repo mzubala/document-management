@@ -1,15 +1,10 @@
 package pl.com.bottega.documentmanagement.infrastructure;
 
-import org.hibernate.query.Query;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.com.bottega.documentmanagement.api.*;
 import pl.com.bottega.documentmanagement.domain.*;
-import pl.com.bottega.documentmanagement.domain.DocumentCriteria;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -22,10 +17,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Created by Dell on 2016-07-18.
  */
-@Service
+//@Service
 public class JPQLDocumentsCatalog implements DocumentsCatalog {
 
-    @PersistenceContext
+//    @PersistenceContext
     private EntityManager entityManager;
 
     @Override

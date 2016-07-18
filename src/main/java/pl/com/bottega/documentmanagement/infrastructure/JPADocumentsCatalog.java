@@ -23,10 +23,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Created by maciuch on 12.06.16.
  */
-//@Service
+@Service
 public class JPADocumentsCatalog implements DocumentsCatalog {
 
-//    @PersistenceContext
+    @PersistenceContext
     private EntityManager entityManager;
 
     @Override
