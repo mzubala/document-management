@@ -53,7 +53,7 @@ public class DocumentFlowProcess {
     }
 
     @Transactional
-    @RequiresAuth(roles = {"MANAGER", "STAFF"})
+    @RequiresAuth(roles = "MANAGER")
     public void verify(DocumentNumber documentNumber) {
         checkNotNull(documentNumber);
 
@@ -62,12 +62,14 @@ public class DocumentFlowProcess {
         documentRepository.save(document);
     }
 
+    @Transactional
+    @RequiresAuth(roles = "MANAGER")
     public void publish(DocumentNumber documentNumber, Iterable<EmployeeId> ids) {
         checkNotNull(documentNumber);
     }
 
     @Transactional
-    @RequiresAuth
+    @RequiresAuth(roles = "EDITOR")
     public void archive(DocumentNumber documentNumber) {
         checkNotNull(documentNumber);
 

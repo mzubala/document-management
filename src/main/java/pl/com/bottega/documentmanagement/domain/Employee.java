@@ -42,8 +42,6 @@ public class Employee {
 
     public boolean hasRoles(String ...roleNames) {
         for (String er : roleNames) {
-            if (roleNames.length == 0)
-                break;
             if (!role.contains(new Role(er)))
                 return false;
         }
