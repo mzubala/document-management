@@ -19,7 +19,7 @@ public class Employee {
     private String hashedPassword;
     @NaturalId
     private String login;
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Collection<Role> role;
 
     private Employee() {}
@@ -48,4 +48,14 @@ public class Employee {
         return true;
     }
 
+    public void setRoles(String[] roles) {
+        this.role.clear();
+        for (String employeeRole : roles) {
+//            role.add(new Role(employeeRole));
+        }
+    }
+
+    public Collection<Role> getRole() {
+        return role;
+    }
 }

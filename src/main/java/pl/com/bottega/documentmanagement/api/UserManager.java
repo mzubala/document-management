@@ -2,15 +2,15 @@ package pl.com.bottega.documentmanagement.api;
 
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import pl.com.bottega.documentmanagement.domain.Employee;
 import pl.com.bottega.documentmanagement.domain.EmployeeId;
-import pl.com.bottega.documentmanagement.domain.EmployeeRepository;
+import pl.com.bottega.documentmanagement.domain.repositories.EmployeeRepository;
+import pl.com.bottega.documentmanagement.domain.Role;
+import pl.com.bottega.documentmanagement.domain.repositories.RoleRepository;
 
 /**
  * Created by maciuch on 12.06.16.
@@ -21,9 +21,11 @@ public class UserManager {
 
     private EmployeeRepository employeeRepository;
     private Employee currentEmployee;
+    private RoleRepository roleRepository;
 
-    public UserManager(EmployeeRepository employeeRepository) {
+    public UserManager(EmployeeRepository employeeRepository, RoleRepository roleRepository) {
         this.employeeRepository = employeeRepository;
+        this.roleRepository = roleRepository;
     }
 
     @Transactional
@@ -63,7 +65,7 @@ public class UserManager {
     }
 
     public SignupResultDto login(String login, String password) {
-        this.currentEmployee= employeeRepository.findByLoginAndPassword(login, hashedPassword(password));
+        this.currentEmployee = employeeRepository.findByLoginAndPassword(login, hashedPassword(password));
         if(this.currentEmployee == null)
             return failed("login or password incorrect");
         else
@@ -76,5 +78,14 @@ public class UserManager {
 
     public boolean isAuthenticated(String ...roleNames) {
         return currentEmployee != null && currentEmployee.hasRoles(roleNames);
+    }
+
+    @Transactional
+    public void setRoles(Long employeeId, String[] roles) {
+        Employee employee = employeeRepository.findByEmployeeId(new EmployeeId(employeeId));
+        for (String role : roles)
+            roleRepository.save(new Role(role));
+        employee.setRoles(roles);
+        employeeRepository.save(employee);
     }
 }

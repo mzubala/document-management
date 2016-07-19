@@ -1,5 +1,6 @@
 package pl.com.bottega.documentmanagement.domain;
 
+import com.google.common.base.Objects;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
@@ -30,15 +31,12 @@ public class Role {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Role role = (Role) o;
-
-        return name != null ? name.equals(role.name) : role.name == null;
-
+        return Objects.equal(name, role.name);
     }
 
     @Override
     public int hashCode() {
-        return name != null ? name.hashCode() : 0;
+        return Objects.hashCode(name);
     }
 }
