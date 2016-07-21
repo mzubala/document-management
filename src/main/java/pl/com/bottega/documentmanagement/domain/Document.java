@@ -20,6 +20,7 @@ public class Document {
     private DocumentNumber documentNumber;
     private String content;
     private String title;
+    private Boolean deleted;
 
     @Enumerated(EnumType.STRING)
     private DocumentStatus documentStatus;
@@ -37,6 +38,10 @@ public class Document {
     private Date verificatedAt;
 
 
+    @ManyToOne
+    private Employee deletedBy;
+
+
 
     private Document(){}
 
@@ -48,6 +53,7 @@ public class Document {
         this.creator = creator;
         this.documentStatus = DRAFT;
         this.createAt = new Date();
+        this.deleted = false;
 
 
     }
@@ -67,8 +73,6 @@ public class Document {
        this.documentStatus = VERIFIED;
        this.verificatedAt = new Date();
 
-
-
     }
 
     public void confirm(Employee conirmator) {
@@ -79,4 +83,18 @@ public class Document {
 
     }
 
+    public void archive(Employee employee) {
+        this.deleted = true;
+        this.deletedBy = employee;
+
+
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public Employee getDeletedBy() {
+        return deletedBy;
+    }
 }

@@ -11,8 +11,12 @@ public class DocumentDto {
 
     private String number;
     private String title;
+
+
+
     private String content;
     private String status;
+    private Boolean deleted;
 
 
     private Long creatorId, verificatorId;
@@ -20,7 +24,8 @@ public class DocumentDto {
 
     public DocumentDto(String number, String title,
                        String content, DocumentStatus status, Date createdAt,
-                       Date verificatedAt, Date updatedAt, Long creatorId, Long verificatorId) {
+                       Date verificatedAt, Date updatedAt, Long creatorId,
+                       Long verificatorId, Boolean deleted) {
         this.number = number;
         this.title = title;
         this.content = content;
@@ -30,6 +35,7 @@ public class DocumentDto {
         this.updatedAt = updatedAt;
         this.creatorId = creatorId;
         this.verificatorId = verificatorId;
+        this.deleted = deleted;
     }
 
     public String getNumber() {
@@ -82,6 +88,13 @@ public class DocumentDto {
 
     public Date getUpdatedAt() {
         return updatedAt;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 
 }

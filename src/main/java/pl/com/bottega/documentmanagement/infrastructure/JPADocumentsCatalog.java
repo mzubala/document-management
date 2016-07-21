@@ -41,7 +41,7 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
         Root<Document> root = query.from(Document.class);
         query.where(builder.equal(root.get(Document_.documentNumber), documentNumber));
 
-        return entityManager.createQuery(new JPADocumentsCatalog().query(builder, query, root)).getSingleResult();
+        return entityManager.createQuery(new JPADocumentsCatalog().queryDocumentDto(builder, query, root)).getSingleResult();
 
     }
 
@@ -53,11 +53,11 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
         CriteriaQuery<DocumentDto> query = builder.createQuery(DocumentDto.class);
         Root<Document> root = query.from(Document.class);
         Collection<Predicate> predicates = new HashSet<>();
-        CriteriaQuery<DocumentDto> ifQuery = ifQuery(documentCriteria,predicates,root,builder,query);
-        return entityManager.createQuery(new JPADocumentsCatalog().query(builder, ifQuery, root)).getResultList();
+        CriteriaQuery<DocumentDto> ifQuery = ifQuery(documentCriteria, predicates, root, builder, query);
+        return entityManager.createQuery(queryDocumentDto(builder, ifQuery, root)).getResultList();
     }
 
-    private CriteriaQuery<DocumentDto> query(CriteriaBuilder builder, CriteriaQuery<DocumentDto> query, Root<Document> root) {
+    private CriteriaQuery<DocumentDto> queryDocumentDto(CriteriaBuilder builder, CriteriaQuery<DocumentDto> query, Root<Document> root) {
 
         query.select(builder.construct(DocumentDto.class,
                 root.get(Document_.documentNumber).get(DocumentNumber_.number),
@@ -68,7 +68,9 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
                 root.get(Document_.verificatedAt),
                 root.get(Document_.updatedAt),
                 root.get(Document_.creator).get(Employee_.employeeId).get(EmployeeId_.id),
-                root.get(Document_.veryficator).get(Employee_.employeeId).get(EmployeeId_.id)
+                root.get(Document_.veryficator).get(Employee_.employeeId).get(EmployeeId_.id),
+                root.get(Document_.deleted)
+
         ));
 
         return query;
@@ -76,19 +78,53 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
 
     private CriteriaQuery<DocumentDto> ifQuery(DocumentCriteria documentCriteria, Collection<Predicate> predicates,
                                                Root<Document> root, CriteriaBuilder builder, CriteriaQuery query) {
+        addDocumentIsDocumentIsNotDeleted(builder, root, predicates);
+        addDocumentIsStatusIsDefined(documentCriteria, builder, root, predicates);
+        addDocumentIsCreatedIsDefined(documentCriteria, builder, root, predicates);
+        addDocumentIsVerifiedIsDefined(documentCriteria, builder, root, predicates);
+        addDocumentIsCratedDateDefined(documentCriteria, builder, root, predicates);
+        addDocumentIsVerifyDateDefined(documentCriteria, builder, root, predicates);
+        addDocumentIsQueryDefined(documentCriteria, builder, root, predicates);
 
-        if (documentCriteria.isStatusDefine()) {
+        return query.where(predicates.toArray(new Predicate[]{}));
+    }
+
+    private void addDocumentIsDocumentIsNotDeleted(CriteriaBuilder builder,
+                                                   Root<Document> root, Collection<Predicate> predicates) {
+
+        predicates.add(builder.isFalse(root.get(Document_.deleted)));
+
+    }
+
+    private void addDocumentIsStatusIsDefined(DocumentCriteria documentCriteria, CriteriaBuilder builder,
+                                              Root<Document> root, Collection<Predicate> predicates) {
+
+        if (documentCriteria.isStatusDefine())
             predicates.add(builder.equal(root.get(Document_.documentStatus), documentCriteria.getStatus()));
-        }
-        if (documentCriteria.isCreatedByDefined()) {
+
+
+    }
+
+    private void addDocumentIsCreatedIsDefined(DocumentCriteria documentCriteria, CriteriaBuilder builder,
+                                               Root<Document> root, Collection<Predicate> predicates) {
+        if (documentCriteria.isCreatedByDefined())
             predicates.add(builder.equal(root.get(Document_.creator).get(
                     Employee_.employeeId).get(EmployeeId_.id),
                     documentCriteria.getCreatedBy()));
-        }
-        if (documentCriteria.isVerifyByDefined()) {
+
+    }
+
+    private void addDocumentIsVerifiedIsDefined(DocumentCriteria documentCriteria, CriteriaBuilder builder,
+                                                Root<Document> root, Collection<Predicate> predicates) {
+        if (documentCriteria.isVerifyByDefined())
             predicates.add(builder.equal(root.get(Document_.veryficator).get(Employee_.employeeId).get(EmployeeId_.id),
                     documentCriteria.getVerifiedBy()));
-        }
+
+
+    }
+
+    private void addDocumentIsCratedDateDefined(DocumentCriteria documentCriteria, CriteriaBuilder builder,
+                                                Root<Document> root, Collection<Predicate> predicates) {
         if (documentCriteria.isCreatedDatesDefined()) {
             if (documentCriteria.isCreatedFromDefined()) {
                 predicates.add(builder.greaterThanOrEqualTo(root.get(Document_.createAt),
@@ -100,6 +136,10 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
             }
 
         }
+    }
+
+    private void addDocumentIsVerifyDateDefined(DocumentCriteria documentCriteria, CriteriaBuilder builder,
+                                                Root<Document> root, Collection<Predicate> predicates) {
         if (documentCriteria.isVerifyDateDefined()) {
             if (documentCriteria.isVerifyFromDefined()) {
                 predicates.add(builder.greaterThanOrEqualTo(root.get(Document_.verificatedAt),
@@ -111,6 +151,11 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
             }
 
         }
+
+    }
+
+    public void addDocumentIsQueryDefined(DocumentCriteria documentCriteria, CriteriaBuilder builder,
+                                          Root<Document> root, Collection<Predicate> predicates) {
         if (documentCriteria.isQueryDefined()) {
             predicates.add(builder.or(
                     builder.like(root.get(Document_.content), "%" +
@@ -119,6 +164,51 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
                             documentCriteria.getQuery() + "%")));
 
         }
-        return   query.where(predicates.toArray(new Predicate[]{}));
+
     }
+
+    //  if (documentCriteria.isStatusDefine()) {
+    //      predicates.add(builder.equal(root.get(Document_.documentStatus), documentCriteria.getStatus()));
+    //  }
+//        if (documentCriteria.isCreatedByDefined()) {
+//            predicates.add(builder.equal(root.get(Document_.creator).get(
+//                    Employee_.employeeId).get(EmployeeId_.id),
+//                    documentCriteria.getCreatedBy()));
+//        }
+//        if (documentCriteria.isVerifyByDefined()) {
+//            predicates.add(builder.equal(root.get(Document_.veryficator).get(Employee_.employeeId).get(EmployeeId_.id),
+//                    documentCriteria.getVerifiedBy()));
+//        }
+//        if (documentCriteria.isCreatedDatesDefined()) {
+//            if (documentCriteria.isCreatedFromDefined()) {
+//                predicates.add(builder.greaterThanOrEqualTo(root.get(Document_.createAt),
+//                        documentCriteria.getCreatedFrom()));
+//            }
+//            if (documentCriteria.isCreatedUntilDefined()) {
+//                predicates.add(builder.lessThanOrEqualTo(root.get(Document_.createAt),
+//                        documentCriteria.getCreatedUntil()));
+//            }
+//
+//        }
+//        if (documentCriteria.isVerifyDateDefined()) {
+//            if (documentCriteria.isVerifyFromDefined()) {
+//                predicates.add(builder.greaterThanOrEqualTo(root.get(Document_.verificatedAt),
+//                        documentCriteria.getVerifiedFrom()));
+//            }
+//            if (documentCriteria.isVerifiedUntilDefined()) {
+//                predicates.add(builder.lessThanOrEqualTo(root.get(Document_.verificatedAt),
+//                        documentCriteria.getVerifiedUntil()));
+//            }
+//
+//        }
+//        if (documentCriteria.isQueryDefined()) {
+//            predicates.add(builder.or(
+//                    builder.like(root.get(Document_.content), "%" +
+//                            documentCriteria.getQuery() + "%"),
+//                    builder.like(root.get(Document_.title), "%" +
+//                            documentCriteria.getQuery() + "%")));
+//
+//        }
 }
+
+

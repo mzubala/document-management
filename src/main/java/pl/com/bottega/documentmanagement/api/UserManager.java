@@ -74,15 +74,14 @@ public class UserManager {
         else return success();
     }
 
-
     public Employee currentEmployee() {
         return this.currentEmployee;
 
     }
 
-    public boolean isAuthenticated() {
+    public boolean isAuthenticated(String ...roleName) {
 
-        return currentEmployee!= null;
+        return currentEmployee != null && currentEmployee.hasRoles(roleName);
 
     }
 }

@@ -4,6 +4,10 @@ import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToMany;
+
+import java.util.Collection;
 
 import static com.google.common.base.Preconditions.checkState;
 
@@ -18,6 +22,9 @@ public class Employee {
     @NaturalId
     private String login;
     private String hashedPassword;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Collection<Role> roles;
 
     private Employee(){
 
@@ -40,5 +47,15 @@ public class Employee {
         this.login = login;
         this.hashedPassword = password;
 
+    }
+
+    public boolean hasRoles(String ...roleNames){
+        for (String str : roleNames)
+        {
+
+            if (!roles.contains(new Role(str)))
+                return false;
+        }
+        return true;
     }
 }

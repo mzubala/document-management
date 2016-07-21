@@ -11,7 +11,8 @@ import java.lang.annotation.Target;
  * Created by Wojciech Winiarski on 09.07.2016.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD, ElementType.TYPE})
+//@Target({ElementType.METHOD, ElementType.TYPE})
 public @interface RequiresAuth {
+    String[] roles() default {};
 
 }

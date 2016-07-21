@@ -52,6 +52,12 @@ public class DocumentController {
     return documentsCatalog.find(documentCriteria);
 
     }
+    @DeleteMapping("/{documentNumber}")
+    public void delete(@PathVariable String documentNumber){
+        documentFlowProcess.archive(new DocumentNumber(documentNumber));
+
+
+    }
 
 }
 
