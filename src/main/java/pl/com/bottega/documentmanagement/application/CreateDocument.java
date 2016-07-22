@@ -24,6 +24,7 @@ public class CreateDocument {
         System.out.println(number);
         documentFlowProcess.change(number, "new title", "sia la la");
         System.out.println(number);
+        documentFlowProcess.delete(number);
 
     }
 

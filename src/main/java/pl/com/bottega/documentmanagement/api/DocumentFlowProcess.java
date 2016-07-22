@@ -67,12 +67,19 @@ public class DocumentFlowProcess {
 
     @Transactional
     @RequiresAuth(roles = {"EDITOR"})
+    public void delete(DocumentNumber documentNumber) {
+        checkNotNull(documentNumber);
+        Document document = documentRepository.load(documentNumber);
+        document.delete();
+        documentRepository.save(document);
+    }
+
+    @Transactional
+    @RequiresAuth(roles = {"EDITOR"})
     public void archive(DocumentNumber documentNumber) {
         checkNotNull(documentNumber);
         Document document = documentRepository.load(documentNumber);
-/*
-        document.isdDeleted();
-*/
+        documentRepository.save(document);
     }
 
     public DocumentNumber createNewVersion(DocumentNumber documentNumber) {

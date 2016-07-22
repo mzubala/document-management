@@ -24,6 +24,7 @@ public class Document {
     private Employee verificator;
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date createdAt, updatedAt, verificatedAt;
+    private Boolean deleted;
 
 
     public Document(DocumentNumber documentNumber, String content, String title, Employee creator) {
@@ -33,6 +34,7 @@ public class Document {
         this.creator = creator;
         this.documentStatus = DocumentStatus.DRAFT;
         this.createdAt = new Date();
+        this.deleted = false;
     }
 
     private Document(){}
@@ -48,7 +50,6 @@ public class Document {
         this.verificator = employee;
         documentStatus = documentStatus.VERIFIED;
         this.verificatedAt = new Date();
-
     }
 
     public void confirm(Employee confirmator) {
@@ -57,5 +58,9 @@ public class Document {
 
     public void confirm(Employee confirmator, Employee forEmployee) {
 
+    }
+
+    public void delete() {
+        this.deleted = true;
     }
 }
