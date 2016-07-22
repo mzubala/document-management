@@ -27,9 +27,30 @@ public class DocumentCriteria {
     public String getTitle() {
         return title;
     }
+    public void setTitle (String title){
+        this.title = title;
+        this.query = title;
+    }
 
     public String getContent() {
         return content;
+    }
+
+    public void setDocumentNumber(DocumentNumber documentNumber) {
+        this.documentNumber = documentNumber;
+    }
+
+    public void setContent(String content) {
+        this.query = content;
+        this.content = content;
+    }
+
+    public void setUpdatedFrom(Date updatedFrom) {
+        this.updatedFrom = updatedFrom;
+    }
+
+    public void setUpdatedUntil(Date updatedUntil) {
+        this.updatedUntil = updatedUntil;
     }
 
     public Long getCreatedBy() {

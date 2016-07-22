@@ -1,5 +1,6 @@
 package pl.com.bottega.documentmanagement.infrastructure;
 
+import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
 import pl.com.bottega.documentmanagement.api.DocumentCriteria;
 import pl.com.bottega.documentmanagement.api.DocumentDto;
@@ -8,16 +9,16 @@ import pl.com.bottega.documentmanagement.domain.DocumentNumber;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.List;
+import javax.persistence.TypedQuery;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Created by paulina.pislewicz on 2016-07-12.
  */
-//@Component
+@Component
 public class JPQLDocumentCatalog implements DocumentsCatalog {
-    //@PersistenceContext
+    @PersistenceContext
     EntityManager entityManager;
 
     public DocumentDto get(DocumentNumber documentNumber) {
@@ -32,25 +33,70 @@ public class JPQLDocumentCatalog implements DocumentsCatalog {
 
 
     @Override
-    public Iterable <DocumentDto> find(DocumentCriteria documentCriteria) {
+    public Iterable<DocumentDto> find(DocumentCriteria documentCriteria) {
         checkNotNull(documentCriteria);
-        return entityManager.createQuery("SELECT new pl.com.bottega.documentmanagement.api.DocumentDto" +
-                        "(d.documentNumber.number,   d.title, d.content, d.documentStatus, d.createdAt, d.updatedAt, d.verificatedAt, d.creator.employeeId.id, d.verificator.employeeId.id)" +
-                        " FROM Document d " +
-                        "WHERE d.documentNumber.number = :documentNumber AND d.title = :title AND d.content = :content AND d.documentStatus = :status AND d.createdAt BETWEEN :createdFrom AND :createdUntil AND d.updatedAt BETWEEN :updatedFrom AND :updatedUntil AND d.verificatedAt BETWEEN :verificatedFrom AND :verificatedUntil AND d.creator.employeeId.id =:creatorId AND d.verificator.employeeId.id = :verificatorId ",
-                DocumentDto.class).
-                setParameter("documentNumber", documentCriteria.getDocumentNumber().getNumber()).
-                setParameter("title", documentCriteria.getTitle()).
-                setParameter("content", documentCriteria.getContent()).
-                setParameter("status", documentCriteria.getStatus()).
-                setParameter("createdFrom", documentCriteria.getCreatedFrom()).
-                setParameter("createdUntil", documentCriteria.getCreatedUntil()).
-                setParameter("updatedFrom", documentCriteria.getUpdatedFrom()).
-                setParameter("updatedUntil", documentCriteria.getUpdatedUntil()).
-                setParameter("verificatedFrom", documentCriteria.getVerifiedFrom()).
-                setParameter("verificatedUntil", documentCriteria.getVerifiedUntil()).
-                setParameter("creatorId", documentCriteria.getCreatedBy()).
-                setParameter("verificatorId", documentCriteria.getVerifiedBy()).
-                getResultList();
+        String query = "SELECT new pl.com.bottega.documentmanagement.api.DocumentDto" +
+                "(d.documentNumber.number,   d.title, d.content, d.documentStatus, d.createdAt, d.updatedAt, d.verificatedAt, " +
+                "d.creator.employeeId.id, d.verificator.employeeId.id)" +
+                " FROM Document d ";
+
+        String condition_docNr = "WHERE d.documentNumber.number = :documentNumber";
+        String query_1 = "WHERE d.title = :title AND d.content = :content";
+        String condition_docStatus = "WHERE d.documentStatus = :status";
+        String when_created = "WHERE d.createdAt BETWEEN :createdFrom AND :createdUntil";
+        String when_updated = "WHERE d.updatedAt BETWEEN :updatedFrom AND :updatedUntil";
+        String when_verificated = "WHERE d.verificatedAt BETWEEN :verificatedFrom AND :verificatedUntil";
+        String who_created = "WHERE d.creator.employeeId.id =:creatorId ";
+        String who_verified = "WHERE d.verificator.employeeId.id = :verificatorId";
+
+
+        if (documentCriteria.isDocumentNumberDefined())
+            return entityManager.createQuery(query + condition_docNr, DocumentDto.class).
+                    setParameter("documentNumber", documentCriteria.getDocumentNumber().getNumber()).getResultList();
+
+        if (documentCriteria.isQueryDefined())
+            return entityManager.createQuery(query + query_1, DocumentDto.class).
+                    setParameter("title", documentCriteria.getTitle()).
+                    setParameter("content", documentCriteria.getContent()).getResultList();
+
+        if (documentCriteria.isStatusDefined())
+            return entityManager.createQuery(query + condition_docStatus, DocumentDto.class).
+                    setParameter("status", documentCriteria.getStatus()).getResultList();
+
+        if (documentCriteria.isCreatesDatesDefined())
+            if (documentCriteria.isCreatedFromDefined()) {
+                return entityManager.createQuery(query + when_created, DocumentDto.class).
+                        setParameter("createdFrom", documentCriteria.getCreatedFrom()).getResultList();
+            } else
+                return entityManager.createQuery(query + when_created, DocumentDto.class).
+                        setParameter("createdUntil", documentCriteria.getCreatedUntil()).getResultList();
+
+        if (documentCriteria.isUpdatedDatesDefined())
+            if (documentCriteria.isUpdatedFromDefined()) {
+                return entityManager.createQuery(query + when_updated, DocumentDto.class).
+                        setParameter("updatedFrom", documentCriteria.getUpdatedFrom()).getResultList();
+            } else
+                return entityManager.createQuery(query + when_created, DocumentDto.class).
+                        setParameter("updatedUntil", documentCriteria.getUpdatedUntil()).getResultList();
+
+        if (documentCriteria.isVerifiesDatesDefined())
+            if (documentCriteria.isVerifiedFromDefined()) {
+                return entityManager.createQuery(query + when_verificated, DocumentDto.class).
+                        setParameter("verificatedFrom", documentCriteria.getVerifiedFrom()).getResultList();
+            } else
+                return entityManager.createQuery(query + when_verificated, DocumentDto.class).
+                        setParameter("verificatedUntil", documentCriteria.getVerifiedUntil()).getResultList();
+
+        if (documentCriteria.isCreatedByDefined())
+            return entityManager.createQuery(query + who_created, DocumentDto.class).
+                    setParameter("creatorId", documentCriteria.getCreatedBy()).getResultList();
+
+        if (documentCriteria.isVerifiedByDefined())
+            return entityManager.createQuery(query + who_verified, DocumentDto.class).
+                    setParameter("verificatorId", documentCriteria.getVerifiedBy()).getResultList();
+
+        return entityManager.createQuery(query).getResultList();
+
+
     }
 }

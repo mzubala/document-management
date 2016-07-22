@@ -1,13 +1,11 @@
 package pl.com.bottega.documentmanagement.infrastructure;
 
-import org.springframework.stereotype.Component;
 import pl.com.bottega.documentmanagement.api.DocumentCriteria;
 import pl.com.bottega.documentmanagement.api.DocumentDto;
 import pl.com.bottega.documentmanagement.api.DocumentsCatalog;
 import pl.com.bottega.documentmanagement.domain.*;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -20,10 +18,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Created by maciuch on 12.06.16.
  */
-@Component
+//@Component
 public class JPADocumentsCatalog implements DocumentsCatalog {
 
-    @PersistenceContext
+    //@PersistenceContext
     private EntityManager entityManager;
 
     @Override
@@ -32,6 +30,7 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<DocumentDto> query = builder.createQuery(DocumentDto.class);
         Root<Document> root = query.from(Document.class);
+       // query.where(builder.not(root.get(Document_.deleted)));
         query.where(builder.equal(root.get(Document_.documentNumber), documentNumber));
         query.select(builder.construct(DocumentDto.class,
                 root.get(Document_.documentNumber).get(DocumentNumber_.number),
@@ -75,8 +74,8 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
         if (documentCriteria.isQueryDefined()) {
             //(content like "%query%" OR title like "%query%") AND () AND () AND ()
             predicates.add(builder.or(
-                    builder.like(root.get(Document_.content), "%" + documentCriteria.getQuery() + "%"),
-                    builder.like(root.get(Document_.title), "%" + documentCriteria.getQuery() + "%")
+                    builder.like(root.get(Document_.content), "%" + documentCriteria.getContent() + "%"),
+                    builder.like(root.get(Document_.title), "%" + documentCriteria.getTitle() + "%")
             ));
         }
 
@@ -134,6 +133,7 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
                         root.get(Document_.updatedAt), documentCriteria.getUpdatedUntil()
                 ));
             }
+
         }
         query.where(predicates.toArray(new Predicate[]{}));
         return entityManager.createQuery(query).getResultList();
