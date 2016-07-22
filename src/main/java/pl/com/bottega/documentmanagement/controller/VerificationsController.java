@@ -20,7 +20,7 @@ public class VerificationsController {
 
     }
 
-    //@PutMapping(path = "/verification", headers = "myHeader=myValue")
+
     @PutMapping
     public void create(@PathVariable String nr){
         documentFlowProcess.verify(new DocumentNumber(nr));

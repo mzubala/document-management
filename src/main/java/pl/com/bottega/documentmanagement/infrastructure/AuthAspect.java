@@ -16,8 +16,7 @@ public class AuthAspect {
         this.userManager = userManager;
     }
     public void checkAuthentication(RequiresAuth requiresAuth){
-        requiresAuth.roles();
-        if (!userManager.isAuthenticated())
+        if (!userManager.isAuthenticated(requiresAuth.roles()))
             throw new AuthRequiredException();
     }
 }

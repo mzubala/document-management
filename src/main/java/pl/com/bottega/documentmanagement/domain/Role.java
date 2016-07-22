@@ -20,4 +20,17 @@ public class Role {
     public Role (String name){
         this.name = name;
     }
+
+    private Role(){}
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Role)) return false;
+
+        Role role = (Role) o;
+
+        return name.equals(role.name);
+
+    }
 }
+
