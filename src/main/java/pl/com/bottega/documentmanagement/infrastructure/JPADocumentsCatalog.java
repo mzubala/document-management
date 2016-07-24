@@ -32,7 +32,6 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<DocumentDto> query = builder.createQuery(DocumentDto.class);
         Root<Document> root = query.from(Document.class);
-       // query.where(builder.not(root.get(Document_.deleted)));
         query.where(builder.equal(root.get(Document_.documentNumber), documentNumber));
         query.select(builder.construct(DocumentDto.class,
                 root.get(Document_.documentNumber).get(DocumentNumber_.number),
@@ -112,10 +111,10 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
             if (documentCriteria.isUpdatedUntilDefined()) {
                 findByUpdatedUntil(documentCriteria, builder, root, predicates);
             }
-
         }
+
         query.where(predicates.toArray(new Predicate[]{}));
-        return entityManager.createQuery(query).getResultList();
+            return entityManager.createQuery(query).getResultList();
     }
 
     private void findByUpdatedUntil(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {

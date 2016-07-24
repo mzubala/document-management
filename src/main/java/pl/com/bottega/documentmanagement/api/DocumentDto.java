@@ -15,7 +15,6 @@ public class DocumentDto {
     private String status;
     private Long creatorId, verificatorId;
     private Date createdAt, verificatedAt, updatedAt;
-    private boolean deleted;
 
 
 
@@ -83,11 +82,4 @@ public class DocumentDto {
         return updatedAt;
     }
 
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
-    }
 }

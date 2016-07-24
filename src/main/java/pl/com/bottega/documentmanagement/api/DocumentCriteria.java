@@ -19,6 +19,7 @@ public class DocumentCriteria {
     private Date verifiedFrom, verifiedUntil;
     private Date updatedFrom, updatedUntil;
     private String query;
+    private Boolean deleted;
 
     public DocumentNumber getDocumentNumber() {
         return documentNumber;
@@ -183,5 +184,21 @@ public class DocumentCriteria {
         return updatedUntil!=null;
     }
 
+
+    public boolean isTitleDefined() {
+        return title !=null;
+    }
+
+    public boolean isContentDefined() {
+        return content !=null;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
+    }
 
 }

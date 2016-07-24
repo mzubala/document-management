@@ -1,6 +1,5 @@
 package pl.com.bottega.documentmanagement.infrastructure;
 
-import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
 import pl.com.bottega.documentmanagement.api.DocumentCriteria;
 import pl.com.bottega.documentmanagement.api.DocumentDto;
@@ -9,16 +8,15 @@ import pl.com.bottega.documentmanagement.domain.DocumentNumber;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Created by paulina.pislewicz on 2016-07-12.
  */
-@Component
+//@Component
 public class JPQLDocumentCatalog implements DocumentsCatalog {
-    @PersistenceContext
+    //@PersistenceContext
     EntityManager entityManager;
 
     public DocumentDto get(DocumentNumber documentNumber) {
@@ -41,7 +39,8 @@ public class JPQLDocumentCatalog implements DocumentsCatalog {
                 " FROM Document d ";
 
         String condition_docNr = "WHERE d.documentNumber.number = :documentNumber";
-        String query_1 = "WHERE d.title = :title AND d.content = :content";
+        String what_title = "WHERE d.title = :title";
+        String what_content = "WHERE d.content = :content";
         String condition_docStatus = "WHERE d.documentStatus = :status";
         String when_created = "WHERE d.createdAt BETWEEN :createdFrom AND :createdUntil";
         String when_updated = "WHERE d.updatedAt BETWEEN :updatedFrom AND :updatedUntil";
@@ -55,9 +54,12 @@ public class JPQLDocumentCatalog implements DocumentsCatalog {
                     setParameter("documentNumber", documentCriteria.getDocumentNumber().getNumber()).getResultList();
 
         if (documentCriteria.isQueryDefined())
-            return entityManager.createQuery(query + query_1, DocumentDto.class).
-                    setParameter("title", documentCriteria.getTitle()).
-                    setParameter("content", documentCriteria.getContent()).getResultList();
+            if (documentCriteria.isTitleDefined())
+            return entityManager.createQuery(query + what_title, DocumentDto.class).
+                    setParameter("title", "%" + documentCriteria.getTitle() +"%").getResultList();
+            if (documentCriteria.isContentDefined())
+                return entityManager.createQuery(query + what_content, DocumentDto.class).
+                setParameter("content", "%" + documentCriteria.getContent() +"%").getResultList();
 
         if (documentCriteria.isStatusDefined())
             return entityManager.createQuery(query + condition_docStatus, DocumentDto.class).
@@ -99,4 +101,5 @@ public class JPQLDocumentCatalog implements DocumentsCatalog {
 
 
     }
+
 }
