@@ -1,11 +1,13 @@
 package pl.com.bottega.documentmanagement.infrastructure;
 
+import org.springframework.stereotype.Component;
 import pl.com.bottega.documentmanagement.api.DocumentCriteria;
 import pl.com.bottega.documentmanagement.api.DocumentDto;
 import pl.com.bottega.documentmanagement.api.DocumentsCatalog;
 import pl.com.bottega.documentmanagement.domain.*;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -18,10 +20,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Created by maciuch on 12.06.16.
  */
-//@Component
+@Component
 public class JPADocumentsCatalog implements DocumentsCatalog {
 
-    //@PersistenceContext
+    @PersistenceContext
     private EntityManager entityManager;
 
     @Override
@@ -66,17 +68,12 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
         ));
 
         if (documentCriteria.isDocumentNumberDefined()) {
-            predicates.add(builder.equal(
-                    root.get(Document_.documentNumber), documentCriteria.getDocumentNumber()
-            ));
+            findByDocNr(documentCriteria, builder, root, predicates);
         }
 
         if (documentCriteria.isQueryDefined()) {
             //(content like "%query%" OR title like "%query%") AND () AND () AND ()
-            predicates.add(builder.or(
-                    builder.like(root.get(Document_.content), "%" + documentCriteria.getContent() + "%"),
-                    builder.like(root.get(Document_.title), "%" + documentCriteria.getTitle() + "%")
-            ));
+            findByTitleOrContent(documentCriteria, builder, root, predicates);
         }
 
         if (documentCriteria.isStatusDefined()) {
@@ -84,59 +81,104 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
         }
 
         if (documentCriteria.isCreatedByDefined()) {
-            predicates.add(builder.equal(
-                    root.get(Document_.creator).get(Employee_.employeeId).get(EmployeeId_.id),
-                    documentCriteria.getCreatedBy())
-            );
+            findByCreator(documentCriteria, builder, root, predicates);
         }
 
         if (documentCriteria.isCreatesDatesDefined()) {
             if (documentCriteria.isCreatedFromDefined()) {
-                predicates.add(builder.greaterThanOrEqualTo(
-                        root.get(Document_.createdAt), documentCriteria.getCreatedFrom()
-                ));
+                findByCreatedFrom(documentCriteria, builder, root, predicates);
             }
             if (documentCriteria.isCreatedUntilDefined()) {
-                predicates.add(builder.lessThanOrEqualTo(
-                        root.get(Document_.createdAt), documentCriteria.getCreatedUntil()
-                ));
+                findByCreatedUntil(documentCriteria, builder, root, predicates);
             }
         }
 
         if (documentCriteria.isVerifiedByDefined()) {
-            predicates.add(builder.equal(
-                    root.get(Document_.verificator).get(Employee_.employeeId).get(EmployeeId_.id),
-                    documentCriteria.getVerifiedBy()
-            ));
+            findByVerificator(documentCriteria, builder, root, predicates);
         }
 
         if (documentCriteria.isVerifiesDatesDefined()) {
             if (documentCriteria.isVerifiedFromDefined()) {
-                predicates.add(builder.greaterThanOrEqualTo(
-                        root.get(Document_.verificatedAt), documentCriteria.getVerifiedFrom()
-                ));
+                findByVerifiedFrom(documentCriteria, builder, root, predicates);
             }
             if (documentCriteria.isVerifiedUntilDefined()) {
-                predicates.add(builder.lessThanOrEqualTo(
-                        root.get(Document_.verificatedAt), documentCriteria.getVerifiedUntil()
-                ));
+                findByVerifiedUntil(documentCriteria, builder, root, predicates);
             }
         }
         if (documentCriteria.isUpdatedDatesDefined()) {
             if (documentCriteria.isUpdatedFromDefined()) {
-                predicates.add(builder.greaterThanOrEqualTo(
-                        root.get(Document_.updatedAt), documentCriteria.getUpdatedFrom()
-                ));
+                findByUpdatedFrom(documentCriteria, builder, root, predicates);
             }
             if (documentCriteria.isUpdatedUntilDefined()) {
-                predicates.add(builder.lessThanOrEqualTo(
-                        root.get(Document_.updatedAt), documentCriteria.getUpdatedUntil()
-                ));
+                findByUpdatedUntil(documentCriteria, builder, root, predicates);
             }
 
         }
         query.where(predicates.toArray(new Predicate[]{}));
         return entityManager.createQuery(query).getResultList();
+    }
+
+    private void findByUpdatedUntil(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
+        predicates.add(builder.lessThanOrEqualTo(
+                root.get(Document_.updatedAt), documentCriteria.getUpdatedUntil()
+        ));
+    }
+
+    private void findByUpdatedFrom(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
+        predicates.add(builder.greaterThanOrEqualTo(
+                root.get(Document_.updatedAt), documentCriteria.getUpdatedFrom()
+        ));
+    }
+
+    private void findByVerifiedUntil(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
+        predicates.add(builder.lessThanOrEqualTo(
+                root.get(Document_.verificatedAt), documentCriteria.getVerifiedUntil()
+        ));
+    }
+
+    private void findByVerifiedFrom(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
+        predicates.add(builder.greaterThanOrEqualTo(
+                root.get(Document_.verificatedAt), documentCriteria.getVerifiedFrom()
+        ));
+    }
+
+    private void findByVerificator(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
+        predicates.add(builder.equal(
+                root.get(Document_.verificator).get(Employee_.employeeId).get(EmployeeId_.id),
+                documentCriteria.getVerifiedBy()
+        ));
+    }
+
+    private void findByCreatedUntil(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
+        predicates.add(builder.lessThanOrEqualTo(
+                root.get(Document_.createdAt), documentCriteria.getCreatedUntil()
+        ));
+    }
+
+    private void findByCreatedFrom(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
+        predicates.add(builder.greaterThanOrEqualTo(
+                root.get(Document_.createdAt), documentCriteria.getCreatedFrom()
+        ));
+    }
+
+    private void findByCreator(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
+        predicates.add(builder.equal(
+                root.get(Document_.creator).get(Employee_.employeeId).get(EmployeeId_.id),
+                documentCriteria.getCreatedBy())
+        );
+    }
+
+    private void findByTitleOrContent(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
+        predicates.add(builder.or(
+                builder.like(root.get(Document_.content), "%" + documentCriteria.getContent() + "%"),
+                builder.like(root.get(Document_.title), "%" + documentCriteria.getTitle() + "%")
+        ));
+    }
+
+    private void findByDocNr(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
+        predicates.add(builder.equal(
+                root.get(Document_.documentNumber), documentCriteria.getDocumentNumber()
+        ));
     }
 
 }
