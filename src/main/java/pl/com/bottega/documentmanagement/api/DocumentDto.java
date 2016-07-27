@@ -97,6 +97,6 @@ public class DocumentDto {
     }
 
     public void setDocumentStatus(String status) {
-        this.documentStatus = documentStatus;
+        this.documentStatus = status;
     }
 }
