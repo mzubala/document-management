@@ -48,43 +48,6 @@ public class JPQLDocumentsCatalog implements DocumentsCatalog {
         return query.getResultList();
     }
 
-    private void fillStatement(DocumentCriteria documentCriteria, Query query) {
-        if (documentCriteria.isStatusDefined()) {
-            query.setParameter("status", documentCriteria.getDocumentStatus());
-        }
-        if (documentCriteria.isCreatedByDefined()) {
-            query.setParameter("creatorId", documentCriteria.getCreatedBy());
-        }
-        if (documentCriteria.isVerifiedByDefined()) {
-            query.setParameter("verificatorId", documentCriteria.getVerifiedBy());
-        }
-        if (documentCriteria.isCreatedDateDefined()) {
-            if (documentCriteria.isCreatedFromDefined() && documentCriteria.isCreatedUntilDefined()) {
-                query.setParameter("createFrom", documentCriteria.getCreatedFrom());
-                query.setParameter("createUntil", documentCriteria.getCreatedUntil());
-            } else if (documentCriteria.isCreatedUntilDefined()) {
-                query.setParameter("createUntil", documentCriteria.getCreatedUntil());
-            } else {
-                query.setParameter("createFrom", documentCriteria.getCreatedFrom());
-            }
-        }
-
-        if (documentCriteria.isVerifiedDateDefined()) {
-            if (documentCriteria.isVerifiedFromDefined() && documentCriteria.isVerifiedUntilDefined()) {
-                query.setParameter("verifiedFrom", documentCriteria.getVerifiedFrom());
-                query.setParameter("verifiedUntil", documentCriteria.getVerifiedUntil());
-            } else if (documentCriteria.isVerifiedUntilDefined()) {
-                query.setParameter("verifiedUntil", documentCriteria.getVerifiedUntil());
-            } else {
-                query.setParameter("verifiedFrom", documentCriteria.getVerifiedFrom());
-            }
-        }
-
-        if (documentCriteria.isQueryDefined()) {
-            query.setParameter("query", "%" + documentCriteria.getQuery() + "%");
-        }
-    }
-
     private String buildQuery(DocumentCriteria documentCriteria) {
         List<String> queryList = new ArrayList<>();
         if (documentCriteria.isStatusDefined()) {
@@ -138,5 +101,42 @@ public class JPQLDocumentsCatalog implements DocumentsCatalog {
             }
         }
         return jpql;
+    }
+
+    private void fillStatement(DocumentCriteria documentCriteria, Query query) {
+        if (documentCriteria.isStatusDefined()) {
+            query.setParameter("status", documentCriteria.getDocumentStatus());
+        }
+        if (documentCriteria.isCreatedByDefined()) {
+            query.setParameter("creatorId", documentCriteria.getCreatedBy());
+        }
+        if (documentCriteria.isVerifiedByDefined()) {
+            query.setParameter("verificatorId", documentCriteria.getVerifiedBy());
+        }
+        if (documentCriteria.isCreatedDateDefined()) {
+            if (documentCriteria.isCreatedFromDefined() && documentCriteria.isCreatedUntilDefined()) {
+                query.setParameter("createFrom", documentCriteria.getCreatedFrom());
+                query.setParameter("createUntil", documentCriteria.getCreatedUntil());
+            } else if (documentCriteria.isCreatedUntilDefined()) {
+                query.setParameter("createUntil", documentCriteria.getCreatedUntil());
+            } else {
+                query.setParameter("createFrom", documentCriteria.getCreatedFrom());
+            }
+        }
+
+        if (documentCriteria.isVerifiedDateDefined()) {
+            if (documentCriteria.isVerifiedFromDefined() && documentCriteria.isVerifiedUntilDefined()) {
+                query.setParameter("verifiedFrom", documentCriteria.getVerifiedFrom());
+                query.setParameter("verifiedUntil", documentCriteria.getVerifiedUntil());
+            } else if (documentCriteria.isVerifiedUntilDefined()) {
+                query.setParameter("verifiedUntil", documentCriteria.getVerifiedUntil());
+            } else {
+                query.setParameter("verifiedFrom", documentCriteria.getVerifiedFrom());
+            }
+        }
+
+        if (documentCriteria.isQueryDefined()) {
+            query.setParameter("query", "%" + documentCriteria.getQuery() + "%");
+        }
     }
 }
