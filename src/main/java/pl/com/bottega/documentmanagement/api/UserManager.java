@@ -10,7 +10,10 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import pl.com.bottega.documentmanagement.domain.Employee;
 import pl.com.bottega.documentmanagement.domain.EmployeeId;
+import pl.com.bottega.documentmanagement.domain.Role;
 import pl.com.bottega.documentmanagement.domain.repositories.EmployeeRepository;
+
+import java.util.Collection;
 
 /**
  * Created by maciuch on 12.06.16.
@@ -81,5 +84,15 @@ public class UserManager {
         if (currentEmployee ==null)
             return false;
         return currentEmployee.hasRoles(roleNames);
+    }
+
+    public void addRole(Long employeeId, Collection<Role> role) {
+        Employee employee = employeeRepository.findByEmployeeId(new EmployeeId(employeeId));
+
+        if (role != null){
+            employee.replaceRoles(role);
+        }
+        employeeRepository.save(employee);
+
     }
 }

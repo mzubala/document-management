@@ -38,17 +38,24 @@ public class Employee {
         this.hashedPassword = password;
     }
 
-    public boolean hasRoles(String ... rolesNames){
-        if (rolesNames.length==0)
+    public boolean hasRoles(String ... roleName){
+        if (roleName.length==0)
             return true;
-        else for (String role_name: rolesNames)
-            if (hasTheRole(role_name))
+        else for (String role_name: roleName)
+            if (hasRole(role_name))
                     return true;
         return false;
 
     }
 
-    private boolean hasTheRole(String role_name) {
+    private boolean hasRole(String role_name) {
         return ((role.contains(new Role(role_name))));
     }
+
+
+    public void replaceRoles(Collection<Role> newRoles) {
+        role.clear();
+        role.addAll(newRoles);
+    }
+
 }

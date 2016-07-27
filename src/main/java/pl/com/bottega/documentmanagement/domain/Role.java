@@ -32,5 +32,7 @@ public class Role {
         return name.equals(role.name);
 
     }
+
+
 }
 
