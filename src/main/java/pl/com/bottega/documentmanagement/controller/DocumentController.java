@@ -1,7 +1,10 @@
 package pl.com.bottega.documentmanagement.controller;
 
 import org.springframework.web.bind.annotation.*;
+import pl.com.bottega.documentmanagement.api.DocumentCriteria;
+import pl.com.bottega.documentmanagement.api.DocumentDto;
 import pl.com.bottega.documentmanagement.api.DocumentFlowProcess;
+import pl.com.bottega.documentmanagement.api.DocumentsCatalog;
 import pl.com.bottega.documentmanagement.domain.DocumentNumber;
 
 /**
@@ -11,9 +14,11 @@ import pl.com.bottega.documentmanagement.domain.DocumentNumber;
 @RequestMapping("/documents")
 public class DocumentController {
     private DocumentFlowProcess documentFlowProcess;
+    private DocumentsCatalog documentsCatalog;
 
-    public DocumentController(DocumentFlowProcess documentFlowProcess) {
+    public DocumentController(DocumentFlowProcess documentFlowProcess, DocumentsCatalog documentsCatalog) {
         this.documentFlowProcess = documentFlowProcess;
+        this.documentsCatalog = documentsCatalog;
     }
 
     @PutMapping
@@ -22,7 +27,22 @@ public class DocumentController {
     }
 
     @PostMapping(path = "/{documentNumber}")
-    public void change(@PathVariable("documentNumber") DocumentNumber documentNumber, @RequestBody DocumentRequest documentRequest) {
+    public void change(@PathVariable DocumentNumber documentNumber, @RequestBody DocumentRequest documentRequest) {
         documentFlowProcess.change(documentNumber, documentRequest.getTitle(), documentRequest.getContent());
+    }
+
+    @GetMapping("/{documentNumber}")
+    public DocumentDto show(@PathVariable DocumentNumber documentNumber) {
+        return documentsCatalog.get(documentNumber);
+    }
+
+    @GetMapping
+    public Iterable<DocumentDto> index(DocumentCriteria documentCriteria) {
+        return documentsCatalog.find(documentCriteria);
+    }
+
+    @DeleteMapping("/{documentNumber}")
+    public void delete(@PathVariable DocumentNumber documentNumber) {
+        documentFlowProcess.delete(documentNumber);
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import pl.com.bottega.documentmanagement.domain.Employee;
 import pl.com.bottega.documentmanagement.domain.EmployeeId;
@@ -61,6 +62,7 @@ public class UserManager {
         return Hashing.sha1().hashString(password, Charsets.UTF_8).toString();
     }
 
+
     public SignupResultDto login(String login, String password) {
         this.currentEmployee = employeeRepository.findByLoginAndPassword(login, hashedPassword(password));
         if(this.currentEmployee == null)
@@ -73,4 +75,15 @@ public class UserManager {
         return this.currentEmployee;
     }
 
+    public boolean isAuthenticated(String... roleNames) {
+        return currentEmployee != null && currentEmployee.hasRoles(roleNames);
+    }
+
+    @Transactional
+    @RequiresAuth(roles = {"ADMIN"})
+    public void setRoles(String[] roles, EmployeeId employeeId) {
+        Employee employee = employeeRepository.findByEmployeeId(employeeId);
+        employee.setRoles(roles);
+        employeeRepository.save(employee);
+    }
 }

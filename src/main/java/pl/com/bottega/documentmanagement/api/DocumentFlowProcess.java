@@ -27,6 +27,7 @@ public class DocumentFlowProcess {
     }
 
     @Transactional
+    @RequiresAuth(roles = {"EDITOR"})
     public DocumentNumber create(String title, String content) {
         checkNotNull(title);
         checkNotNull(content);
@@ -43,6 +44,7 @@ public class DocumentFlowProcess {
     }
 
     @Transactional
+    @RequiresAuth(roles = {"EDITOR"})
     public void change(DocumentNumber documentNumber, String newTitle, String newContent) {
         checkNotNull(documentNumber);
         checkNotNull(newTitle);
@@ -54,6 +56,7 @@ public class DocumentFlowProcess {
     }
 
     @Transactional
+    @RequiresAuth(roles = {"MANAGER"})
     public void verify(DocumentNumber documentNumber) {
         checkNotNull(documentNumber);
 
@@ -62,12 +65,25 @@ public class DocumentFlowProcess {
         documentRepository.save(document);
     }
 
+    @Transactional
+    @RequiresAuth(roles = {"MANAGER"})
     public void publish(DocumentNumber documentNumber, Iterable<EmployeeId> ids) {
         checkNotNull(documentNumber);
     }
 
+    @Transactional
+    @RequiresAuth(roles = {"MANAGER"})
     public void archive(DocumentNumber documentNumber) {
         checkNotNull(documentNumber);
+    }
+
+    @Transactional
+    @RequiresAuth(roles = {"EDITOR"})
+    public void delete(DocumentNumber documentNumber){
+        checkNotNull(documentNumber);
+        Document document = documentRepository.load(documentNumber);
+        document.delete();
+        documentRepository.save(document);
     }
 
     public DocumentNumber createNewVersion(DocumentNumber documentNumber) {

@@ -1,6 +1,7 @@
 package pl.com.bottega.documentmanagement.domain;
 
 import javax.persistence.*;
+import java.util.Date;
 
 /**
  * Created by maciuch on 12.06.16.
@@ -23,8 +24,13 @@ public class Document {
     @ManyToOne
     private Employee verificator;
 
-    @Enumerated(EnumType.ORDINAL)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt, verifiedAt, updatedAt;
+
+    @Enumerated(EnumType.STRING)
     private DocumentStatus documentStatus;
+
+    private boolean deleted;
 
     public Document(DocumentNumber documentNumber, String content, String title, Employee creator) {
         this.documentNumber = documentNumber;
@@ -32,28 +38,29 @@ public class Document {
         this.title = title;
         this.creator = creator;
         this.documentStatus = DocumentStatus.DRAFT;
+        this.createdAt = new Date();
+        this.deleted = false;
     }
 
-    private Document() {
-    }
+    private Document() {}
 
     public void change(String title, String content) {
         this.title = title;
         this.content = content;
         this.documentStatus = DocumentStatus.DRAFT;
+        this.updatedAt = new Date();
     }
 
     public void verify(Employee verificator) {
         this.verificator = verificator;
         this.documentStatus = DocumentStatus.VERIFIED;
+        this.verifiedAt = new Date();
     }
 
     public void confirm(Employee conirmator) {
-
     }
 
     public void confirm(Employee confirmator, Employee forEmployee) {
-
     }
 
     @Override
@@ -64,5 +71,9 @@ public class Document {
                 ", title='" + title + '\'' +
                 ", content='" + content + '\'' +
                 '}';
+    }
+
+    public void delete() {
+        this.deleted = true;
     }
 }

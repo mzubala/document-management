@@ -2,11 +2,13 @@ package pl.com.bottega.documentmanagement.application;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import pl.com.bottega.documentmanagement.api.DocumentDto;
 import pl.com.bottega.documentmanagement.api.DocumentFlowProcess;
 import pl.com.bottega.documentmanagement.api.SignupResultDto;
 import pl.com.bottega.documentmanagement.api.UserManager;
 import pl.com.bottega.documentmanagement.domain.DocumentNumber;
 import pl.com.bottega.documentmanagement.domain.EmployeeId;
+import pl.com.bottega.documentmanagement.infrastructure.JPQLDocumentsCatalog;
 
 /**
  * Created by maciuch on 18.06.16.
@@ -26,6 +28,11 @@ public class CreateDocument {
         documentFlowProcess.change(number, "new title", "new content");
 
         System.out.println(documentFlowProcess.load(number));
+
+        JPQLDocumentsCatalog jpql = new JPQLDocumentsCatalog();
+
+        DocumentDto dto = jpql.get(number);
+        System.out.println(dto);
 
     }
 }

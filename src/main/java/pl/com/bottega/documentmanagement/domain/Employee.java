@@ -1,9 +1,16 @@
 package pl.com.bottega.documentmanagement.domain;
 
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
+import org.hibernate.annotations.NaturalId;
+
+import javax.persistence.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkState;
+import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.FetchType.EAGER;
 
 /**
  * Created by maciuch on 12.06.16.
@@ -14,9 +21,14 @@ public class Employee {
     @EmbeddedId
     private EmployeeId employeeId;
     private String hashedPassword;
+
+    @ManyToMany(cascade = ALL, fetch = EAGER)
+    private List<Role> roles;
+
+    @NaturalId
     private String login;
 
-    private Employee() {}
+    private Employee(){}
 
     public Employee(String login, String hashedPassword, EmployeeId employeeId) {
         this.login = login;
@@ -34,4 +46,23 @@ public class Employee {
         this.hashedPassword = password;
     }
 
+    public boolean hasRoles(String... roleNames) {
+        if(roleNames == null || roleNames.length == 0) {
+            return true;
+        }
+        for (String role : roleNames) {
+            if (roles.contains(new Role(role)))
+                return true;
+        }
+        return false;
+    }
+
+    public void setRoles(String... rolesNames) {
+        List<Role> result = new ArrayList<>();
+        for(String role : rolesNames){
+            Role rol = new Role(role);
+            result.add(rol);
+        }
+        this.roles = result;
+    }
 }

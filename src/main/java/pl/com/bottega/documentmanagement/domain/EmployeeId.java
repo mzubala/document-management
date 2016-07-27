@@ -9,7 +9,7 @@ import java.io.Serializable;
  * Created by maciuch on 12.06.16.
  */
 @Embeddable
-public class EmployeeId implements Serializable {
+public class EmployeeId implements Serializable{
 
     @GeneratedValue
     private Long id;
