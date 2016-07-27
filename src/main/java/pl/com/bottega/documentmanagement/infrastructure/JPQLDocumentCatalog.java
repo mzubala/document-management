@@ -14,9 +14,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Created by paulina.pislewicz on 2016-07-12.
  */
-//@Component
+@Component
 public class JPQLDocumentCatalog implements DocumentsCatalog {
-    //@PersistenceContext
+    @PersistenceContext
     EntityManager entityManager;
 
     public DocumentDto get(DocumentNumber documentNumber) {
@@ -38,7 +38,7 @@ public class JPQLDocumentCatalog implements DocumentsCatalog {
                 "d.creator.employeeId.id, d.verificator.employeeId.id)" +
                 " FROM Document d ";
 
-        String condition_docNr = "WHERE d.documentNumber.number = :documentNumber";
+        String condition_docNr = "WHERE d.documentNumber.number = :number";
         String what_title = "WHERE d.title = :title";
         String what_content = "WHERE d.content = :content";
         String condition_docStatus = "WHERE d.documentStatus = :status";

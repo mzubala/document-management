@@ -1,13 +1,11 @@
 package pl.com.bottega.documentmanagement.infrastructure;
 
-import org.springframework.stereotype.Component;
 import pl.com.bottega.documentmanagement.api.DocumentCriteria;
 import pl.com.bottega.documentmanagement.api.DocumentDto;
 import pl.com.bottega.documentmanagement.api.DocumentsCatalog;
 import pl.com.bottega.documentmanagement.domain.*;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -20,10 +18,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Created by maciuch on 12.06.16.
  */
-@Component
+//@Component
 public class JPADocumentsCatalog implements DocumentsCatalog {
 
-    @PersistenceContext
+    //@PersistenceContext
     private EntityManager entityManager;
 
     @Override
@@ -113,9 +111,9 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
             }
         }
 
-        query.where(predicates.toArray(new Predicate[]{}));
+            query.where(predicates.toArray(new Predicate[]{}));
             return entityManager.createQuery(query).getResultList();
-    }
+        }
 
     private void findByUpdatedUntil(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
         predicates.add(builder.lessThanOrEqualTo(
