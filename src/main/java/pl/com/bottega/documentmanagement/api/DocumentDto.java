@@ -17,8 +17,7 @@ public class DocumentDto {
     private Date createdAt, verificatedAt, updatedAt;
 
 
-
-    public DocumentDto(String number, String title, String content, DocumentStatus status, Date createdAt, Date updatedAt, Date verificatedAt, Long creatorId, Long verificatorId) {
+    public DocumentDto(String number, String title, String content, DocumentStatus status, Date createdAt, Date updatedAt, Date verificatedAt, Long creatorId, Long verificatorId ) {
         this.number = number;
         this.title = title;
         this.content = content;
