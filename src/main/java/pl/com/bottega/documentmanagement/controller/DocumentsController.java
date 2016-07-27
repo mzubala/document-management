@@ -43,4 +43,9 @@ public class DocumentsController {
         return documentsCatalog.find(documentCriteria);
     }
 
+    @DeleteMapping("/{documentNumber}")
+    public void destroy(@PathVariable String documentNumber) {
+        documentFlowProcess.archive(new DocumentNumber(documentNumber));
+    }
+
 }

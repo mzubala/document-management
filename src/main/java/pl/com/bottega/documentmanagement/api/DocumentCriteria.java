@@ -104,4 +104,15 @@ public class DocumentCriteria {
         return query != null;
     }
 
+    public boolean isVerifiedByDefined() {
+        return verifiedBy != null;
+    }
+
+    public boolean isVerifiedUntilDefined() {
+        return verifiedUntil != null;
+    }
+
+    public boolean isVerifiedFromDefined() {
+        return verifiedFrom != null;
+    }
 }
