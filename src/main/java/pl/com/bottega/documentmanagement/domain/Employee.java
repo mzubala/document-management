@@ -59,10 +59,8 @@ public class Employee {
 
     public void setRoles(String... rolesNames) {
         List<Role> result = new ArrayList<>();
-        for(String role : rolesNames){
-            Role rol = new Role(role);
-            result.add(rol);
-        }
+        for(String role : rolesNames)
+            result.add(new Role(role));
         this.roles = result;
     }
 }
