@@ -9,12 +9,25 @@ import java.util.Date;
  */
 public class DocumentCriteria {
 
+    private static final Long DEFAULT_PER_PAGE = 2l;
+    private static final Long DEFAULT_PAGE_NUMBER = 1l;
+
     private DocumentStatus status;
     private Long verifiedBy;
     private Long createdBy;
     private Date createdFrom, createdUntil;
     private Date verifiedFrom, verifiedUntil;
     private String query;
+    private Long perPage = DEFAULT_PER_PAGE;
+    private Long pageNumber = DEFAULT_PAGE_NUMBER;
+
+    public void setPerPage(Long perPage) {
+        this.perPage = perPage;
+    }
+
+    public void setPageNumber(Long pageNumber) {
+        this.pageNumber = pageNumber;
+    }
 
     public DocumentStatus getStatus() {
         return status;
@@ -114,5 +127,13 @@ public class DocumentCriteria {
 
     public boolean isVerifiedFromDefined() {
         return verifiedFrom != null;
+    }
+
+    public Long getPageNumber() {
+        return pageNumber;
+    }
+
+    public Long getPerPage() {
+        return perPage;
     }
 }
