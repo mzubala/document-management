@@ -11,18 +11,10 @@ public class DocumentCriteria {
 
     private DocumentStatus status;
     private Long verifiedBy;
-    private Long createBy;
+    private Long createdBy;
     private Date createdFrom, createdUntil;
     private Date verifiedFrom, verifiedUntil;
     private String query;
-
-    public String getQuery() {
-        return query;
-    }
-
-    public void setQuery(String query) {
-        this.query = query;
-    }
 
     public DocumentStatus getStatus() {
         return status;
@@ -40,12 +32,12 @@ public class DocumentCriteria {
         this.verifiedBy = verifiedBy;
     }
 
-    public Long getCreateBy() {
-        return createBy;
+    public Long getCreatedBy() {
+        return createdBy;
     }
 
-    public void setCreateBy(Long createBy) {
-        this.createBy = createBy;
+    public void setCreatedBy(Long createdBy) {
+        this.createdBy = createdBy;
     }
 
     public Date getCreatedFrom() {
@@ -80,12 +72,20 @@ public class DocumentCriteria {
         this.verifiedUntil = verifiedUntil;
     }
 
+    public String getQuery() {
+        return query;
+    }
+
+    public void setQuery(String query) {
+        this.query = query;
+    }
+
     public boolean isStatusDefined() {
         return status != null;
     }
 
     public boolean isCreatedByDefined() {
-        return createBy != null;
+        return createdBy != null;
     }
 
     public boolean isCreatedDatesDefined() {
@@ -102,5 +102,17 @@ public class DocumentCriteria {
 
     public boolean isQueryDefined() {
         return query != null;
+    }
+
+    public boolean isVerifiedByDefined() {
+        return verifiedBy != null;
+    }
+
+    public boolean isVerifiedUntilDefined() {
+        return verifiedUntil != null;
+    }
+
+    public boolean isVerifiedFromDefined() {
+        return verifiedFrom != null;
     }
 }

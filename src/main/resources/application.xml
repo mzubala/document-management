@@ -26,7 +26,7 @@
         <property name="url" value="${jdbc.url}"/>
         <property name="username" value="${jdbc.username}"/>
         <property name="password" value="${jdbc.password}"/>
-        <property name="maxTotal" value="5" />
+        <property name="maxTotal" value="5"/>
     </bean>
 
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
@@ -45,9 +45,10 @@
 
     <aop:config>
         <aop:aspect id="a1" ref="authAspect">
-            <aop:pointcut id="authMethod" expression="@annotation(pl.com.bottega.documentmanagement.api.RequiresAuth)" />
+            <aop:pointcut id="authMethod"
+                          expression="@annotation(pl.com.bottega.documentmanagement.api.RequiresAuth) and @annotation(requiresAuth)"/>
 
-            <aop:before pointcut-ref="authMethod" method="checkAuth" />
+            <aop:before arg-names="requiresAuth" pointcut-ref="authMethod" method="checkAuth"/>
         </aop:aspect>
 
         <!--aop:aspect id="a2" ref="authAspect">
@@ -57,9 +58,9 @@
         </aop:aspect-->
 
         <aop:aspect id="profilingAspect" ref="profilingAspect">
-            <aop:pointcut id="allApiMethods" expression="execution(* pl.com.bottega.documentmanagement.api.*.*(..))" />
+            <aop:pointcut id="allApiMethods" expression="execution(* pl.com.bottega.documentmanagement.api.*.*(..))"/>
 
-            <aop:around pointcut-ref="allApiMethods" method="profile" />
+            <aop:around pointcut-ref="allApiMethods" method="profile"/>
         </aop:aspect>
 
     </aop:config>
