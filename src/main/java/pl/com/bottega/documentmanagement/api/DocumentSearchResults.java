@@ -9,11 +9,11 @@ public class DocumentSearchResults {
 
     private Long perPage, pageNumber, totalPages;
 
-    public DocumentSearchResults(Iterable<DocumentDto> documents, Long perPage, Long pageNumber, Long totalPages) {
+    public DocumentSearchResults(Iterable<DocumentDto> documents, Long perPage, Long pageNumber, Long totalResults) {
         this.documents = documents;
         this.perPage = perPage;
         this.pageNumber = pageNumber;
-        this.totalPages = totalPages;
+        this.totalPages = totalResults / perPage + (totalResults % perPage > 0 ? 1 : 0);
     }
 
     public Iterable<DocumentDto> getDocuments() {
