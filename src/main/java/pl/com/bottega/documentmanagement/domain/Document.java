@@ -30,13 +30,13 @@ public class Document {
     @Enumerated(EnumType.STRING)
     private DocumentStatus status;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Employee creator;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Employee verificator;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Employee deletor;
 
     @ManyToMany(cascade = CascadeType.ALL)
@@ -87,6 +87,10 @@ public class Document {
 
     public Set<Tag> tags() {
         return tags;
+    }
+
+    public Employee getVerificator() {
+        return verificator;
     }
 
 }

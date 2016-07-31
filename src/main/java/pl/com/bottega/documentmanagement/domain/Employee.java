@@ -23,7 +23,7 @@ public class Employee {
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Role> roles;
 
-    private Employee() {
+    protected Employee() {
     }
 
     public Employee(String login, String hashedPassword, EmployeeId employeeId) {
