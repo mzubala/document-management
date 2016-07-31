@@ -36,7 +36,7 @@ public class NPlus1SelectSimulator {
 
     @Transactional
     public void simulate() {
-        Query query = entityManager.createQuery("FROM Document d JOIN FETCH d.tags", Document.class);
+        Query query = entityManager.createQuery("FROM Document d JOIN fetch d.tags", Document.class).setMaxResults(10);
         List<Document> docuemnts = query.getResultList();
         for(Document d : docuemnts) {
             System.out.print(d.toString() + " ");
@@ -49,7 +49,7 @@ public class NPlus1SelectSimulator {
 
     @Transactional
     public Document getDocument() {
-        Query query = entityManager.createQuery("FROM Document d JOIN FETCH d.tags");
+        Query query = entityManager.createQuery("FROM Document d");
         query.setMaxResults(1);
         Document d = (Document) query.getResultList().get(0);
         System.out.println(d.getVerificator().toString());

@@ -30,16 +30,6 @@ public class Document {
     @Enumerated(EnumType.STRING)
     private DocumentStatus status;
 
-    /*
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date updatedAt;
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date verifiedAt;
-    równoważne z poniższym
-    */
-
     @ManyToOne(fetch = FetchType.LAZY)
     private Employee creator;
 
@@ -99,5 +89,8 @@ public class Document {
         return tags;
     }
 
+    public Employee getVerificator() {
+        return verificator;
+    }
 
 }
