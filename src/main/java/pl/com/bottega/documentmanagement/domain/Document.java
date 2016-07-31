@@ -49,10 +49,10 @@ public class Document {
     @ManyToOne
     private Employee deletor;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.ALL)
     private Set<Tag> tags;
 
-    public Document() {
+    private Document() {
     }
 
     public Document(DocumentNumber documentNumber, String content, String title, Employee creator) {

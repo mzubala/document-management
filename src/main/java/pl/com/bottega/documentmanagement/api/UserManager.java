@@ -106,7 +106,7 @@ public class UserManager {
         for (String roleName : roleNames) {
             Role role = new Role(roleName);
             if (!existingRoles.contains(role))
-                existingRoles.add(role);
+                rolesToUpdate.add(role);
         }
         return rolesToUpdate;
     }

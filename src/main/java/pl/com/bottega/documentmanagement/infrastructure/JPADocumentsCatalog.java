@@ -2,8 +2,6 @@ package pl.com.bottega.documentmanagement.infrastructure;
 
 import org.springframework.stereotype.Component;
 import pl.com.bottega.documentmanagement.api.*;
-import pl.com.bottega.documentmanagement.api.DocumentCriteria;
-import pl.com.bottega.documentmanagement.api.DocumentDto;
 import pl.com.bottega.documentmanagement.domain.*;
 
 import javax.persistence.EntityManager;
@@ -59,13 +57,14 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
 
     @Override
     //@RequiresAuth(roles = "STAFF")
-    public DocumentSearchResult find(DocumentCriteria documentCriteria) {
+    public DocumentSearchResults find(DocumentCriteria documentCriteria) {
         checkNotNull(documentCriteria);
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<DocumentDto> query = builder.createQuery(DocumentDto.class);
         Root<Document> root = query.from(Document.class);
         selectDocumentDto(builder, query, root);
         applyCriteria(documentCriteria, builder, query, root);
+
         CriteriaQuery<Long> countQuery = builder.createQuery(Long.class);
         Root<Document> countRoot = countQuery.from(Document.class);
         countQuery.select(builder.count(countRoot));
@@ -74,13 +73,16 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
         Query jpaQuery = entityManager.createQuery(query);
         Query jpaCountQuery = entityManager.createQuery(countQuery);
 
-        long first = (documentCriteria.getPageNr() - 1) * documentCriteria.getPerPage();
+        long first = (documentCriteria.getPageNumber() - 1) * documentCriteria.getPerPage();
         jpaQuery.setFirstResult((int)first);
         jpaQuery.setMaxResults(documentCriteria.getPerPage().intValue());
 
-        return new DocumentSearchResult(jpaQuery.getResultList(), documentCriteria.getPerPage(), documentCriteria.getPageNr(), (Long) jpaCountQuery.getSingleResult());
+        return new DocumentSearchResults(jpaQuery.getResultList(),
+                documentCriteria.getPerPage(),
+                documentCriteria.getPageNumber(),
+                (Long) jpaCountQuery.getSingleResult()
+                );
 
-        //return entityManager.createQuery(query).setFirstResult().setMaxResults().getResultList();
     }
 
     private void applyCriteria(DocumentCriteria documentCriteria, CriteriaBuilder builder, CriteriaQuery query, Root<Document> root) {

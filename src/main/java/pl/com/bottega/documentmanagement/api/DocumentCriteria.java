@@ -18,6 +18,16 @@ public class DocumentCriteria {
     private Date createdFrom, createdUntil;
     private Date verifiedFrom, verifiedUntil;
     private String query;
+    private Long perPage = DEFAULT_PER_PAGE;
+    private Long pageNumber = DEFAULT_PAGE_NUMBER;
+
+    public void setPerPage(Long perPage) {
+        this.perPage = perPage;
+    }
+
+    public void setPageNumber(Long pageNumber) {
+        this.pageNumber = pageNumber;
+    }
 
     private Long perPage = DEFAULT_PER_PAGE;
     private Long pageNumber = DEFAULT_PAGE_NUMBER;
@@ -138,4 +148,11 @@ public class DocumentCriteria {
         return verifiedFrom != null;
     }
 
+    public Long getPageNumber() {
+        return pageNumber;
+    }
+
+    public Long getPerPage() {
+        return perPage;
+    }
 }

@@ -5,7 +5,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import pl.com.bottega.documentmanagement.api.NPlus1SelectSimulator;
 
 /**
- * Created by anna on 30.07.2016.
+ * Created by maciuch on 30.07.16.
  */
 public class NPlus1SelectTest {
 
@@ -15,4 +15,5 @@ public class NPlus1SelectTest {
         //simulator.insertTestData();
         simulator.simulate();
     }
+
 }
