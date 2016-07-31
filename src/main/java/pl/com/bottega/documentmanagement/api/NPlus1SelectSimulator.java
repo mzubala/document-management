@@ -52,7 +52,7 @@ public class NPlus1SelectSimulator {
         Query query = entityManager.createQuery("FROM Document d");
         query.setMaxResults(1);
         Document d = (Document) query.getResultList().get(0);
-        System.out.println(d.getVerificator().toString());
+        System.out.println(d.verificator().toString());
         System.out.println(d.tags().size());
         return d;
     }

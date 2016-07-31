@@ -1,10 +1,10 @@
 package pl.com.bottega.documentmanagement.domain;
 
-import pl.com.bottega.documentmanagement.api.DocumentDto;
-
 import javax.persistence.*;
 import java.util.Date;
 import java.util.Set;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 /**
  * Created by maciuch on 12.06.16.
@@ -63,6 +63,7 @@ public class Document {
     }
 
     public void verify(Employee employee) {
+        checkArgument(employee != null);
         this.verificator = employee;
         this.status = DocumentStatus.VERIFIED;
         this.verifiedAt = new Date();
@@ -89,8 +90,35 @@ public class Document {
         return tags;
     }
 
-    public Employee getVerificator() {
+    public Employee verificator() {
         return verificator;
     }
 
+    public String content() {
+        return content;
+    }
+
+    public Employee creator() {
+        return creator;
+    }
+
+    public String title() {
+        return title;
+    }
+
+    public boolean deleted() {
+        return deleted;
+    }
+
+    public DocumentNumber number() {
+        return documentNumber;
+    }
+
+    public DocumentStatus status() {
+        return status;
+    }
+
+    public Date verifiedAt() {
+        return verifiedAt;
+    }
 }

@@ -17,7 +17,7 @@ public class NPlus1SelectTest {
         //simulator.insertTestData();
         //simulator.simulate();
         Document d = simulator.getDocument();
-        System.out.println(d.getVerificator().toString());
+        System.out.println(d.verificator().toString());
         for(Tag t : d.tags())
             System.out.println(t);
     }
