@@ -10,5 +10,5 @@ public interface DocumentsCatalog {
     @Transactional
     DocumentDto get(DocumentNumber documentNumber);
 
-    Iterable<DocumentDto> find(DocumentCriteria documentCriteria);
+    DocumentSearchResults find(DocumentCriteria documentCriteria);
 }

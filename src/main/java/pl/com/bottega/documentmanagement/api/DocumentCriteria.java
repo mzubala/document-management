@@ -2,6 +2,7 @@ package pl.com.bottega.documentmanagement.api;
 
 import pl.com.bottega.documentmanagement.domain.DocumentStatus;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.Date;
 
 /**
@@ -9,12 +10,17 @@ import java.util.Date;
  */
 public class DocumentCriteria {
 
+    private static final Long DEFAULT_PER_PAGE = 2l;
+    private static final Long DEFAULT_PAGE_NUMBER = 1l;
+
     private DocumentStatus documentStatus;
     private Long verifiedBy;
     private Long createdBy;
     private Date createdFrom, createdUntil;
     private Date verifiedFrom, verifiedUntil;
     private String query;
+    private Long pageNumber = DEFAULT_PER_PAGE;
+    private Long perPage = DEFAULT_PAGE_NUMBER;
 
     public DocumentStatus getDocumentStatus() {
         return documentStatus;
@@ -118,5 +124,21 @@ public class DocumentCriteria {
 
     public boolean isVerifiedUntilDefined() {
         return verifiedUntil != null;
+    }
+
+    public Long getPageNumber() {
+        return pageNumber;
+    }
+
+    public void setPageNumber(Long pageNumber) {
+        this.pageNumber = pageNumber;
+    }
+
+    public Long getPerPage() {
+        return perPage;
+    }
+
+    public void setPerPage(Long perPage) {
+        this.perPage = perPage;
     }
 }

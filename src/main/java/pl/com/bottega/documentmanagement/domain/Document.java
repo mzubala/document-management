@@ -1,7 +1,13 @@
 package pl.com.bottega.documentmanagement.domain;
 
+import org.hibernate.annotations.*;
+import org.springframework.transaction.annotation.Transactional;
+
 import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
 import java.util.Date;
+import java.util.Set;
 
 import static pl.com.bottega.documentmanagement.domain.DocumentStatus.*;
 
@@ -14,28 +20,42 @@ public class Document {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
     private String title;
+
     private String content;
+
     @Embedded
     private DocumentNumber number;
+
     @ManyToOne
     private Employee creator;
+
     @Enumerated(EnumType.STRING)
     private DocumentStatus documentStatus;
+
     @ManyToOne
     private Employee verificator;
+
     @Temporal(TemporalType.TIMESTAMP)
     private Date createAt;
+
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
+
     @Temporal(TemporalType.TIMESTAMP)
     private Date verifiedAt;
+
     /**
      * 'true' if document is deleted
      */
     private boolean deleted;
+
     @ManyToOne
     private Employee deletedBy;
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    private Set<Tag> tags;
 
     private Document() {}
 
@@ -122,4 +142,13 @@ public class Document {
     public Employee getDeletedBy() {
         return deletedBy;
     }
+
+    public void tag(Set<Tag> tags) {
+        this.tags = tags;
+    }
+
+    public Set<Tag> tags() {
+        return tags;
+    }
 }
+

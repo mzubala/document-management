@@ -37,7 +37,7 @@ public class DocumentsController {
 
     // /documents?query=hospital&createdBy=40&verifiedBy=76&...&...
     @GetMapping
-    public Iterable<DocumentDto> index(DocumentCriteria documentCriteria) {
+    public DocumentSearchResults index(DocumentCriteria documentCriteria) {
         return documentsCatalog.find(documentCriteria);
     }
 
