@@ -1,7 +1,10 @@
 package pl.com.bottega.documentmanagement.domain;
 
+import com.sun.deploy.security.ValidationState;
+
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Set;
 
 import static pl.com.bottega.documentmanagement.domain.DocumentStatus.DRAFT;
 import static pl.com.bottega.documentmanagement.domain.DocumentStatus.VERIFIED;
@@ -40,6 +43,9 @@ public class Document {
 
     @ManyToOne
     private Employee deletedBy;
+
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER) //zapis dokumentu bedzie budowac zapis tagow, zapis 1 encji powoduje zapis reszty encji
+    private Set<Tag> tags;
 
 
 
@@ -97,4 +103,18 @@ public class Document {
     public Employee getDeletedBy() {
         return deletedBy;
     }
+
+
+    public void tag(Set<Tag> tags){
+        this.tags = tags;
+    }
+
+    public Set<Tag> tags(){
+        return tags;
+    }
+
+    public Employee getVeryficator(){
+        return veryficator;
+    }
+
 }

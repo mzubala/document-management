@@ -26,7 +26,7 @@ public class Employee {
     @ManyToMany(fetch = FetchType.EAGER)
     private Collection<Role> roles;
 
-    private Employee(){
+    public Employee(){
 
     }
 
@@ -48,6 +48,8 @@ public class Employee {
         this.hashedPassword = password;
 
     }
+
+
 
     public boolean hasRoles(String ...roleNames){
         for (String str : roleNames)
