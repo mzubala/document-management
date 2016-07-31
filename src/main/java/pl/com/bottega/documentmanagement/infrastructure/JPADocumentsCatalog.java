@@ -1,14 +1,14 @@
 package pl.com.bottega.documentmanagement.infrastructure;
 
 import org.springframework.stereotype.Component;
+import pl.com.bottega.documentmanagement.api.*;
 import pl.com.bottega.documentmanagement.api.DocumentCriteria;
 import pl.com.bottega.documentmanagement.api.DocumentDto;
-import pl.com.bottega.documentmanagement.api.DocumentsCatalog;
-import pl.com.bottega.documentmanagement.api.RequiresAuth;
 import pl.com.bottega.documentmanagement.domain.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -58,18 +58,32 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
     }
 
     @Override
-    @RequiresAuth(roles = "STAFF")
-    public Iterable<DocumentDto> find(DocumentCriteria documentCriteria) {
+    //@RequiresAuth(roles = "STAFF")
+    public DocumentSearchResult find(DocumentCriteria documentCriteria) {
         checkNotNull(documentCriteria);
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<DocumentDto> query = builder.createQuery(DocumentDto.class);
         Root<Document> root = query.from(Document.class);
         selectDocumentDto(builder, query, root);
         applyCriteria(documentCriteria, builder, query, root);
-        return entityManager.createQuery(query).getResultList();
+        CriteriaQuery<Long> countQuery = builder.createQuery(Long.class);
+        Root<Document> countRoot = countQuery.from(Document.class);
+        countQuery.select(builder.count(countRoot));
+        applyCriteria(documentCriteria, builder, countQuery, countRoot);
+
+        Query jpaQuery = entityManager.createQuery(query);
+        Query jpaCountQuery = entityManager.createQuery(countQuery);
+
+        long first = (documentCriteria.getPageNr() - 1) * documentCriteria.getPerPage();
+        jpaQuery.setFirstResult((int)first);
+        jpaQuery.setMaxResults(documentCriteria.getPerPage().intValue());
+
+        return new DocumentSearchResult(jpaQuery.getResultList(), documentCriteria.getPerPage(), documentCriteria.getPageNr(), (Long) jpaCountQuery.getSingleResult());
+
+        //return entityManager.createQuery(query).setFirstResult().setMaxResults().getResultList();
     }
 
-    private void applyCriteria(DocumentCriteria documentCriteria, CriteriaBuilder builder, CriteriaQuery<DocumentDto> query, Root<Document> root) {
+    private void applyCriteria(DocumentCriteria documentCriteria, CriteriaBuilder builder, CriteriaQuery query, Root<Document> root) {
         Collection<Predicate> predicates = new HashSet<>();
         applyStatus(documentCriteria, builder, root, predicates);
         applyCreatedBy(documentCriteria, builder, root, predicates);

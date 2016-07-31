@@ -3,6 +3,7 @@ package pl.com.bottega.documentmanagement.infrastructure;
 import org.springframework.stereotype.Component;
 import pl.com.bottega.documentmanagement.api.DocumentCriteria;
 import pl.com.bottega.documentmanagement.api.DocumentDto;
+import pl.com.bottega.documentmanagement.api.DocumentSearchResult;
 import pl.com.bottega.documentmanagement.api.DocumentsCatalog;
 import pl.com.bottega.documentmanagement.domain.DocumentNumber;
 
@@ -40,12 +41,12 @@ public class JPQLDocumentsCatalog implements DocumentsCatalog {
     }
 
     @Override
-    public Iterable<DocumentDto> find(DocumentCriteria documentCriteria) {
+    public DocumentSearchResult find(DocumentCriteria documentCriteria) {
         checkNotNull(documentCriteria);
         String jpql = buildQuery(documentCriteria);
         Query query = entityManager.createQuery(jpql);
         fillStatement(documentCriteria, query);
-        return query.getResultList();
+        return new DocumentSearchResult(query.getResultList(), documentCriteria.getPerPage(), documentCriteria.getPageNr(), 0l);
     }
 
     private String buildQuery(DocumentCriteria documentCriteria) {
