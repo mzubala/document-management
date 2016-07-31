@@ -6,7 +6,7 @@ import pl.com.bottega.documentmanagement.domain.DocumentNumber;
  * Created by maciuch on 10.07.16.
  */
 public interface DocumentsCatalog {
-    DocumentDto get(DocumentNumber documentNumber);
+    pl.com.bottega.documentmanagement.api.DocumentDto get(DocumentNumber documentNumber);
 
     DocumentSearchResults find(DocumentCriteria documentCriteria);
 }

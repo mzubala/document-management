@@ -6,6 +6,9 @@ import javax.persistence.*;
 import java.util.Date;
 import java.util.Set;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Created by maciuch on 12.06.16.
  */
@@ -63,6 +66,7 @@ public class Document {
     }
 
     public void verify(Employee employee) {
+        checkArgument(employee != null);
         this.verificator = employee;
         this.status = DocumentStatus.VERIFIED;
         this.verifiedAt = new Date();
@@ -93,4 +97,35 @@ public class Document {
         return verificator;
     }
 
+    public DocumentNumber number() {
+        return documentNumber;
+    }
+
+    public String content() {
+        return content;
+    }
+
+    public String title() {
+        return title;
+    }
+
+    public Employee creator() {
+        return creator;
+    }
+
+    public DocumentStatus status() {
+        return status;
+    }
+
+    public boolean deleted() {
+        return deleted;
+    }
+
+    public Date verifiedAt() {
+        return verifiedAt;
+    }
+
+    public Employee verificator() {
+        return verificator;
+    }
 }

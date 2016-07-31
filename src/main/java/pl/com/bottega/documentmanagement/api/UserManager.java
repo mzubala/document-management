@@ -26,13 +26,15 @@ import java.util.stream.Collectors;
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class UserManager {
 
-    private String INITIAL_ROLE = "STAFF";
-
     private EmployeeRepository employeeRepository;
     private Employee currentEmployee;
+    private EmployeeFactory employeeFactory;
+    private PasswordHasher passwordHasher;
 
-    public UserManager(EmployeeRepository employeeRepository) {
+    public UserManager(EmployeeRepository employeeRepository, EmployeeFactory employeeFactory, PasswordHasher passwordHasher) {
         this.employeeRepository = employeeRepository;
+        this.employeeFactory = employeeFactory;
+        this.passwordHasher = passwordHasher;
     }
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
@@ -53,8 +55,7 @@ public class UserManager {
         if (employeeRepository.isLoginOccupied(login))
             return failed("login is occupied");
         else {
-            Employee employee = new Employee(login, hashedPassword(password), employeeId);
-            employee.updateRoles(getRoles(INITIAL_ROLE));
+            Employee employee = employeeFactory.create(login, password, employeeId);
             employeeRepository.save(employee);
             return success();
         }
@@ -68,12 +69,9 @@ public class UserManager {
         return new SignupResultDto();
     }
 
-    private String hashedPassword(String password) {
-        return Hashing.sha1().hashString(password, Charsets.UTF_8).toString();
-    }
 
     public SignupResultDto login(String login, String password) {
-        this.currentEmployee = employeeRepository.findByLoginAndPassword(login, hashedPassword(password));
+        this.currentEmployee = employeeRepository.findByLoginAndPassword(login, password);
         if (this.currentEmployee == null)
             return failed("login or password incorrect");
         else

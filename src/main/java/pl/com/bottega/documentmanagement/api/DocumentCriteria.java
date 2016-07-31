@@ -21,20 +21,12 @@ public class DocumentCriteria {
     private Long perPage = DEFAULT_PER_PAGE;
     private Long pageNumber = DEFAULT_PAGE_NUMBER;
 
-    public void setPerPage(Long perPage) {
-        this.perPage = perPage;
-    }
+
 
     public void setPageNumber(Long pageNumber) {
         this.pageNumber = pageNumber;
     }
 
-    private Long perPage = DEFAULT_PER_PAGE;
-    private Long pageNumber = DEFAULT_PAGE_NUMBER;
-
-    public Long getPerPage() {
-        return perPage;
-    }
 
     public void setPerPage(Long perPage) {
         this.perPage = perPage;

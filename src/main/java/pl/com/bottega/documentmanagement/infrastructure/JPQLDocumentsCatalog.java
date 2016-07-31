@@ -1,6 +1,5 @@
 package pl.com.bottega.documentmanagement.infrastructure;
 
-import org.springframework.stereotype.Component;
 import pl.com.bottega.documentmanagement.api.DocumentCriteria;
 import pl.com.bottega.documentmanagement.api.DocumentDto;
 import pl.com.bottega.documentmanagement.api.DocumentSearchResults;
@@ -26,7 +25,7 @@ public class JPQLDocumentsCatalog implements DocumentsCatalog {
     private EntityManager entityManager;
 
     @Override
-    public DocumentDto get(DocumentNumber documentNumber) {
+    public pl.com.bottega.documentmanagement.api.DocumentDto get(DocumentNumber documentNumber) {
         checkNotNull(documentNumber);
         String jpql = "select new pl.com.bottega.documentmanagement.api.DocumentDto(" +
                 "d.documentNumber.number," +
