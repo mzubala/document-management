@@ -18,13 +18,19 @@ import pl.com.bottega.documentmanagement.domain.EmployeeRepository;
 @Service
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class UserManager {
+
+    private PasswordHasher passwordHasher;
     private EmployeeRepository employeeRepository;
     private Employee currentEmployee;
 
+    private EmployeeFactory employeeFactory;
 
 
-    public UserManager(EmployeeRepository employeeRepository){
+
+    public UserManager(EmployeeRepository employeeRepository, EmployeeFactory employeeFactory, PasswordHasher passwordHasher){
         this.employeeRepository = employeeRepository;
+        this.employeeFactory = employeeFactory;
+        this.passwordHasher = passwordHasher;
     }
 
 
@@ -56,19 +62,18 @@ public class UserManager {
         if(employeeRepository.isLoginOccupied(login))
             return failed("Login is occupied");
         else {
-            Employee employee = new Employee(login, hashedPassword(password), employeeId);
+            Employee employee = employeeFactory.create(login, password, employeeId);
             employeeRepository.save(employee);
             return success();
         }
     }
-    private String hashedPassword(String password){
-        return Hashing.sha1().hashString(password, Charsets.UTF_8).toString();
-    }
+
+
 
     public SignupResultDto login(String login, String password){ //wpisuje sie nie zahashowane haslo wiec trzeba hashowac
 
         this.currentEmployee =
-                employeeRepository.findByLoginAndPassword(login, hashedPassword(password));
+                employeeRepository.findByLoginAndPassword(login, passwordHasher.hashedPassword(password));
         if(this.currentEmployee == null)
             return failed("login or password incorrect");
         else return success();

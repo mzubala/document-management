@@ -12,8 +12,8 @@ import java.util.Date;
  */
 public class DocumentCriteria {
 
-    private static final Long DEFAULT_PER_PAGE = 2l;
-    private static final Long DEFAULT_PAGE_NUMBER = 1l;
+    private static final Long DEFAULT_PER_PAGE = 2L;
+    private static final Long DEFAULT_PAGE_NUMBER = 1L;
 
     private DocumentStatus status;
     private Long verifiedBy;

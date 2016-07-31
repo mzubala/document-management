@@ -6,6 +6,8 @@ import javax.persistence.*;
 import java.util.Date;
 import java.util.Set;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 import static pl.com.bottega.documentmanagement.domain.DocumentStatus.DRAFT;
 import static pl.com.bottega.documentmanagement.domain.DocumentStatus.VERIFIED;
 
@@ -74,14 +76,16 @@ public class Document {
     }
 
     public void verify(Employee employee) {
-
+       checkArgument(employee != null);
        this.veryficator = employee;
        this.documentStatus = VERIFIED;
        this.verificatedAt = new Date();
 
     }
 
-    public void confirm(Employee conirmator) {
+
+
+    public void confirm(Employee confirmator) {
 
     }
 
@@ -117,4 +121,36 @@ public class Document {
         return veryficator;
     }
 
+
+    public DocumentNumber number() {
+        return documentNumber;
+    }
+
+    public String content() {
+        return content;
+    }
+
+    public String title() {
+        return title;
+    }
+
+    public Employee creator() {
+        return creator;
+    }
+
+    public boolean deleted() {
+        return deleted;
+    }
+
+    public DocumentStatus status() {
+        return documentStatus;
+    }
+
+    public Date verifiedAt() {
+        return verificatedAt;
+    }
+
+    public Employee veryficator() {
+        return veryficator;
+    }
 }
