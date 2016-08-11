@@ -2,6 +2,9 @@ package pl.com.bottega.documentmanagement.domain;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Set;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 
 /**
@@ -17,6 +20,7 @@ public class Document {
     private DocumentNumber documentNumber;
     private String content;
     private String title;
+
     @Enumerated(EnumType.STRING)
     private DocumentStatus documentStatus;
     @ManyToOne
@@ -30,6 +34,16 @@ public class Document {
     @Temporal(TemporalType.TIMESTAMP)
     private Date verificationAt;
 
+    /**
+     * true if document is deleted
+     */
+    private Boolean deleted;
+    @ManyToOne
+    private Employee deletedBy;
+
+    @ManyToMany(cascade = CascadeType.ALL) //zapis dokumentu pociagnie zapis tagów
+    private Set<Tag> tags;
+
     private Document(){}
 
     public Document(DocumentNumber documentNumber, String content, String title, Employee creator) {
@@ -39,6 +53,7 @@ public class Document {
         this.creator = creator;
         this.documentStatus = DocumentStatus.DRAFT;
         this.createdAt = new Date();
+        this.deleted = false;
 
     }
 
@@ -51,6 +66,7 @@ public class Document {
     }
 
     public void verify(Employee employee) {
+        checkArgument(employee != null);
         this.verifier = employee;
         this.documentStatus = DocumentStatus.VERIFIED;
         this.verificationAt = new Date();
@@ -65,4 +81,52 @@ public class Document {
 
     }
 
+    public void archive(Employee employee){
+        this.deleted = true;
+        this.deletedBy = employee;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public Employee getDeletedBy() {
+        return deletedBy;
+    }
+
+    public void tag(Set<Tag> tags){
+        this.tags = tags;
+    }
+    public Set<Tag> tags(){
+        return tags;
+    }
+
+    public String content(){
+        return content;
+    }
+    public Employee creator(){
+        return creator;
+    }
+    public String title(){
+        return title;
+    }
+    public boolean deleted(){
+        return deleted;
+    }
+
+    public DocumentNumber number() {
+        return documentNumber;
+    }
+
+    public DocumentStatus status() {
+        return documentStatus;
+    }
+
+    public Employee verifier() {
+        return verifier;
+    }
+
+    public Date verificationAt() {
+        return verificationAt;
+    }
 }

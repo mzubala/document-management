@@ -12,24 +12,34 @@ public class DocumentDto {
     private String number;
     private String title;
     private String content;
-    private String status;
+    private String documentStatus;
     private Long creatorId, verifierId;
-    private Date createAt, verificationAt,updateAt;
+    private Date createdAt, verificationAt, updatedAt;
+    private Boolean deleted;
 
 
-    public DocumentDto(String number, String title, String content, DocumentStatus status,
-                       Date createAt, Date verificationAt, Date updateAt, Long creatorId,Long verifierId) {
+
+
+    public DocumentDto(String number, String title, String content, DocumentStatus documentStatus,
+                       Date createAt, Date verificationAt, Date updateAt, Long creatorId, Long verifierId, Boolean deleted) {
         this.number = number;
         this.title = title;
         this.content = content;
-        this.status = status.name();
-        this.createAt = createAt;
+        this.documentStatus = documentStatus.name();
+        this.createdAt = createAt;
         this.verificationAt = verificationAt;
-        this.updateAt = updateAt;
+        this.updatedAt = updateAt;
         this.creatorId = creatorId;
         this.verifierId = verifierId;
+        this.deleted = deleted;
+    }
+    public Boolean isDeleted() {
+        return deleted;
     }
 
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
+    }
     public Long getCreatorId() {
         return creatorId;
     }
@@ -38,16 +48,16 @@ public class DocumentDto {
         return verifierId;
     }
 
-    public Date getCreateAt() {
-        return createAt;
+    public Date getCreatedAt() {
+        return createdAt;
     }
 
     public Date getVerificationAt() {
         return verificationAt;
     }
 
-    public Date getUpdateAt() {
-        return updateAt;
+    public Date getUpdatedAt() {
+        return updatedAt;
     }
 
     public String getNumber() {
@@ -75,10 +85,11 @@ public class DocumentDto {
     }
 
     public String getStatus() {
-        return status;
+        return documentStatus;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setStatus(String documentStatus) {
+        this.documentStatus = documentStatus;
     }
+
 }

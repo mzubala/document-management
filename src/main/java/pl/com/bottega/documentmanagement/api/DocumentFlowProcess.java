@@ -32,7 +32,7 @@ public class DocumentFlowProcess {
     }
 
     @Transactional //przed rozpoczęciem metody jest otwierana tranzakcja po zakończeniu metody tranzakcja jest zatwierdzana
-    @RequiresAuth
+    @RequiresAuth(roles = "EDITOR")
     public DocumentNumber create(String title, String content) {
         checkNotNull(title);
         checkNotNull(content);
@@ -45,7 +45,7 @@ public class DocumentFlowProcess {
     }
 
     @Transactional
-    @RequiresAuth
+    @RequiresAuth(roles = "EDITOR")
     public void change(DocumentNumber documentNumber, String newTitle, String newContent) {
         checkNotNull(documentNumber);
         checkNotNull(newTitle);
@@ -56,7 +56,7 @@ public class DocumentFlowProcess {
         documentRepository.save(document);
     }
     @Transactional
-    @RequiresAuth
+    @RequiresAuth(roles = "MANAGER")
     public void verify(DocumentNumber documentNumber) {
         checkNotNull(documentNumber);
 
@@ -70,8 +70,13 @@ public class DocumentFlowProcess {
     }
 
     @Transactional
+    @RequiresAuth(roles = "EDITOR")
     public void archive(DocumentNumber documentNumber) {
         checkNotNull(documentNumber);
+        Document document = documentRepository.load(documentNumber);
+        document.archive(userManager.currentEmployee());
+        documentRepository.save(document);
+
     }
 
     @Transactional

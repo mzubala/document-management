@@ -44,7 +44,7 @@
     </bean-->
 
 
-    <!--context:property-placeholder location="classpath:jdbc.properties"/-->
+    <!--context:property-placeholder location="classpath:jdbc-test.properties"/-->
 
     <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="${jdbc.driverClassName}"/>
@@ -71,8 +71,8 @@
     <!--tworzymy aspekt i punkt przecięcia i co zrobić przed wywołaniem metody z punktu przeciecia-->
     <aop:config>
         <aop:aspect id="authMethodAspect" ref="authAspect">
-            <aop:pointcut id="authMethod" expression="@annotation(pl.com.bottega.documentmanagement.api.RequiresAuth)"/>
-            <aop:before pointcut-ref="authMethod" method="checkAuth"/>
+            <aop:pointcut id="authMethod" expression="@annotation(pl.com.bottega.documentmanagement.api.RequiresAuth) and @annotation(requiresAuth)"/>
+            <aop:before arg-names="requiresAuth" pointcut-ref="authMethod" method="checkAuth"/>
         </aop:aspect>
 
         <!--aop:aspect id="authClassAspect" ref="authAspect">

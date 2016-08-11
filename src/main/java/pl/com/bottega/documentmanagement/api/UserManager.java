@@ -1,7 +1,5 @@
 package pl.com.bottega.documentmanagement.api;
 
-import com.google.common.base.Charsets;
-import com.google.common.hash.Hashing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -21,10 +19,14 @@ public class UserManager {
 
     private EmployeeRepository employeeRepository;
     private Employee currentEmployee;
+    private EmployeeFactory employeeFactory;
+    private PasswordHasher passwordHasher;
 
     @Autowired
-    public UserManager(EmployeeRepository employeeRepository){
+    public UserManager(EmployeeRepository employeeRepository, EmployeeFactory employeeFactory, PasswordHasher passwordHasher){
         this.employeeRepository = employeeRepository;
+        this.employeeFactory = employeeFactory;
+        this.passwordHasher = passwordHasher;
     }
 
     @Transactional (isolation = Isolation.REPEATABLE_READ)//przed rozpoczęciem metody jest otwierana tranzakcja po zakończeniu metody tranzakcja jest zatwierdzana
@@ -43,7 +45,7 @@ public class UserManager {
 
 
     public SignupResultDto login (String login, String password){
-        this.currentEmployee = employeeRepository.findByLoginAndPassword(login, hashedPassword(password));
+        this.currentEmployee = employeeRepository.findByLoginAndPassword(login, passwordHasher.hashedPassword(password));
         if (currentEmployee==null)
             return failed("Login or pass incorrect");
         else
@@ -59,16 +61,13 @@ public class UserManager {
         if (employeeRepository.isLoginOccupied(login))
             return failed("login is occupied");
         else {
-
-            Employee employee = new Employee(login, hashedPassword(password), employeeId);
+            //Employee employee = new Employee(login, hashedPassword(password), employeeId);
+            Employee employee = employeeFactory.create(login, password, employeeId);
             employeeRepository.save(employee);
             return success();
         }
     }
 
-    private String hashedPassword(String password){
-        return Hashing.sha1().hashString(password, Charsets.UTF_8).toString();
-    }
 
     private SignupResultDto failed(String reason){
         return  new SignupResultDto(reason);
@@ -79,7 +78,7 @@ public class UserManager {
     }
 
 
-    public boolean isAuthenticated() {
-        return currentEmployee != null;
+    public boolean isAuthenticated(String ...roleNames) {
+        return currentEmployee != null && currentEmployee.hasRoles(roleNames);
     }
 }

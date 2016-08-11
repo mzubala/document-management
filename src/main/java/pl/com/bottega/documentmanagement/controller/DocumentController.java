@@ -1,10 +1,7 @@
 package pl.com.bottega.documentmanagement.controller;
 
 import org.springframework.web.bind.annotation.*;
-import pl.com.bottega.documentmanagement.api.DocumentCriteria;
-import pl.com.bottega.documentmanagement.api.DocumentDto;
-import pl.com.bottega.documentmanagement.api.DocumentFlowProcess;
-import pl.com.bottega.documentmanagement.api.DocumentsCatalog;
+import pl.com.bottega.documentmanagement.api.*;
 import pl.com.bottega.documentmanagement.domain.DocumentNumber;
 
 /**
@@ -45,8 +42,13 @@ public class DocumentController {
 
     // /documents?query=hospital&createdBy=40&verifiedBy=76&...&...&
     @GetMapping
-    public Iterable<DocumentDto>index (DocumentCriteria documentCriteria){
+    public DocumentSearchResults index (DocumentCriteria documentCriteria){
         return documentsCatalog.find(documentCriteria);
+    }
+
+    @DeleteMapping("/{documentNumber}")
+    public void delete(@PathVariable String documentNumber){
+        documentFlowProcess.archive(new DocumentNumber(documentNumber));
     }
 
 }

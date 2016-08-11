@@ -4,12 +4,15 @@ import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToMany;
+import java.util.Collection;
+import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkState;
 
-/**
- * Created by maciuch on 12.06.16.
- */
+
+
 @Entity
 public class Employee {
                 // nie będzie traktowana jako nowa tabelka tylko mapowane na kolumny w employee
@@ -18,6 +21,9 @@ public class Employee {
     private String hashedPassword;
     @NaturalId
     private String login;
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Collection<Role> roles;
+
 
     private Employee(){}
 
@@ -37,4 +43,15 @@ public class Employee {
         this.hashedPassword = password;
     }
 
+    public boolean hasRoles(String ...roleNames){
+        for (String role : roleNames) {
+            if(!roles.contains(new Role(role)))
+                return false;
+        }
+        return true;
+    }
+
+    public void updateRoles(Set<Role> newRole) {
+        this.roles = newRole;
+    }
 }
