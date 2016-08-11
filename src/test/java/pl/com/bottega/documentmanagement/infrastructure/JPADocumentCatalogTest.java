@@ -22,6 +22,7 @@ import javax.persistence.PersistenceContext;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -73,7 +74,7 @@ public class JPADocumentCatalogTest {
     @Test
     @Transactional
     @Sql("/fixtures/document.sql")
-    public void shouldFindDocumentSqlStatus(){
+    public void shouldFindDocumentSqlStatusDraft(){
 
         //given
 
@@ -93,4 +94,94 @@ public class JPADocumentCatalogTest {
         assertEquals("DRAFT", document.getStatus());
 
     }
+    @Test
+    @Transactional
+    @Sql("/fixtures/document.sql")
+    public void shouldFindDocumentSqlStatusVerified(){
+        //given
+
+
+        //when
+        DocumentCriteria documentCriteria = new DocumentCriteria();
+        documentCriteria.setPerPage(25L);
+        documentCriteria.setPageNumber(1L);
+        documentCriteria.setStatus(DocumentStatus.VERIFIED);
+        DocumentSearchResults results = jpaDocumentsCatalog.find(documentCriteria);
+        //then
+        assertEquals(new Long(1), results.getTotalPages());
+        List<DocumentDto> documents = Lists.newArrayList(results.getDocuments());
+        assertEquals(1, documents.size());
+        DocumentDto document = documents.get(0);
+        assertEquals("content", document.getContent());
+        assertEquals("VERIFIED", document.getStatus());
+
+    }
+    @Transactional
+    @Sql("/fixtures/document.sql")
+    @Test
+    public  void shouldFindDocumentSqlVerifiedBy(){
+        //given
+
+
+        //when
+        DocumentCriteria documentCriteria = new DocumentCriteria();
+        documentCriteria.setPerPage(25L);
+        documentCriteria.setPageNumber(1L);
+        documentCriteria.setVerifiedBy(1123L);
+
+        DocumentSearchResults results = jpaDocumentsCatalog.find(documentCriteria);
+        //then
+        assertEquals(new Long(1), results.getTotalPages());
+        List<DocumentDto> documents = Lists.newArrayList(results.getDocuments());
+        DocumentDto document = documents.get(0);
+        assertEquals(1, documents.size());
+        assertEquals(new Long(1123), document.getVerificatorId());
+
+    }
+    @Transactional
+    @Sql("/fixtures/document.sql")
+    @Test
+    public  void shouldFindDocumentSqlCreatedBy(){
+        //given
+
+
+        //when
+        DocumentCriteria documentCriteria = new DocumentCriteria();
+        documentCriteria.setPerPage(25L);
+        documentCriteria.setPageNumber(1L);
+        documentCriteria.setCreatedBy(1123L);
+
+        DocumentSearchResults results = jpaDocumentsCatalog.find(documentCriteria);
+        //then
+        assertEquals(new Long(1), results.getTotalPages());
+        List<DocumentDto> documents = Lists.newArrayList(results.getDocuments());
+        DocumentDto document = documents.get(0);
+        assertEquals(2, documents.size());
+        assertEquals(new Long(1123), document.getCreatorId());
+
+
+    }
+    //TODO
+//    @Transactional
+//    @Sql("/fixtures/document.sql")
+//    @Test
+//    public  void shouldFindDocumentSqlCreatedFrom() {
+//        //given
+//
+//
+//        //when
+//        DocumentCriteria documentCriteria = new DocumentCriteria();
+//        documentCriteria.setPerPage(25L);
+//        documentCriteria.setPageNumber(1L);
+//        documentCriteria.setCreatedFrom(new Date (2016,0,1));
+//        DocumentSearchResults results = jpaDocumentsCatalog.find(documentCriteria);
+//        //then
+//        assertEquals(new Long(1), results.getTotalPages());
+//        List<DocumentDto> documents = Lists.newArrayList(results.getDocuments());
+//        DocumentDto document = documents.get(0);
+//        assertEquals(2, documents.size());
+//        assertDate(new Long(1123), document.getCreatorId());
+//        ??????????????????????
+//    }
+
 }

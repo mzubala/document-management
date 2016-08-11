@@ -5,6 +5,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
+import pl.com.bottega.documentmanagement.api.DocumentFlowProcess;
 
 import java.util.Date;
 
@@ -23,11 +26,12 @@ public class DocumentTest {
     private Employee anyEmployee;
 
     private String anyContent = "Test content";
-
     private String anyTitle = "Test title";
+
     @Mock
     private Employee verificator;
     private static long EPS = 2L*1000L;
+
 
 
     @Test
@@ -65,7 +69,7 @@ public class DocumentTest {
     }
 
     @Test
-    public void shouldRequireVerificatorOtherWay(){
+    public void shouldRequireVerificatorOtherWay() throws IllegalArgumentException {
         //given
         Document document = new Document(anyNumber, anyContent, anyTitle, anyEmployee);
         //when
@@ -75,7 +79,35 @@ public class DocumentTest {
             return;
         }
         fail("Illegal argument exception expected");
-        //
+
+    }
+    @Test
+    public void shouldEditDocument(){
+
+        //given
+        Document document = new Document(anyNumber, anyContent, anyTitle, anyEmployee);
+        //when
+        document.change("newTitle", "newContent");
+
+        //then
+        assertEquals("newTitle", document.title());
+        assertEquals("newContent", document.content());
+    }
+    @Test
+    public void shouldDeleteDocument(){
+
+        //given
+        Document document = new Document(anyNumber, anyContent, anyTitle, anyEmployee);
+        //when
+        document.archive(anyEmployee);
+        //then
+        assertTrue(document.deleted());
+
     }
 
 }
+    //given
+
+    //when
+
+    //then

@@ -75,7 +75,7 @@ public class UserManager {
         this.currentEmployee =
                 employeeRepository.findByLoginAndPassword(login, passwordHasher.hashedPassword(password));
         if(this.currentEmployee == null)
-            return failed("login or password incorrect");
+            return failed("Login or password incorrect");
         else return success();
     }
 

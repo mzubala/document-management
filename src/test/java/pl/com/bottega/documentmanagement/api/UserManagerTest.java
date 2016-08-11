@@ -65,10 +65,54 @@ public class UserManagerTest {
 
         //then modyfikujemy ze ma byc succes lub ma byc null
         verify(employeeRepository).save(employee);
-
-
         assertTrue(signupResultDto.isSuccess());
         assertNull("Login is occupied", signupResultDto.getFailuer());
+    }
+    @Test
+    public void shouldNotLogInWhenLoginIsIncorrect(){
+        //given
+        UserManager userManager = new UserManager(employeeRepository, employeeFactory, passwordHasher);
+        when(employeeFactory.create(freeLogin, anyPassword, anyEmployeeId)).thenReturn(employee);
+
+
+        //when
+        SignupResultDto signupResultDto = userManager.login("Bad login", "Any password");
+
+        //then
+        assertFalse(signupResultDto.isSuccess());
+        assertNotNull(signupResultDto.getFailuer());
+        assertEquals("Login or password incorrect", signupResultDto.getFailuer());
+    }
+    @Test
+    public void shouldNotLogInWhenPasswordIsIncorrect(){
+        //given
+        UserManager userManager = new UserManager(employeeRepository, employeeFactory, passwordHasher);
+        when(employeeFactory.create(freeLogin, anyPassword, anyEmployeeId)).thenReturn(employee);
+
+        //when
+        SignupResultDto signupResultDto = userManager.login("Free login", "Bad password");
+
+        //then
+        assertFalse(signupResultDto.isSuccess());
+        assertNotNull(signupResultDto.getFailuer());
+        assertEquals("Login or password incorrect", signupResultDto.getFailuer());
+    }
+    @Test
+    public void shouldLogInWhenLoginAndPasswordAreCorrect(){ //Nie dziala mi logowanie, Maciek prosze o podpowiedz jak zrobic.
+        //given
+        UserManager userManager = new UserManager(employeeRepository, employeeFactory, passwordHasher);
+        when(employeeFactory.create(freeLogin, anyPassword, anyEmployeeId)).thenReturn(employee);
+
+        //when
+
+        SignupResultDto signupResultDto = userManager.login(freeLogin, anyPassword);
+
+        //then
+        assertTrue(signupResultDto.isSuccess());
+        assertNotNull(signupResultDto.getFailuer());
+        assertEquals("Login and password correct", signupResultDto.isSuccess());
+
+
     }
 
 }
