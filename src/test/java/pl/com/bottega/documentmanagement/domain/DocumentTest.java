@@ -63,7 +63,6 @@ public class DocumentTest {
 
     @Test
     public void shouldRequireVerificator() {
-        //when
         try {
             document.verify(null);
         }
@@ -71,8 +70,6 @@ public class DocumentTest {
             return;
         }
         fail("IllegalArgumentException excpected");
-
-        //then
     }
 
     @Test
@@ -126,8 +123,6 @@ public class DocumentTest {
             return;
         }
         fail("IllegalArgumentException excpected");
-
-        //then
     }
 
     @Test

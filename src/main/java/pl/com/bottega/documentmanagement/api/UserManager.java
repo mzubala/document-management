@@ -1,8 +1,6 @@
 package pl.com.bottega.documentmanagement.api;
 
-import com.google.common.base.Charsets;
 import com.google.common.collect.Sets;
-import com.google.common.hash.Hashing;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
@@ -11,14 +9,12 @@ import pl.com.bottega.documentmanagement.domain.Employee;
 import pl.com.bottega.documentmanagement.domain.EmployeeId;
 import pl.com.bottega.documentmanagement.domain.repositories.EmployeeRepository;
 import pl.com.bottega.documentmanagement.domain.Role;
-import pl.com.bottega.documentmanagement.domain.repositories.RoleRepository;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Created by maciuch on 12.06.16.

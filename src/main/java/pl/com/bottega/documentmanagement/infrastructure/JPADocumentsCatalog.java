@@ -28,7 +28,7 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
     private EntityManager entityManager;
 
     @Override
-    @RequiresAuth
+    @RequiresAuth(roles = "STAFF")
     public DocumentDto get(DocumentNumber documentNumber) {
 
 //        "SELECT new pl.com.bottega.documentmanagement.api.DocumentDto(' d.title, d.content, d.status, d.employee.employeeId.id
@@ -60,7 +60,7 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
 
 
     @Override
-//    @RequiresAuth
+    @RequiresAuth(roles = "STAFF")
     public DocumentSearchResults find(DocumentCriteria documentCriteria) {
         checkNotNull(documentCriteria);
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
