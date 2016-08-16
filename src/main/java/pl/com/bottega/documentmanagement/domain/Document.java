@@ -1,14 +1,12 @@
 package pl.com.bottega.documentmanagement.domain;
 
-import org.hibernate.annotations.*;
-import org.springframework.transaction.annotation.Transactional;
-
 import javax.persistence.*;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import java.util.Date;
 import java.util.Set;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static pl.com.bottega.documentmanagement.domain.DocumentStatus.*;
 
 /**
@@ -77,6 +75,7 @@ public class Document {
     }
 
     public void verify(Employee employee) {
+        checkArgument(employee != null);
         this.verificator = employee;
         this.documentStatus = VERIFIED;
         this.verifiedAt = new Date();

@@ -22,10 +22,18 @@ public class UserManager {
     private EmployeeRepository employeeRepository;
     private Employee currentEmployee;
     private RoleRepository roleRepository;
+    private EmployeeFactory employeeFactory;
+    private PasswordHasher passwordHasher;
 
-    public UserManager(EmployeeRepository employeeRepository, RoleRepository roleRepository) {
+//    public UserManager(EmployeeRepository employeeRepository, RoleRepository roleRepository) {
+//        this.employeeRepository = employeeRepository;
+//        this.roleRepository = roleRepository;
+//    }
+
+    public UserManager(EmployeeRepository employeeRepository, EmployeeFactory employeeFactory, PasswordHasher passwordHasher) {
         this.employeeRepository = employeeRepository;
-        this.roleRepository = roleRepository;
+        this.employeeFactory = employeeFactory;
+        this.passwordHasher = passwordHasher;
     }
 
     @Transactional
@@ -46,7 +54,8 @@ public class UserManager {
         if (employeeRepository.isLoginOccupied(login))
             return failed("login is occupied");
         else {
-            Employee employee = new Employee(login, hashedPassword(password), employeeId);
+            Employee employee = employeeFactory.create(login, password, employeeId);
+//            Employee employee = new Employee(login, hashedPassword(password), employeeId);
             employeeRepository.save(employee);
             return success();
         }
