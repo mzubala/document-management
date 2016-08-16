@@ -19,11 +19,13 @@ public class DocumentFlowProcess {
     private DocumentNumberGenerator documentNumberGenerator;
     private DocumentRepository documentRepository;
     private UserManager userManager;
+    private DocumentFactory documentFactory;
 
-    public DocumentFlowProcess(DocumentRepository documentRepository, UserManager userManager, DocumentNumberGenerator documentNumberGenerator) {
+    public DocumentFlowProcess(DocumentRepository documentRepository, UserManager userManager, DocumentNumberGenerator documentNumberGenerator, DocumentFactory documentFactory) {
         this.documentRepository = documentRepository;
         this.userManager = userManager;
         this.documentNumberGenerator = documentNumberGenerator;
+        this.documentFactory = documentFactory;
     }
 
     @Transactional
@@ -33,7 +35,8 @@ public class DocumentFlowProcess {
         checkNotNull(content);
 
         DocumentNumber documentNumber = documentNumberGenerator.generate();
-        Document document = new Document(documentNumber, content, title, userManager.currentEmployee());
+        Document document = documentFactory.create(documentNumber, content, title, userManager.currentEmployee());
+
         documentRepository.save(document);
 
         return documentNumber;
