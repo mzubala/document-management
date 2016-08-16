@@ -12,57 +12,18 @@ public class DocumentDto {
     private String number;
     private String title;
     private String content;
-    private String documentStatus;
+    private String status;
+
     private Long creatorId, verificatorId;
-    private Date createdAt, verifiedAt, updatedAt;
 
-    public Long getCreatorId() {
-        return creatorId;
-    }
-
-    public void setCreatorId(Long creatorId) {
-        this.creatorId = creatorId;
-    }
-
-    public Long getVerificatorId() {
-        return verificatorId;
-    }
-
-    public void setVerificatorId(Long verificatorId) {
-        this.verificatorId = verificatorId;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Date getVerifiedAt() {
-        return verifiedAt;
-    }
-
-    public void setVerifiedAt(Date verifiedAt) {
-        this.verifiedAt = verifiedAt;
-    }
-
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public DocumentDto(String number, String title, String content, DocumentStatus documentStatus, Date createdAt, Date verifiedAt, Date updatedAt, Long creatorId, Long verificatorId) {
+    private Date createdAt, verificatedAt, updatedAt;
+    public DocumentDto(String number, String title, String content, DocumentStatus status, Date createdAt, Date verificatedAt, Date updatedAt, Long creatorId, Long verificatorId) {
         this.number = number;
         this.title = title;
         this.content = content;
-        this.documentStatus = documentStatus.name();
+        this.status = status.name();
         this.createdAt = createdAt;
-        this.verifiedAt = verifiedAt;
+        this.verificatedAt = verificatedAt;
         this.updatedAt = updatedAt;
         this.creatorId = creatorId;
         this.verificatorId = verificatorId;
@@ -92,11 +53,31 @@ public class DocumentDto {
         this.content = content;
     }
 
-    public String getDocumentStatus() {
-        return documentStatus;
+    public String getStatus() {
+        return status;
     }
 
-    public void setDocumentStatus(String status) {
-        this.documentStatus = status;
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Long getCreatorId() {
+        return creatorId;
+    }
+
+    public Long getVerificatorId() {
+        return verificatorId;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public Date getVerificatedAt() {
+        return verificatedAt;
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
     }
 }

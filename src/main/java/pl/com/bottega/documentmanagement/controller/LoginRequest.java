@@ -1,9 +1,10 @@
 package pl.com.bottega.documentmanagement.controller;
 
 /**
- * Created by Admin on 03.07.2016.
+ * Created by maciuch on 03.07.16.
  */
 public class LoginRequest {
+
     private String login;
     private String password;
 
@@ -22,4 +23,5 @@ public class LoginRequest {
     public void setPassword(String password) {
         this.password = password;
     }
+
 }

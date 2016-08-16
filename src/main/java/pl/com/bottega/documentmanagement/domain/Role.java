@@ -2,10 +2,11 @@ package pl.com.bottega.documentmanagement.domain;
 
 import org.hibernate.annotations.NaturalId;
 
-import javax.persistence.*;
-import java.util.List;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
-import static pl.com.bottega.documentmanagement.domain.Employee_.roles;
 
 /**
  * Created by Admin on 26.07.2016.
@@ -19,7 +20,8 @@ public class Role {
     @NaturalId
     private String name;
 
-    public Role(){}
+    public Role() {
+    }
 
     public Role(String role) {
         this.name = role;

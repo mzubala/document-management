@@ -6,11 +6,12 @@ import pl.com.bottega.documentmanagement.api.UserManager;
 import pl.com.bottega.documentmanagement.domain.EmployeeId;
 
 /**
- * Created by Admin on 03.07.2016.
+ * Created by maciuch on 03.07.16.
  */
 @RestController
 @RequestMapping("/employees")
 public class EmployeesController {
+
     private UserManager userManager;
 
     public EmployeesController(UserManager userManager) {
@@ -19,11 +20,13 @@ public class EmployeesController {
 
     @PutMapping
     public SignupResultDto signup(@RequestBody SignupRequest signupRequest) {
-        return userManager.signup(signupRequest.getLogin(), signupRequest.getPassword(), new EmployeeId(signupRequest.getEmployeeId()));
+        EmployeeId employeeId = new EmployeeId(signupRequest.getEmployeeId());
+        return userManager.signup(signupRequest.getLogin(), signupRequest.getPassword(), employeeId);
     }
 
-    @PutMapping("/{employeeId}/roles")
-    public void changeRoles(@PathVariable Long employeeId, @RequestBody RoleRequest roles) {
-        userManager.setRoles(roles.getRoles(), new EmployeeId(employeeId));
+    @PostMapping("/{employeeId}/roles")
+    public void updateRoles(@PathVariable("employeeId") EmployeeId employeeId, @RequestBody UpdateRolesRequest request) {
+        userManager.updateRoles(employeeId, request.getRoles());
     }
+
 }

@@ -3,6 +3,7 @@ package pl.com.bottega.documentmanagement.infrastructure;
 import org.springframework.stereotype.Component;
 import pl.com.bottega.documentmanagement.api.DocumentCriteria;
 import pl.com.bottega.documentmanagement.api.DocumentDto;
+import pl.com.bottega.documentmanagement.api.DocumentSearchResults;
 import pl.com.bottega.documentmanagement.api.DocumentsCatalog;
 import pl.com.bottega.documentmanagement.domain.DocumentNumber;
 
@@ -18,7 +19,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Created by Admin on 25.07.2016.
  */
 
-@Component
+//@Component
 public class JPQLDocumentsCatalog implements DocumentsCatalog {
 
     @PersistenceContext
@@ -30,7 +31,7 @@ public class JPQLDocumentsCatalog implements DocumentsCatalog {
         String jpql = "select new pl.com.bottega.documentmanagement.api.DocumentDto(" +
                 "d.documentNumber.number," +
                 "d.title, d.content," +
-                "d.documentStatus, d.createdAt, d.verifiedAt, d.updatedAt," +
+                "d.status, d.createdAt, d.verifiedAt, d.updatedAt," +
                 "d.creator.employeeId.id, d.verificator.employeeId.id) " +
                 "from Document d where d.documentNumber=:documentNumber " +
                 "AND d.deleted = false";
@@ -40,56 +41,54 @@ public class JPQLDocumentsCatalog implements DocumentsCatalog {
     }
 
     @Override
-    public Iterable<DocumentDto> find(DocumentCriteria documentCriteria) {
+    public DocumentSearchResults find(DocumentCriteria documentCriteria) {
         checkNotNull(documentCriteria);
         String jpql = buildQuery(documentCriteria);
         Query query = entityManager.createQuery(jpql);
         fillStatement(documentCriteria, query);
-        return query.getResultList();
+        return new DocumentSearchResults(query.getResultList(),
+                documentCriteria.getPerPage(),
+                documentCriteria.getPageNumber(),
+                0l);
     }
 
     private String buildQuery(DocumentCriteria documentCriteria) {
         List<String> queryList = new ArrayList<>();
         if (documentCriteria.isStatusDefined()) {
-            queryList.add(" d.documentStatus =:status ");
+            queryList.add(" d.getStatus =:getStatus ");
         }
         if (documentCriteria.isCreatedByDefined()) {
-            queryList.add(" d.creator.employeeId.id =:creatorId ");
+            queryList.add(" d.getCreator.employeeId.id =:creatorId ");
         }
         if (documentCriteria.isVerifiedByDefined()) {
-            queryList.add(" d.verificator.employeeId.id =:verificatorId ");
+            queryList.add(" d.getVerificator.employeeId.id =:verificatorId ");
         }
 
-        if (documentCriteria.isCreatedDateDefined()) {
-            if (documentCriteria.isCreatedFromDefined() && documentCriteria.isCreatedUntilDefined()) {
-                queryList.add(" d.createdAt BETWEEN :createFrom AND :createUntil ");
-            } else if (documentCriteria.isCreatedUntilDefined()) {
-                queryList.add(" d.createdAt < :createUntil ");
-            } else {
-                queryList.add(" d.createdAt > :createFrom ");
-            }
+
+        if (documentCriteria.isCreatedUntilDefined()) {
+            queryList.add(" d.createdAt < :createUntil ");
+        }
+        if (documentCriteria.isCreatedFromDefined()) {
+            queryList.add(" d.createdAt > :createFrom ");
         }
 
-        if (documentCriteria.isVerifiedDateDefined()) {
-            if (documentCriteria.isVerifiedFromDefined() && documentCriteria.isVerifiedUntilDefined()) {
-                queryList.add(" d.verifiedAt BETWEEN :verifiedFrom AND :verifiedUntil ");
-            } else if (documentCriteria.isVerifiedUntilDefined()) {
-                queryList.add(" d.verifiedAt < :verifiedUntil ");
-            } else {
-                queryList.add(" d.verifiedAt > :verifiedFrom ");
-            }
+        if (documentCriteria.isVerifiedUntilDefined()) {
+            queryList.add(" d.getVerifiedAt < :verifiedUntil ");
+        }
+        if (documentCriteria.isVerifiedFromDefined()) {
+            queryList.add(" d.getVerifiedAt > :verifiedFrom ");
         }
 
         if (documentCriteria.isQueryDefined()) {
-            queryList.add(" (d.title LIKE :query OR d.content LIKE :query) ");
+            queryList.add(" (d.getTitle LIKE :query OR d.getContent LIKE :query) ");
         }
 
         String jpql = "SELECT new pl.com.bottega.documentmanagement.api.DocumentDto(" +
-                "d.documentNumber.number," +
-                "d.title, d.content," +
-                "d.documentStatus, d.createdAt, d.verifiedAt, d.updatedAt," +
-                "d.creator.employeeId.id, d.verificator.employeeId.id) " +
-                "FROM Document d WHERE d.deleted = false ";
+                "d.documentNumber.getNumber," +
+                "d.getTitle, d.getContent," +
+                "d.getStatus, d.createdAt, d.getVerifiedAt, d.updatedAt," +
+                "d.getCreator.employeeId.id, d.getVerificator.employeeId.id) " +
+                "FROM Document d WHERE d.isDeleted = false ";
 
         if (queryList.size() > 0) {
             jpql += "AND";
@@ -105,7 +104,7 @@ public class JPQLDocumentsCatalog implements DocumentsCatalog {
 
     private void fillStatement(DocumentCriteria documentCriteria, Query query) {
         if (documentCriteria.isStatusDefined()) {
-            query.setParameter("status", documentCriteria.getDocumentStatus());
+            query.setParameter("status", documentCriteria.getStatus());
         }
         if (documentCriteria.isCreatedByDefined()) {
             query.setParameter("creatorId", documentCriteria.getCreatedBy());
@@ -113,30 +112,21 @@ public class JPQLDocumentsCatalog implements DocumentsCatalog {
         if (documentCriteria.isVerifiedByDefined()) {
             query.setParameter("verificatorId", documentCriteria.getVerifiedBy());
         }
-        if (documentCriteria.isCreatedDateDefined()) {
-            if (documentCriteria.isCreatedFromDefined() && documentCriteria.isCreatedUntilDefined()) {
-                query.setParameter("createFrom", documentCriteria.getCreatedFrom());
-                query.setParameter("createUntil", documentCriteria.getCreatedUntil());
-            } else if (documentCriteria.isCreatedUntilDefined()) {
-                query.setParameter("createUntil", documentCriteria.getCreatedUntil());
-            } else {
-                query.setParameter("createFrom", documentCriteria.getCreatedFrom());
-            }
+        if (documentCriteria.isCreatedUntilDefined()) {
+            query.setParameter("createUntil", documentCriteria.getCreatedUntil());
         }
-
-        if (documentCriteria.isVerifiedDateDefined()) {
-            if (documentCriteria.isVerifiedFromDefined() && documentCriteria.isVerifiedUntilDefined()) {
-                query.setParameter("verifiedFrom", documentCriteria.getVerifiedFrom());
-                query.setParameter("verifiedUntil", documentCriteria.getVerifiedUntil());
-            } else if (documentCriteria.isVerifiedUntilDefined()) {
-                query.setParameter("verifiedUntil", documentCriteria.getVerifiedUntil());
-            } else {
-                query.setParameter("verifiedFrom", documentCriteria.getVerifiedFrom());
-            }
+        if (documentCriteria.isCreatedFromDefined()) {
+            query.setParameter("createFrom", documentCriteria.getCreatedFrom());
         }
-
+        if (documentCriteria.isVerifiedUntilDefined()) {
+            query.setParameter("verifiedUntil", documentCriteria.getVerifiedUntil());
+        }
+        if (documentCriteria.isVerifiedFromDefined()) {
+            query.setParameter("verifiedFrom", documentCriteria.getVerifiedFrom());
+        }
         if (documentCriteria.isQueryDefined()) {
             query.setParameter("query", "%" + documentCriteria.getQuery() + "%");
         }
     }
+
 }

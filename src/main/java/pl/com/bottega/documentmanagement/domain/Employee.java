@@ -1,16 +1,13 @@
 package pl.com.bottega.documentmanagement.domain;
 
+import com.google.common.base.MoreObjects;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
-
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkState;
-import static javax.persistence.CascadeType.ALL;
-import static javax.persistence.FetchType.EAGER;
 
 /**
  * Created by maciuch on 12.06.16.
@@ -20,20 +17,27 @@ public class Employee {
 
     @EmbeddedId
     private EmployeeId employeeId;
-    private String hashedPassword;
 
-    @ManyToMany(cascade = ALL, fetch = EAGER)
-    private List<Role> roles;
+    private String hashedPassword;
 
     @NaturalId
     private String login;
 
-    private Employee(){}
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Set<Role> roles;
+
+    protected Employee() {}
 
     public Employee(String login, String hashedPassword, EmployeeId employeeId) {
         this.login = login;
         this.hashedPassword = hashedPassword;
         this.employeeId = employeeId;
+    }
+
+    public Employee(EmployeeId id) {
+        this.employeeId = id;
+        this.login = "unregisteredEmployee" + id;
+        this.hashedPassword = null;
     }
 
     public boolean isRegistered() {
@@ -46,21 +50,43 @@ public class Employee {
         this.hashedPassword = password;
     }
 
-    public boolean hasRoles(String... roleNames) {
-        if(roleNames == null || roleNames.length == 0) {
-            return true;
-        }
-        for (String role : roleNames) {
-            if (roles.contains(new Role(role)))
-                return true;
-        }
-        return false;
+    public void updateRoles(Set<Role> newRoles) {
+        this.roles = newRoles;
     }
 
-    public void setRoles(String... rolesNames) {
-        List<Role> result = new ArrayList<>();
-        for(String role : rolesNames)
-            result.add(new Role(role));
-        this.roles = result;
+    public boolean hasRoles(String[] roleNames) {
+        if (roleNames.length == 0)
+            return true;
+        return !Arrays.stream(roleNames).anyMatch((roleName) -> !roles.contains(new Role(roleName)));
+    }
+
+    public EmployeeId getEmployeeId() {
+        return employeeId;
+    }
+
+    public void setEmployeeId(EmployeeId employeeId) {
+        this.employeeId = employeeId;
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("employeeId", employeeId)
+                .toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Employee)) return false;
+
+        Employee employee = (Employee) o;
+
+        return employeeId.equals(employee.employeeId);
+    }
+
+    @Override
+    public int hashCode() {
+        return employeeId.hashCode();
     }
 }

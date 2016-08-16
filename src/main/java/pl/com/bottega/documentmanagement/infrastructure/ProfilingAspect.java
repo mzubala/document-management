@@ -7,19 +7,27 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 
 /**
- * Created by Admin on 09.07.2016.
+ * Created by maciuch on 09.07.16.
  */
 @Component
 public class ProfilingAspect {
+
     public Object profile(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         Date startTime = new Date();
-        Object result = proceedingJoinPoint.proceed();
+
+        //call target method
+        Object returnValue = proceedingJoinPoint.proceed();
+
         Date endTime = new Date();
         long time = endTime.getTime() - startTime.getTime();
-        String message = "Class: " + proceedingJoinPoint.getTarget().getClass().getName() + " " +
-                "Method: " + proceedingJoinPoint.getSignature().getName() +
-                "Processing time: " + time + "ms";
-        Logger.getLogger(ProfilingAspect.class).info(message);
-        return result;
+        String msg = "Class: " +
+                proceedingJoinPoint.getTarget().getClass().getName() +
+                ", Method: " + proceedingJoinPoint.getSignature().getName() +
+                ", Processing time: " + time + "ms";
+        Logger.getLogger(ProfilingAspect.class).info(msg);
+
+        // return target method return value
+        return returnValue;
     }
+
 }

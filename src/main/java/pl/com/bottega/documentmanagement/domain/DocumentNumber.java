@@ -9,8 +9,7 @@ import java.io.Serializable;
  * Created by maciuch on 12.06.16.
  */
 @Embeddable
-public class DocumentNumber implements Serializable {
-    private static final long serialVersionUID = 1234L;
+public class DocumentNumber implements Serializable{
 
     @NaturalId
     private String number;
@@ -21,6 +20,7 @@ public class DocumentNumber implements Serializable {
         this.number = number;
     }
 
+    @Override
     public String toString() {
         return number;
     }

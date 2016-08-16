@@ -1,10 +1,8 @@
 package pl.com.bottega.documentmanagement.domain;
 
-import javax.persistence.Enumerated;
-
 /**
- * Created by Admin on 07.07.2016.
+ * Created by maciuch on 07.07.16.
  */
 public enum DocumentStatus {
-    DRAFT, VERIFIED
+    DRAFT, VERIFIED, PUBLISHED
 }

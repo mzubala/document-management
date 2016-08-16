@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:aop="http://www.springframework.org/schema/aop"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:util="http://www.springframework.org/schema/util" xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns="http://www.springframework.org/schema/beans"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/tx
@@ -12,7 +11,7 @@
         http://www.springframework.org/schema/aop
         http://www.springframework.org/schema/aop/spring-aop.xsd
         http://www.springframework.org/schema/context
-        http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+        http://www.springframework.org/schema/context/spring-context.xsd">
 
     <context:component-scan base-package="pl.com.bottega.documentmanagement"/>
     <tx:annotation-driven/>
@@ -27,24 +26,8 @@
         <property name="url" value="${jdbc.url}"/>
         <property name="username" value="${jdbc.username}"/>
         <property name="password" value="${jdbc.password}"/>
-        <property name="maxTotal" value="5" />
+        <property name="maxTotal" value="5"/>
     </bean>
-
-    <bean name="jacksonObjectMapper" class="org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean">
-        <property name="featuresToDisable">
-            <array>
-                <util:constant static-field="com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS"/>
-            </array>
-        </property>
-    </bean>
-
-    <mvc:annotation-driven>
-        <mvc:message-converters register-defaults="true">
-            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
-                <property name="objectMapper" ref="jacksonObjectMapper"/>
-            </bean>
-        </mvc:message-converters>
-    </mvc:annotation-driven>
 
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="dataSource" ref="dataSource"/>
@@ -65,6 +48,11 @@
             <aop:pointcut id="authMethod" expression="@annotation(pl.com.bottega.documentmanagement.api.RequiresAuth) and @annotation(requiresAuth)"/>
             <aop:before arg-names="requiresAuth" pointcut-ref="authMethod" method="checkAuth"/>
         </aop:aspect>
+        <aop:aspect id="profilingAspect" ref="profilingAspect">
+            <aop:pointcut id="allApiMethods" expression="execution(* pl.com.bottega.documentmanagement.api.*.*(..))"/>
+            <aop:around pointcut-ref="allApiMethods" method="profile"/>
+        </aop:aspect>
+
     </aop:config>
 
 </beans>
