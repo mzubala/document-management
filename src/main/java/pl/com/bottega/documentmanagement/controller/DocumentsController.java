@@ -54,7 +54,6 @@ public class DocumentsController {
 
     @PutMapping("/confirm/{documentNumber}")
     public void confirm(@PathVariable DocumentNumber documentNumber, @RequestBody EmployeeId employeeId) {
-        System.out.println("Подтвердить документ " + documentNumber + " Для работника " + employeeId);
         readingConfirmator.confirm(documentNumber, employeeId);
     }
 }
