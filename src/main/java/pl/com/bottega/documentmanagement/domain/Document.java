@@ -68,6 +68,7 @@ public class Document {
     }
 
     public void change(String title, String content) {
+        checkArgument(!(title == null && content == null));
         this.title = title;
         this.content = content;
         this.documentStatus = DRAFT;
@@ -130,6 +131,7 @@ public class Document {
     }
 
     public void delete(Employee employee) {
+        checkArgument(employee != null);
         this.deleted = true;
         this.deletedBy = employee;
     }
