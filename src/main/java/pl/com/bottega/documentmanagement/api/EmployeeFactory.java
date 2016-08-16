@@ -17,7 +17,7 @@ public class EmployeeFactory {
     }
 
     public Employee create(String login, String password, EmployeeId employeeId) {
-        Employee employee = new Employee(login, password, employeeId);
+        Employee employee = new Employee(login, passwordHasher.hashedPassword(password), employeeId);
         return employee;
     }
 }

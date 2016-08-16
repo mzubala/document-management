@@ -17,6 +17,9 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Created by maciuch on 12.06.16.
  */
@@ -28,14 +31,8 @@ public class UserManager {
 
     private EmployeeRepository employeeRepository;
     private Employee currentEmployee;
-    private RoleRepository roleRepository;
     private EmployeeFactory employeeFactory;
     private PasswordHasher passwordHasher;
-
-//    public UserManager(EmployeeRepository employeeRepository, RoleRepository roleRepository) {
-//        this.employeeRepository = employeeRepository;
-//        this.roleRepository = roleRepository;
-//    }
 
     public UserManager(EmployeeRepository employeeRepository, EmployeeFactory employeeFactory, PasswordHasher passwordHasher) {
         this.employeeRepository = employeeRepository;
@@ -45,6 +42,7 @@ public class UserManager {
 
     @Transactional
     public SignupResultDto signup(String login, String password, EmployeeId employeeId) {
+        checkArgument(!(login == null || password == null || employeeId == null));
         Employee employee = employeeRepository.findByEmployeeId(employeeId);
         if (employee == null)
             return setupNewAccount(login, password, employeeId);
@@ -61,8 +59,7 @@ public class UserManager {
         if (employeeRepository.isLoginOccupied(login))
             return failed("login is occupied");
         else {
-//            Employee employee = employeeFactory.create(login, password, employeeId);
-            Employee employee = new Employee(login, hashedPassword(password), employeeId);
+            Employee employee = employeeFactory.create(login, password, employeeId);
             employee.updateRoles(getRoles(INITIAL_ROLE));
             employeeRepository.save(employee);
             return success();
@@ -93,12 +90,10 @@ public class UserManager {
         return new SignupResultDto();
     }
 
-    private String hashedPassword(String password) {
-        return Hashing.sha1().hashString(password, Charsets.UTF_8).toString();
-    }
-
     public SignupResultDto login(String login, String password) {
-        this.currentEmployee = employeeRepository.findByLoginAndPassword(login, hashedPassword(password));
+        checkArgument(!(login == null || password == null));
+        String hashedPassword = passwordHasher.hashedPassword(password);
+        this.currentEmployee = employeeRepository.findByLoginAndPassword(login, hashedPassword);
         if (this.currentEmployee == null)
             return failed("login or password incorrect");
         else
@@ -115,11 +110,9 @@ public class UserManager {
 
     @Transactional
     public void updateRoles(EmployeeId employeeId, Set<String> roleNames) {
+        checkArgument(!(employeeId == null || roleNames == null));
         Employee employee = employeeRepository.findByEmployeeId(employeeId);
-        employee.updateRoles(getRoles(roleNames));
-//        for (String role : roles)
-//            roleRepository.save(new Role(role));
-//        employee.updateRoles(roles);
-//        employeeRepository.save(employee);
+        Set<Role> roles = getRoles(roleNames);
+        employee.updateRoles(roles);
     }
 }

@@ -47,23 +47,10 @@ public class Employee {
         if (roleNames.length == 0)
             return true;
         return !Arrays.stream(roleNames).anyMatch((roleName) -> !roles.contains(new Role (roleName)));
-
-//        for (String er : roleNames) {
-//            if (!roles.contains(new Role(er)))
-//                return false;
-//        }
-//        return true;
     }
 
     public void updateRoles(Set<Role> newRoles) {
         this.roles = newRoles;
-    }
-
-    public void setRoles(String[] roles) {
-        this.roles.clear();
-        for (String employeeRole : roles) {
-//            role.add(new Role(employeeRole));
-        }
     }
 
     public Set<Role> getRole() {
