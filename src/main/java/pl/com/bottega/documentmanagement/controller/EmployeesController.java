@@ -25,7 +25,7 @@ public class EmployeesController {
     }
 
     @PutMapping("/{employeeId}/roles")
-    public void setRoles(@PathVariable Long employeeId, @RequestBody RolesRequest rolesRequest) {
-        userManager.setRoles(employeeId, rolesRequest.getRoles());
+    public void updateRoles(@PathVariable Long employeeId, @RequestBody updateRolesRequest request) {
+        userManager.updateRoles(new EmployeeId(employeeId), request.getRoles());
     }
 }

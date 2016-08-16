@@ -4,7 +4,8 @@ import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
 
-import java.util.Collection;
+import java.util.Arrays;
+import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkState;
 
@@ -17,10 +18,12 @@ public class Employee {
     @EmbeddedId
     private EmployeeId employeeId;
     private String hashedPassword;
+
     @NaturalId
     private String login;
+
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private Collection<Role> role;
+    private Set<Role> roles;
 
     private Employee() {}
 
@@ -40,22 +43,30 @@ public class Employee {
         this.hashedPassword = password;
     }
 
-    public boolean hasRoles(String ...roleNames) {
-        for (String er : roleNames) {
-            if (!role.contains(new Role(er)))
-                return false;
-        }
-        return true;
+    public boolean hasRoles(String[] roleNames) {
+        if (roleNames.length == 0)
+            return true;
+        return !Arrays.stream(roleNames).anyMatch((roleName) -> !roles.contains(new Role (roleName)));
+
+//        for (String er : roleNames) {
+//            if (!roles.contains(new Role(er)))
+//                return false;
+//        }
+//        return true;
+    }
+
+    public void updateRoles(Set<Role> newRoles) {
+        this.roles = newRoles;
     }
 
     public void setRoles(String[] roles) {
-        this.role.clear();
+        this.roles.clear();
         for (String employeeRole : roles) {
 //            role.add(new Role(employeeRole));
         }
     }
 
-    public Collection<Role> getRole() {
-        return role;
+    public Set<Role> getRole() {
+        return roles;
     }
 }

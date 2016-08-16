@@ -1,6 +1,5 @@
 package pl.com.bottega.documentmanagement.api;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.com.bottega.documentmanagement.domain.Document;
@@ -74,7 +73,7 @@ public class DocumentFlowProcess {
         checkNotNull(documentNumber);
 
         Document document = documentRepository.load(documentNumber);
-        document.archive(userManager.currentEmployee());
+        document.delete(userManager.currentEmployee());
         documentRepository.save(document);
     }
 

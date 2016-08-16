@@ -1,7 +1,6 @@
 package pl.com.bottega.documentmanagement.infrastructure;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import pl.com.bottega.documentmanagement.api.*;
 import pl.com.bottega.documentmanagement.api.DocumentCriteria;
 import pl.com.bottega.documentmanagement.domain.*;
@@ -13,7 +12,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.print.Doc;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -40,13 +38,13 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<DocumentDto> query = builder.createQuery(DocumentDto.class);
         Root<Document> root = query.from(Document.class);
-        query.where(builder.and(builder.equal(root.get(Document_.number), documentNumber), builder.isFalse(root.get(Document_.deleted))));
-        uploadDocumentDto(builder, query, root);
+        query.where(builder.and(builder.equal(root.get(Document_.number), documentNumber), builder.not(root.get(Document_.deleted))));
+        selectDocumentDto(builder, query, root);
         return entityManager.createQuery(query).getSingleResult();
 
     }
 
-    private void uploadDocumentDto(CriteriaBuilder builder, CriteriaQuery<DocumentDto> query, Root<Document> root) {
+    private void selectDocumentDto(CriteriaBuilder builder, CriteriaQuery<DocumentDto> query, Root<Document> root) {
         query.select(builder.construct(DocumentDto.class,
                 root.get(Document_.number).get(DocumentNumber_.number),
                 root.get(Document_.title),
@@ -68,7 +66,7 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<DocumentDto> query = builder.createQuery(DocumentDto.class);
         Root<Document> root = query.from(Document.class);
-        uploadDocumentDto(builder, query, root);
+        selectDocumentDto(builder, query, root);
         applyCriteria(documentCriteria, builder, root, query);
 
         CriteriaQuery<Long> countQuery = builder.createQuery(Long.class);
@@ -91,21 +89,21 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
 
     private void applyCriteria(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, CriteriaQuery query) {
         Collection<Predicate> predicates = new HashSet<>();
-        addDocumentsIfAreNotDeleted(documentCriteria, builder, root, predicates);
-        addDocumentsIfStatusDefined(documentCriteria, builder, root, predicates);
-        addDocumentsIfCreatedByDefined(documentCriteria, builder, root, predicates);
-        addDocumentsIfVerifiedByDefined(documentCriteria, builder, root, predicates);
-        addDocumentsIfCreatedDatesDefined(documentCriteria, builder, root, predicates);
-        addDocumentsIfVerifiedDatesDefined(documentCriteria, builder, root, predicates);
-        addDocumentsifQueryDefined(documentCriteria, builder, root, predicates);
+        applyNotDeleted(documentCriteria, builder, root, predicates);
+        applyStatus(documentCriteria, builder, root, predicates);
+        applyCreatedBy(documentCriteria, builder, root, predicates);
+        applyVerifiedBy(documentCriteria, builder, root, predicates);
+        applyCreatedDates(documentCriteria, builder, root, predicates);
+        applyVerifiedDates(documentCriteria, builder, root, predicates);
+        applyQuery(documentCriteria, builder, root, predicates);
         query.where(predicates.toArray(new Predicate[] {}));
     }
 
-    private void addDocumentsIfAreNotDeleted(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
+    private void applyNotDeleted(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
         predicates.add((builder.isFalse(root.get(Document_.deleted))));
     }
 
-    private void addDocumentsifQueryDefined(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
+    private void applyQuery(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
         if(documentCriteria.isQueryDefined()) {
             predicates.add(builder.or(
                     builder.like(root.get(Document_.content), "%" + documentCriteria.getQuery() + "%"),
@@ -114,7 +112,7 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
         }
     }
 
-    private void addDocumentsIfVerifiedDatesDefined(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
+    private void applyVerifiedDates(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
         if(documentCriteria.isVerifiedDatesDefined()) {
             if(documentCriteria.isVerfiedFromDefined())
                 predicates.add(builder.greaterThanOrEqualTo(root.get(Document_.verifiedAt), documentCriteria.getVerifiedFrom()));
@@ -123,7 +121,7 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
         }
     }
 
-    private void addDocumentsIfCreatedDatesDefined(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
+    private void applyCreatedDates(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
         if(documentCriteria.isCreatedDatesDefined()) {
             if(documentCriteria.isCreatedFromDefined())
                 predicates.add(builder.greaterThanOrEqualTo(root.get(Document_.createAt), documentCriteria.getCreatedFrom()));
@@ -132,7 +130,7 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
         }
     }
 
-    private void addDocumentsIfVerifiedByDefined(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
+    private void applyVerifiedBy(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
         if(documentCriteria.isVerifiedByDefined()) {
             predicates.add(builder.equal(
                     root.get(Document_.verificator).get(Employee_.employeeId).get(EmployeeId_.id),
@@ -141,7 +139,7 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
         }
     }
 
-    private void addDocumentsIfCreatedByDefined(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
+    private void applyCreatedBy(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
         if(documentCriteria.isCreatedByDefined()) {
             predicates.add(builder.equal(
                     root.get(Document_.creator).get(Employee_.employeeId).get(EmployeeId_.id),
@@ -150,7 +148,7 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
         }
     }
 
-    private void addDocumentsIfStatusDefined(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
+    private void applyStatus(DocumentCriteria documentCriteria, CriteriaBuilder builder, Root<Document> root, Collection<Predicate> predicates) {
         if(documentCriteria.isStatusDefinied()) {
             predicates.add(builder.equal(root.get(Document_.documentStatus), documentCriteria.getDocumentStatus()));
         }

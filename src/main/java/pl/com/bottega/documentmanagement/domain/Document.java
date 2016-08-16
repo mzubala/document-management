@@ -129,7 +129,7 @@ public class Document {
         return verifiedAt;
     }
 
-    public void archive(Employee employee) {
+    public void delete(Employee employee) {
         this.deleted = true;
         this.deletedBy = employee;
     }

@@ -1,6 +1,7 @@
 package pl.com.bottega.documentmanagement.api;
 
 import com.google.common.base.Charsets;
+import com.google.common.collect.Sets;
 import com.google.common.hash.Hashing;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -12,12 +13,18 @@ import pl.com.bottega.documentmanagement.domain.repositories.EmployeeRepository;
 import pl.com.bottega.documentmanagement.domain.Role;
 import pl.com.bottega.documentmanagement.domain.repositories.RoleRepository;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Created by maciuch on 12.06.16.
  */
 @Service
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class UserManager {
+
+    private static final String INITIAL_ROLE = "STAFF";
 
     private EmployeeRepository employeeRepository;
     private Employee currentEmployee;
@@ -54,11 +61,28 @@ public class UserManager {
         if (employeeRepository.isLoginOccupied(login))
             return failed("login is occupied");
         else {
-            Employee employee = employeeFactory.create(login, password, employeeId);
-//            Employee employee = new Employee(login, hashedPassword(password), employeeId);
+//            Employee employee = employeeFactory.create(login, password, employeeId);
+            Employee employee = new Employee(login, hashedPassword(password), employeeId);
+            employee.updateRoles(getRoles(INITIAL_ROLE));
             employeeRepository.save(employee);
             return success();
         }
+    }
+
+    private Set<Role> getRoles(String... roleNames) {
+        return getRoles(Sets.newHashSet(roleNames));
+    }
+
+    private Set<Role> getRoles(Set<String> roleNames) {
+        Set<Role> rolesToUpdate = new HashSet<>();
+        Collection<Role> existingRoles = employeeRepository.getRoles(roleNames);
+        rolesToUpdate.addAll(existingRoles);
+        for (String roleName : roleNames) {
+            Role role = new Role(roleName);
+            if (!existingRoles.contains(role))
+                rolesToUpdate.add(role);
+        }
+        return rolesToUpdate;
     }
 
     private SignupResultDto failed(String reason) {
@@ -75,7 +99,7 @@ public class UserManager {
 
     public SignupResultDto login(String login, String password) {
         this.currentEmployee = employeeRepository.findByLoginAndPassword(login, hashedPassword(password));
-        if(this.currentEmployee == null)
+        if (this.currentEmployee == null)
             return failed("login or password incorrect");
         else
             return success();
@@ -90,11 +114,12 @@ public class UserManager {
     }
 
     @Transactional
-    public void setRoles(Long employeeId, String[] roles) {
-        Employee employee = employeeRepository.findByEmployeeId(new EmployeeId(employeeId));
-        for (String role : roles)
-            roleRepository.save(new Role(role));
-        employee.setRoles(roles);
-        employeeRepository.save(employee);
+    public void updateRoles(EmployeeId employeeId, Set<String> roleNames) {
+        Employee employee = employeeRepository.findByEmployeeId(employeeId);
+        employee.updateRoles(getRoles(roleNames));
+//        for (String role : roles)
+//            roleRepository.save(new Role(role));
+//        employee.updateRoles(roles);
+//        employeeRepository.save(employee);
     }
 }

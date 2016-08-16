@@ -2,7 +2,6 @@ package pl.com.bottega.documentmanagement.api;
 
 import pl.com.bottega.documentmanagement.domain.DocumentStatus;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.Date;
 
 /**

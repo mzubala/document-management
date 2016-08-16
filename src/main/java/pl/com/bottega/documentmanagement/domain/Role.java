@@ -17,7 +17,8 @@ public class Role {
     @NaturalId
     private String name;
 
-    private Role(){}
+    private Role(){
+    }
 
     public Role(String name) {
         this.name = name;

@@ -10,8 +10,6 @@ import pl.com.bottega.documentmanagement.domain.EmployeeId;
 @Service
 public class EmployeeFactory {
 
-    private static final String INITIAL_ROLE = "STAFF";
-
     private PasswordHasher passwordHasher;
 
     public EmployeeFactory(PasswordHasher passwordHasher) {
@@ -20,7 +18,6 @@ public class EmployeeFactory {
 
     public Employee create(String login, String password, EmployeeId employeeId) {
         Employee employee = new Employee(login, password, employeeId);
-//        employee.updateRoles(Sets.newHashSet(INITIAL_ROLE));
         return employee;
     }
 }
