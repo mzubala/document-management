@@ -5,5 +5,6 @@ package pl.com.bottega.documentmanagement.domain;
  */
 public enum DocumentStatus {
     DRAFT,
-    VERIFIED
+    VERIFIED,
+    PUBLISHED
 }
