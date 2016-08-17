@@ -140,4 +140,5 @@ public class DocumentCriteria {
     public void setPerPage(Long perPage) {
         this.perPage = perPage;
     }
+
 }
