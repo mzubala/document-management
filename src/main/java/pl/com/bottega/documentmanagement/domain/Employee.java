@@ -3,7 +3,8 @@ package pl.com.bottega.documentmanagement.domain;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
-import java.util.Collection;
+import java.util.Arrays;
+import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkState;
 
@@ -18,9 +19,9 @@ public class Employee {
     @NaturalId
     private String login;
     private String hashedPassword;
-    @ManyToMany (fetch = FetchType.EAGER)
+    @ManyToMany (fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @Embedded
-    private Collection<Role> role;
+    private Set<Role> roles;
 
     public Employee (String login, String hashedPassword, EmployeeId employeeId){
         this.login = login;
@@ -38,7 +39,7 @@ public class Employee {
         this.hashedPassword = password;
     }
 
-    public boolean hasRoles(String ... roleName){
+   /* public boolean hasRoles(String ... roleName){
         if (roleName.length==0)
             return true;
         else for (String role_name: roleName)
@@ -47,15 +48,16 @@ public class Employee {
         return false;
 
     }
+*/
 
-    private boolean hasRole(String role_name) {
-        return ((role.contains(new Role(role_name))));
+    public void updateRoles(Set<Role> newRoles) {
+        this.roles = newRoles;
     }
 
-
-    public void replaceRoles(Collection<Role> newRoles) {
-        role.clear();
-        role.addAll(newRoles);
+    public boolean hasRoles(String[] roleNames) {
+        if (roleNames.length == 0)
+            return true;
+        return !Arrays.stream(roleNames).anyMatch((roleName) -> !roles.contains(new Role(roleName)));
     }
 
 }

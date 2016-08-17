@@ -1,7 +1,6 @@
 package pl.com.bottega.documentmanagement.controller;
 
 import org.springframework.web.bind.annotation.*;
-import pl.com.bottega.documentmanagement.api.EmployeeDto;
 import pl.com.bottega.documentmanagement.api.SignupResultDto;
 import pl.com.bottega.documentmanagement.api.UserManager;
 import pl.com.bottega.documentmanagement.domain.EmployeeId;
@@ -24,8 +23,9 @@ public class  EmployeesController {
         return userManager.signup(signupRequest.getLogin(), signupRequest.getPassword(), employeeId);
     }
     @PutMapping ("/{employeeId}/roles")
-    public void addRole(@PathVariable Long employeeId, EmployeeDto employeeDto){
-        userManager.addRole(employeeId, employeeDto.getRole());
+    public void updateRoles(@PathVariable Long id, @RequestBody UpdateRolesRequest request){
+        EmployeeId employeeId = new EmployeeId(id);
+        userManager.updateRoles(employeeId, request.getRoles());
 
     }
 
