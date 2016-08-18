@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Created by maciuch on 12.06.16.
@@ -49,6 +50,19 @@ public class UserManager {
             employeeRepository.save(employee);
             return success();
         }
+    }
+
+    @Transactional
+    public SignupResultDto signup(EmployeeId employeeId) {
+        checkNotNull(employeeId);
+        Employee employee = employeeRepository.findByEmployeeId(employeeId);
+
+        if (employee != null)
+            return failed("employee registered");
+
+        employee = employeeFactory.create(null, null, employeeId);
+        employeeRepository.save(employee);
+        return success();
     }
 
     private SignupResultDto setupNewAccount(String login, String password, EmployeeId employeeId) {
