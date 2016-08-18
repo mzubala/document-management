@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.*;
 import pl.com.bottega.documentmanagement.api.*;
 import pl.com.bottega.documentmanagement.domain.Document;
 import pl.com.bottega.documentmanagement.domain.DocumentNumber;
+import pl.com.bottega.documentmanagement.domain.EmployeeId;
 
 /**
  * Created by Dell on 2016-07-03.
@@ -14,10 +15,12 @@ public class DocumentsController {
 
     private DocumentFlowProcess documentFlowProcess;
     private DocumentsCatalog documentsCatalog;
+    private ReadingConfirmator readingConfirmator;
 
-    public DocumentsController(DocumentFlowProcess documentFlowProcess, DocumentsCatalog documentsCatalog) {
+    public DocumentsController(DocumentFlowProcess documentFlowProcess, DocumentsCatalog documentsCatalog, ReadingConfirmator readingConfirmator) {
         this.documentFlowProcess = documentFlowProcess;
         this.documentsCatalog = documentsCatalog;
+        this.readingConfirmator = readingConfirmator;
     }
 
     @PutMapping
@@ -44,5 +47,15 @@ public class DocumentsController {
     @DeleteMapping("/{documentNumber}")
     public void delete(@PathVariable String documentNumber) {
         documentFlowProcess.archive(new DocumentNumber(documentNumber));
+    }
+
+    @PutMapping("/{documentNumber}/confirmationBy")
+    public void confirm(@PathVariable String documentNumber) {
+        readingConfirmator.confirm(new DocumentNumber(documentNumber));
+    }
+
+    @PutMapping("/{documentNumber}/confirmationBy/{employeeId}")
+    public void confirmBy(@PathVariable("documentNumber") String documentNumber, @PathVariable(value = "employeeId") Long employeeId) {
+        readingConfirmator.confirm(new DocumentNumber(documentNumber), new EmployeeId(employeeId));
     }
 }

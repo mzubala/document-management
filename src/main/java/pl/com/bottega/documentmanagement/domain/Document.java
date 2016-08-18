@@ -88,12 +88,26 @@ public class Document {
         this.verifiedAt = new Date();
     }
 
-    public void confirm(Employee conirmator) {
-
+    public void confirm(Employee confirmator) throws IllegalArgumentException {
+        for (Iterator<Reader> it = readers.iterator(); it.hasNext();) {
+            Reader reader = it.next();
+            if (reader.equals(new Reader(this, confirmator))) {
+                reader.confirm();
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Reader has no access");
     }
 
-    public void confirm(Employee confirmator, Employee forEmployee) {
-
+    public void confirm(Employee confirmator, Employee forEmployee) throws IllegalArgumentException {
+        for (Iterator<Reader> it = readers.iterator(); it.hasNext();) {
+            Reader reader = it.next();
+            if (reader.equals(new Reader(this, forEmployee))) {
+                reader.confirm(confirmator);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Reader has no access");
     }
 
     public void publish(Employee employee, Set<Reader> readers) {
@@ -184,6 +198,25 @@ public class Document {
 
     public boolean isDeleted() {
         return deleted;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Document document = (Document) o;
+
+        if (id != null ? !id.equals(document.id) : document.id != null) return false;
+        return number != null ? number.equals(document.number) : document.number == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (number != null ? number.hashCode() : 0);
+        return result;
     }
 }
 

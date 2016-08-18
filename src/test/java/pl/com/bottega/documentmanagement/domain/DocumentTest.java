@@ -38,7 +38,10 @@ public class DocumentTest {
     private Employee anyVerificator;
 
     @Mock
-    private Reader reader;
+    private Reader anyReader;
+
+    @Mock
+    private EmployeeId anyEmployeeId;
 
     @Before
     public void setUp() {
@@ -153,7 +156,7 @@ public class DocumentTest {
 
     @Test
     public void shouldPublishDocument() {
-        Set<Reader> readers = new HashSet<>(Arrays.asList(reader, reader));
+        Set<Reader> readers = new HashSet<>(Arrays.asList(anyReader, anyReader));
 
         document.publish(anyEmployee, readers);
 
@@ -172,5 +175,69 @@ public class DocumentTest {
             return;
         }
         fail("NullPointerException excpected");
+    }
+
+    @Test
+    public void shouldConfirmDocumentReading() {
+        Reader reader = new Reader(document, anyEmployee);
+        Set<Reader> readers = new HashSet<>(Arrays.asList(reader, anyReader));
+        document.publish(anyEmployee, readers);
+
+        document.confirm(anyEmployee);
+
+        assertTrue(reader.isConfirmed());
+        assertFalse(anyReader.isConfirmed());
+        assertTrue(Math.abs(new Date().getTime() - reader.getConfirmedAt().getTime()) < EPS);
+        assertNull(reader.getConfirmedBy());
+        assertEquals(anyEmployee, reader.getEmployee());
+    }
+
+    @Test
+    public void shouldFailConfirmBecauseEmployeeIsNotAReader() {
+        Employee notReader = new Employee(anyEmployeeId);
+        Reader reader = new Reader(document, anyEmployee);
+        Set<Reader> readers = new HashSet<>(Arrays.asList(reader, anyReader));
+        document.publish(anyEmployee, readers);
+
+
+        try {
+            document.confirm(notReader);
+        }
+        catch (IllegalArgumentException ex) {
+            return;
+        }
+        fail("IllegalArgumentException excpected");
+    }
+
+    @Test
+    public void shouldConfirmByOtherEmployeeDocumentReading() {
+        Employee confirmatorManager = new Employee(anyEmployeeId);
+        Reader reader = new Reader(document, anyEmployee);
+        Set<Reader> readers = new HashSet<>(Arrays.asList(reader, anyReader));
+        document.publish(anyEmployee, readers);
+
+        document.confirm(confirmatorManager, anyEmployee);
+
+        assertTrue(reader.isConfirmed());
+        assertFalse(anyReader.isConfirmed());
+        assertTrue(Math.abs(new Date().getTime() - reader.getConfirmedAt().getTime()) < EPS);
+        assertEquals(confirmatorManager, reader.getConfirmedBy());
+        assertEquals(anyEmployee, reader.getEmployee());
+    }
+
+    @Test
+    public void shouldFailConfirmDocumentReadingByOtherEmployeeBecauseOtherEmployeeIsNotAReader() {
+        Employee notReader = new Employee(anyEmployeeId);
+        Reader reader = new Reader(document, anyEmployee);
+        Set<Reader> readers = new HashSet<>(Arrays.asList(reader, anyReader));
+        document.publish(anyEmployee, readers);
+
+        try {
+            document.confirm(anyEmployee, notReader);
+        }
+        catch (IllegalArgumentException ex) {
+            return;
+        }
+        fail("IllegalArgumentException excpected");
     }
 }

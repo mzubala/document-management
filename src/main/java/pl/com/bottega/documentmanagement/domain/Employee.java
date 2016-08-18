@@ -60,4 +60,28 @@ public class Employee {
     public Set<Role> getRole() {
         return roles;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Employee employee = (Employee) o;
+
+        if (employeeId != null ? !employeeId.equals(employee.employeeId) : employee.employeeId != null) return false;
+        if (hashedPassword != null ? !hashedPassword.equals(employee.hashedPassword) : employee.hashedPassword != null)
+            return false;
+        if (login != null ? !login.equals(employee.login) : employee.login != null) return false;
+        return roles != null ? roles.equals(employee.roles) : employee.roles == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = employeeId != null ? employeeId.hashCode() : 0;
+        result = 31 * result + (hashedPassword != null ? hashedPassword.hashCode() : 0);
+        result = 31 * result + (login != null ? login.hashCode() : 0);
+        result = 31 * result + (roles != null ? roles.hashCode() : 0);
+        return result;
+    }
 }
