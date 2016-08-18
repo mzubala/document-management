@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -71,6 +72,7 @@ public class ReadingConfirmatorTest {
 
         readingConfirmator.confirm(anyDocumentNumber);
 
+        verify(documentRepository).save(document);
         assertTrue(reader.isConfirmed());
         assertTrue(Math.abs(new Date().getTime() - reader.getConfirmedAt().getTime()) < EPS);
         assertNull(reader.getConfirmedBy());
@@ -90,6 +92,7 @@ public class ReadingConfirmatorTest {
 
         readingConfirmator.confirm(anyDocumentNumber, anyEmployeeId);
 
+        verify(documentRepository).save(document);
         assertTrue(reader.isConfirmed());
         assertTrue(Math.abs(new Date().getTime() - reader.getConfirmedAt().getTime()) < EPS);
         assertEquals(anyConfirmator, reader.getConfirmedBy());
