@@ -101,7 +101,8 @@ public class UserManagerTest {
     public void shouldLogInWhenLoginAndPasswordAreCorrect(){ //Nie dziala mi logowanie, Maciek prosze o podpowiedz jak zrobic.
         //given
         UserManager userManager = new UserManager(employeeRepository, employeeFactory, passwordHasher);
-        when(employeeFactory.create(freeLogin, anyPassword, anyEmployeeId)).thenReturn(employee);
+        when(employeeRepository.findByLoginAndPassword(freeLogin, anyPassword)).thenReturn(employee);
+        when(passwordHasher.hashedPassword(anyPassword)).thenReturn(anyPassword);
 
         //when
 
@@ -109,8 +110,8 @@ public class UserManagerTest {
 
         //then
         assertTrue(signupResultDto.isSuccess());
-        assertNotNull(signupResultDto.getFailuer());
-        assertEquals("Login and password correct", signupResultDto.isSuccess());
+        assertNull(signupResultDto.getFailuer());
+
 
 
     }

@@ -19,7 +19,11 @@ import pl.com.bottega.documentmanagement.domain.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.print.Doc;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -31,7 +35,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Created by Wojciech Winiarski on 31.07.2016.
  */
-@RunWith(SpringRunner.class)//przed uruchomieniem testu pojawi sie kontekst sprinowy
+@RunWith(SpringRunner.class)//przed uruchomieniem testu pojawi sie kontekst springowy
 @ContextConfiguration("/application.xml")
 @TestPropertySource({"/jdbc-test.properties", "/hibernate-test.properties"})
 @WebAppConfiguration
@@ -161,27 +165,53 @@ public class JPADocumentCatalogTest {
 
 
     }
-    //TODO
-//    @Transactional
-//    @Sql("/fixtures/document.sql")
-//    @Test
-//    public  void shouldFindDocumentSqlCreatedFrom() {
-//        //given
-//
-//
-//        //when
-//        DocumentCriteria documentCriteria = new DocumentCriteria();
-//        documentCriteria.setPerPage(25L);
-//        documentCriteria.setPageNumber(1L);
-//        documentCriteria.setCreatedFrom(new Date (2016,0,1));
-//        DocumentSearchResults results = jpaDocumentsCatalog.find(documentCriteria);
-//        //then
-//        assertEquals(new Long(1), results.getTotalPages());
-//        List<DocumentDto> documents = Lists.newArrayList(results.getDocuments());
-//        DocumentDto document = documents.get(0);
-//        assertEquals(2, documents.size());
-//        assertDate(new Long(1123), document.getCreatorId());
-//        ??????????????????????
-//    }
+
+    @Transactional
+    @Sql("/fixtures/document.sql")
+    @Test
+    public  void shouldFindDocumentSqlCreatedFrom() throws ParseException {
+        //given
+        String createAtDate  = "2016.01.01";
+        DateFormat format = new SimpleDateFormat("yyyy.MM.dd");
+        Date date = format.parse(createAtDate);
+
+        //when
+        DocumentCriteria documentCriteria = new DocumentCriteria();
+        documentCriteria.setPerPage(25L);
+        documentCriteria.setPageNumber(1L);
+        documentCriteria.setCreatedFrom(date);
+        DocumentSearchResults results = jpaDocumentsCatalog.find(documentCriteria);
+        //then
+        assertEquals(new Long(1), results.getTotalPages());
+        List<DocumentDto> documents = Lists.newArrayList(results.getDocuments());
+        DocumentDto document = documents.get(0);
+        assertEquals(2, documents.size());
+        assertEquals(new Long(1123), document.getCreatorId());
+
+
+    }
+
+    @Transactional
+    @Sql("/fixtures/document.sql")
+    @Test
+    public  void shouldFindDocumentSqlCreatedUntil() throws ParseException {
+        //given
+        String createAtDate = "2016.01.10";
+        DateFormat format = new SimpleDateFormat("yyyy.MM.dd");
+        Date date = format.parse(createAtDate);
+
+        //when
+        DocumentCriteria documentCriteria = new DocumentCriteria();
+        documentCriteria.setPerPage(25L);
+        documentCriteria.setPageNumber(1L);
+        documentCriteria.setCreatedUntil(date);
+        DocumentSearchResults results = jpaDocumentsCatalog.find(documentCriteria);
+        //then
+        assertEquals(new Long(1), results.getTotalPages());
+        List<DocumentDto> documents = Lists.newArrayList(results.getDocuments());
+        DocumentDto document = documents.get(0);
+        assertEquals(2, documents.size());
+        assertEquals(new Long(1123), document.getCreatorId());
+    }
 
 }

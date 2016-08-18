@@ -53,8 +53,8 @@ public class DocumentController {
     public void delete(@PathVariable String documentNumber){
         documentFlowProcess.archive(new DocumentNumber(documentNumber));
 
-
     }
+
 
 }
 

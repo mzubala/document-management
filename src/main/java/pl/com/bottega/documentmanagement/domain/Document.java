@@ -4,11 +4,13 @@ import com.sun.deploy.security.ValidationState;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static pl.com.bottega.documentmanagement.domain.DocumentStatus.DRAFT;
+import static pl.com.bottega.documentmanagement.domain.DocumentStatus.PUBLISHED;
 import static pl.com.bottega.documentmanagement.domain.DocumentStatus.VERIFIED;
 
 /**
@@ -42,7 +44,13 @@ public class Document {
     @Temporal(TemporalType.TIMESTAMP)
     private Date verificatedAt;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date publishedAt;
 
+    @ManyToOne
+    private Employee publisher;
+    @ManyToOne(cascade = CascadeType.ALL)
+    Set<Reader> readers = new HashSet<>();
     @ManyToOne
     private Employee deletedBy;
 
@@ -80,6 +88,14 @@ public class Document {
        this.veryficator = employee;
        this.documentStatus = VERIFIED;
        this.verificatedAt = new Date();
+
+    }
+    public void publish(Employee employee, Set<Reader> readers){
+        checkArgument(employee != null);
+        this.publisher = employee;
+        this.documentStatus = PUBLISHED;
+        this.publishedAt = new Date();
+        this.readers = readers;
 
     }
 
@@ -152,5 +168,25 @@ public class Document {
 
     public Employee veryficator() {
         return veryficator;
+    }
+
+    public  Date getPublishedAt(){
+        return publishedAt;
+    }
+    public void setPublishedAt(Date publishedAt){
+        this.publishedAt = publishedAt;
+    }
+
+    public Employee getPublisher(){
+        return publisher;
+    }
+    public void setPublisher(Employee publisher){
+        this.publisher = publisher;
+    }
+    public Set<Reader> getReaders(){
+        return readers;
+    }
+    public void setReaders(Set<Reader> readers){
+        this.readers = readers;
     }
 }

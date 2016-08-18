@@ -3,11 +3,11 @@ package pl.com.bottega.documentmanagement.api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.com.bottega.documentmanagement.domain.Document;
-import pl.com.bottega.documentmanagement.domain.DocumentNumber;
-import pl.com.bottega.documentmanagement.domain.DocumentNumberGenerator;
-import pl.com.bottega.documentmanagement.domain.EmployeeId;
+import pl.com.bottega.documentmanagement.domain.*;
 import pl.com.bottega.documentmanagement.domain.repositories.DocumentRepository;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -25,11 +25,19 @@ public class DocumentFlowProcess {
 
     private UserManager userManager;
 
+    private DocumentFactory documentFactory;
 
-    public DocumentFlowProcess(DocumentNumberGenerator documentNumberGenerator, DocumentRepository documentRepository, UserManager userManager) {
+    private EmployeeRepository employeeRepository;
+
+
+
+    public DocumentFlowProcess(DocumentNumberGenerator documentNumberGenerator, DocumentRepository documentRepository,
+                               UserManager userManager, DocumentFactory documentFactory, EmployeeRepository employeeRepository) {
         this.documentNumberGenerator = documentNumberGenerator;
         this.documentRepository = documentRepository;
         this.userManager = userManager;
+        this.documentFactory = documentFactory;
+        this.employeeRepository = employeeRepository;
     }
 
     @Transactional
@@ -39,9 +47,8 @@ public class DocumentFlowProcess {
         checkNotNull(content);
 
         DocumentNumber documentNumber = documentNumberGenerator.generate();
-        Document document = new Document(documentNumber, title, content, userManager.currentEmployee());
+        Document document = documentFactory.create(documentNumber,content,title,userManager.currentEmployee());
         documentRepository.save(document);
-
         return documentNumber;
     }
     @Transactional
@@ -65,9 +72,7 @@ public class DocumentFlowProcess {
         documentRepository.save(document);
     }
 
-    public void publish(DocumentNumber documentNumber, Iterable<EmployeeId> ids) {
-        checkNotNull(documentNumber);
-    }
+
 
     @Transactional
     @RequiresAuth(roles = "EDITOR")
@@ -83,6 +88,35 @@ public class DocumentFlowProcess {
         checkNotNull(documentNumber);
 
         return null;
+    }
+    @Transactional
+    @RequiresAuth(roles = "MANGER")
+    public void publish(DocumentNumber documentNumber, Set<Long> ids){
+        checkNotNull(documentNumber);
+        Document document = documentRepository.load(documentNumber);
+        Set<Reader> readers = addDocumentReaders(ids, document);
+        document.publish(userManager.currentEmployee(), readers);
+        documentRepository.save(document);
+    }
+
+    private Set<Reader> addDocumentReaders(Set<Long> ids, Document document) {
+
+        Set<Reader> readers = new HashSet<>();
+        for (Long id : ids){
+            EmployeeId employeeId = new EmployeeId(id);
+            Employee employee = employeeRepository.findByEmployee(employeeId);
+            if(employee == null){
+                employee = createDigitalExcludeEmployee(employeeId);
+                readers.add(new Reader(document, employee));
+            }
+        }
+        return readers;
+
+    }
+
+    private Employee createDigitalExcludeEmployee(EmployeeId employeeId) {
+        userManager.signup(employeeId);
+        return employeeRepository .findByEmployee(employeeId);
     }
 
 }

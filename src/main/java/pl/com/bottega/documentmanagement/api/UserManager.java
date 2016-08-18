@@ -12,6 +12,8 @@ import pl.com.bottega.documentmanagement.domain.Employee;
 import pl.com.bottega.documentmanagement.domain.EmployeeId;
 import pl.com.bottega.documentmanagement.domain.EmployeeRepository;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 /**
  * Created by Wojciech Winiarski on 12.06.16.
  */
@@ -48,6 +50,18 @@ public class UserManager {
           return success();
       }
 
+    }
+    @Transactional()
+    public SignupResultDto signup(EmployeeId employeeId){
+        checkArgument(employeeId != null);
+        Employee employee = employeeRepository.findByEmployee(employeeId);
+        if(employee == null){
+            employee = employeeFactory.create(null, null,employeeId);
+            employeeRepository.save(employee);
+            return success();
+        }
+        else
+            return failed("Employee registered");
     }
 
     private SignupResultDto failed(String reason) {
@@ -89,4 +103,6 @@ public class UserManager {
         return currentEmployee != null && currentEmployee.hasRoles(roleName);
 
     }
+
+
 }
