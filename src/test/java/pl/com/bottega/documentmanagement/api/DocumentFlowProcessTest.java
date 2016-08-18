@@ -4,16 +4,18 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import pl.com.bottega.documentmanagement.domain.Document;
-import pl.com.bottega.documentmanagement.domain.DocumentNumber;
-import pl.com.bottega.documentmanagement.domain.DocumentNumberGenerator;
-import pl.com.bottega.documentmanagement.domain.Employee;
+import pl.com.bottega.documentmanagement.domain.*;
 import pl.com.bottega.documentmanagement.domain.repositories.DocumentRepository;
+import pl.com.bottega.documentmanagement.domain.repositories.EmployeeRepository;
+
+import java.util.Collection;
+import java.util.Set;
 
 import static org.aspectj.bridge.MessageUtil.fail;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by paulina.pislewicz on 2016-08-08.
@@ -30,9 +32,17 @@ public class DocumentFlowProcessTest {
     @Mock
     private UserManager userManager;
     @Mock
-     DocumentNumberGenerator documentNumberGenerator;
+    DocumentNumberGenerator documentNumberGenerator;
     @Mock
     private DocumentFactory documentFactory;
+    @Mock
+    private EmployeeRepository employeeRepository;
+
+    @Mock
+    private Set<EmployeeId> employeeIdsObligatedToRead;
+
+    @Mock
+    private Collection<Employee> employeeObligatedToRead;
 
     @Mock
     private Employee creator;
@@ -107,6 +117,7 @@ public class DocumentFlowProcessTest {
         DocumentFlowProcess documentFlowProcess = new DocumentFlowProcess(documentRepository, documentFactory, userManager, documentNumberGenerator);
         Document document = new Document(occupiedDocumentNumber, anyContent, anyTitle, creator);
         when(documentRepository.load(occupiedDocumentNumber)).thenReturn(document);
+
         //when
         documentFlowProcess.change(occupiedDocumentNumber, modifiedTitle, modifiedContent);
         //then
@@ -114,7 +125,22 @@ public class DocumentFlowProcessTest {
         assertEquals(modifiedContent, document.content());
         assertEquals(modifiedTitle, document.title());
         assertNotEquals(anyContent, document.content());
+    }
 
+    @Test
+    public void shouldPublishDocument(){
+        //given
+        DocumentFlowProcess documentFlowProcess = new DocumentFlowProcess(documentRepository, documentFactory, userManager, documentNumberGenerator);
+        Document document = new Document(occupiedDocumentNumber, anyContent, anyTitle, creator);
+        when(documentRepository.load(occupiedDocumentNumber)).thenReturn(document);
+        when(employeeRepository.findByEmployeeIds(employeeIdsObligatedToRead)).thenReturn(employeeObligatedToRead);
+
+        //when
+        documentFlowProcess.publish(occupiedDocumentNumber,employeeIdsObligatedToRead);
+
+        //then
+        verify(documentRepository).save(document);
+        assertEquals(DocumentStatus.PUBLISHED, document.documentStatus());
 
     }
 

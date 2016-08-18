@@ -1,6 +1,7 @@
 package pl.com.bottega.documentmanagement.domain;
 
 import javax.persistence.*;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
 
@@ -27,6 +28,8 @@ public class Document {
     private Employee verificator;
     @ManyToOne
     private Employee publisher;
+    @OneToMany
+    private Set <Reader> readers;
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date createdAt, updatedAt, verificatedAt, publishedAt;
     private Boolean deleted;
@@ -66,13 +69,43 @@ public class Document {
         this.verificatedAt = new Date();
     }
 
-    public void confirm(Employee confirmator) {
-
+    public void publish(Employee publisher, Collection<Employee> employees) {
+        checkArgument(publisher!=null);
+        this.publisher = publisher;
+        documentStatus = documentStatus.PUBLISHED;
+        this.publishedAt = new Date();
     }
+
+    public void confirm(Employee confirmator) {
+        checkArgument(confirmator != null);
+
+        Employee employeeEligibleToConfirm;
+        for (Reader reader : readers) {
+            employeeEligibleToConfirm =  reader.getEmployee();
+            if (employeeEligibleToConfirm.equals(confirmator)) {
+                reader.confirm();
+            } else {
+                throw new IllegalArgumentException("Employee is not entitled to read document!");
+            }
+        }
+    }
+
 
     public void confirm(Employee confirmator, Employee forEmployee) {
+        checkArgument(confirmator!=null);
+        checkArgument(forEmployee!=null);
 
+        Employee employeeEligibleToConfirm;
+        for (Reader reader : readers) {
+            employeeEligibleToConfirm =  reader.getEmployee();
+            if (employeeEligibleToConfirm.equals(confirmator)) {
+                reader.confirmedBy= forEmployee;
+            } else {
+                throw new IllegalArgumentException("Employee is not entitled to read document!");
+            }
+        }
     }
+
 
     public void delete() {
         this.deleted = true;
@@ -112,4 +145,6 @@ public class Document {
     public Employee verificator() {
         return verificator;
     }
+
+
 }

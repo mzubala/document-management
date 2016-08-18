@@ -6,7 +6,9 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Date;
+import java.util.Set;
 
+import static junit.framework.Assert.assertEquals;
 import static junit.framework.TestCase.*;
 
 /**
@@ -20,9 +22,15 @@ public class DocumentTest {
     private DocumentNumber anyNumber;
     @Mock
     private Employee anyEmployee;
+    @Mock
+    private Reader reader;
 
     @Mock
     private Employee anyVerificator;
+
+    @Mock
+    private Set <Employee> employeesObligatedToRead;
+
 
     private String anyContent = "test content";
     private String anyTitle = "test title";
@@ -99,6 +107,30 @@ public class DocumentTest {
         document.delete();
         //then
         assertTrue(document.deleted());
+
+    }
+
+    @Test
+    public void shouldPublishDocument(){
+        //given
+        Document document = new Document(anyNumber,anyContent, anyTitle, anyEmployee);
+
+        //when
+        document.publish(anyEmployee, employeesObligatedToRead );
+
+        //then
+        assertEquals(DocumentStatus.PUBLISHED, document.documentStatus());
+
+    }
+
+    @Test
+    public void shouldConfirm(){
+        //given
+        Document document = new Document(anyNumber,anyContent, anyTitle, anyEmployee);
+        //when
+        document.confirm(anyEmployee);
+        //then
+        assertTrue(reader.confirmed);
 
     }
 }

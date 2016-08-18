@@ -7,6 +7,8 @@ import pl.com.bottega.documentmanagement.domain.*;
 import pl.com.bottega.documentmanagement.domain.repositories.DocumentRepository;
 import pl.com.bottega.documentmanagement.domain.repositories.EmployeeRepository;
 
+import java.util.*;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -19,7 +21,9 @@ public class DocumentFlowProcess {
     private DocumentRepository documentRepository;
     private UserManager userManager;
     private EmployeeRepository employeeRepository;
+    private EmployeeFactory employeeFactory;
     private DocumentFactory documentFactory;
+    private Reader reader;
 
     @Autowired
     public DocumentFlowProcess(DocumentRepository documentRepository, DocumentFactory documentFactory, UserManager userManager, DocumentNumberGenerator documentNumberGenerator) {
@@ -61,14 +65,26 @@ public class DocumentFlowProcess {
         documentRepository.save(document);
     }
 
+    //// TODO: 2016-08-17  
     @Transactional
     @RequiresAuth(roles = {"MANAGER"})
-    public void publish(DocumentNumber documentNumber, Iterable<EmployeeId> ids) {
+    public void publish(DocumentNumber documentNumber, Set<EmployeeId> employeeIds) {
         checkNotNull(documentNumber);
         Document document = documentRepository.load(documentNumber);
-       // document.confirm(ids);
+        Collection<Employee> employeesObligatedToRead = employeeRepository.findByEmployeeIds(employeeIds);
 
+        Employee employeeWithOnlyId;
+
+        for(EmployeeId employeeId: employeeIds) {
+            if (!employeesObligatedToRead.contains(employeeRepository.findByEmployeeId(employeeId))) {
+                employeeWithOnlyId = employeeFactory.create(null, null, employeeId);
+                employeesObligatedToRead.add(employeeWithOnlyId);
+            }
+        }
+        document.publish(userManager.currentEmployee(), employeesObligatedToRead);
     }
+
+    
 
     @Transactional
     @RequiresAuth(roles = {"EDITOR"})

@@ -3,7 +3,9 @@ package pl.com.bottega.documentmanagement.api;
 import pl.com.bottega.documentmanagement.domain.Document;
 import pl.com.bottega.documentmanagement.domain.DocumentNumber;
 import pl.com.bottega.documentmanagement.domain.Employee;
+import pl.com.bottega.documentmanagement.domain.EmployeeId;
 import pl.com.bottega.documentmanagement.domain.repositories.DocumentRepository;
+import pl.com.bottega.documentmanagement.domain.repositories.EmployeeRepository;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -14,6 +16,7 @@ public class ReadingConfirmator {
 
     private DocumentRepository documentRepository;
     private UserManager userManager;
+    private EmployeeRepository employeeRepository;
 
     public void confirm(DocumentNumber documentNumber) {
         checkNotNull(documentNumber);
@@ -23,11 +26,12 @@ public class ReadingConfirmator {
         documentRepository.save(document);
     }
 
-    public void confirm(DocumentNumber documentNumber, Employee forEmployee) {
+    public void confirm(DocumentNumber documentNumber, EmployeeId forEmployeeId) {
         checkNotNull(documentNumber);
-        checkNotNull(forEmployee);
+        checkNotNull(forEmployeeId);
 
         Document document = documentRepository.load(documentNumber);
+        Employee forEmployee = employeeRepository.findByEmployeeId(forEmployeeId);
         document.confirm(userManager.currentEmployee(), forEmployee);
 
         documentRepository.save(document);

@@ -1,10 +1,7 @@
 package pl.com.bottega.documentmanagement.infrastructure;
 
 import org.springframework.stereotype.Repository;
-import pl.com.bottega.documentmanagement.domain.Employee;
-import pl.com.bottega.documentmanagement.domain.EmployeeId;
-import pl.com.bottega.documentmanagement.domain.Role;
-import pl.com.bottega.documentmanagement.domain.Role_;
+import pl.com.bottega.documentmanagement.domain.*;
 import pl.com.bottega.documentmanagement.domain.repositories.EmployeeRepository;
 
 import javax.persistence.EntityManager;
@@ -12,6 +9,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -34,6 +32,7 @@ public class JPAEmployeeRepository implements EmployeeRepository {
     public Employee findByEmployeeId(EmployeeId employeeId) {
        return entityManager.find(Employee.class, employeeId);
     }
+
 
     @Override
     public boolean isLoginOccupied(String login) {
@@ -68,4 +67,16 @@ public class JPAEmployeeRepository implements EmployeeRepository {
         criteriaQuery.where(root.get(Role_.name).in(roleNames));
         return entityManager.createQuery(criteriaQuery).getResultList();
     }
+
+    @Override
+    public List <Employee> findByEmployeeIds(Set<EmployeeId> readersIds) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Employee> criteriaQuery = criteriaBuilder.createQuery(Employee.class);
+        Root <Employee> root;
+        root = criteriaQuery.from(Employee.class);
+        criteriaQuery.select(root);
+        criteriaQuery.where(root.get(Employee_.employeeId).in(readersIds));
+        return entityManager.createQuery(criteriaQuery).getResultList();
+    }
+
 }

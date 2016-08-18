@@ -82,6 +82,7 @@ public class JPADocumentCatalogTest {
         DocumentDto document = documents.get(0);
         assertEquals("draft content", document.getContent());
         assertEquals("DRAFT", document.getStatus());
-
     }
+
+
 }

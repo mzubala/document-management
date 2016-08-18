@@ -1,11 +1,8 @@
 package pl.com.bottega.documentmanagement.controller;
 
 import org.springframework.web.bind.annotation.*;
-import pl.com.bottega.documentmanagement.api.DocumentCriteria;
-import pl.com.bottega.documentmanagement.api.DocumentFlowProcess;
-import pl.com.bottega.documentmanagement.api.DocumentsCatalog;
+import pl.com.bottega.documentmanagement.api.*;
 import pl.com.bottega.documentmanagement.domain.DocumentNumber;
-import pl.com.bottega.documentmanagement.api.DocumentDto;
 
 /**
  * Created by paulina.pislewicz on 2016-07-03.
@@ -40,7 +37,7 @@ public class DocumentController {
 
     ///documents?query=hospital&createdFrom=3000&createdUntil=6000...Spring mvc potrafi stworzyć z tego URL documentCriteria
     @GetMapping
-    public Iterable <DocumentDto> index(DocumentCriteria documentCriteria){ //metoda zwraca kilka dokumentów a nie 1
+    public DocumentSearchResults index(DocumentCriteria documentCriteria){ //metoda zwraca kilka dokumentów a nie 1
         return documentsCatalog.find(documentCriteria);
     }
 
