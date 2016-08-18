@@ -3,10 +3,10 @@ package pl.com.bottega.documentmanagement.domain;
 import javax.persistence.*;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import java.util.Date;
-import java.util.Set;
+import java.util.*;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 import static pl.com.bottega.documentmanagement.domain.DocumentStatus.*;
 
 /**
@@ -44,9 +44,9 @@ public class Document {
     @Temporal(TemporalType.TIMESTAMP)
     private Date verifiedAt;
 
-    /**
-     * 'true' if document is deleted
-     */
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date publishedAt;
+
     private boolean deleted;
 
     @ManyToOne
@@ -55,7 +55,13 @@ public class Document {
     @ManyToMany(cascade = CascadeType.ALL)
     private Set<Tag> tags;
 
-    private Document() {}
+    @ManyToOne
+    private Employee publishedBy;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    private Set<Reader> readers = new HashSet<>();
+
+    public Document() {}
 
     public Document(DocumentNumber documentNumber, String content, String title, Employee creator) {
         this.number = documentNumber;
@@ -88,6 +94,14 @@ public class Document {
 
     public void confirm(Employee confirmator, Employee forEmployee) {
 
+    }
+
+    public void publish(Employee employee, Set<Reader> readers) {
+        checkNotNull(employee);
+        this.documentStatus = PUBLISHED;
+        this.publishedBy = employee;
+        this.publishedAt = new Date();
+        this.readers = readers;
     }
 
     public DocumentNumber getNumber() {
@@ -150,6 +164,26 @@ public class Document {
 
     public Set<Tag> tags() {
         return tags;
+    }
+
+    public Date getPublishedAt() {
+        return publishedAt;
+    }
+
+    public Set<Reader> getReaders() {
+        return readers;
+    }
+
+    public Set<Tag> getTags() {
+        return tags;
+    }
+
+    public Employee getPublishedBy() {
+        return publishedBy;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
     }
 }
 

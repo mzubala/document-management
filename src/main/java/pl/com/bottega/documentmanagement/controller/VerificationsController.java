@@ -17,7 +17,7 @@ public class VerificationsController {
         this.documentFlowProcess = documentFlowProcess;
     }
 
-    @PutMapping
+    @PostMapping
     public void create(@PathVariable String documentNumber) {
         documentFlowProcess.verify(new DocumentNumber(documentNumber));
     }

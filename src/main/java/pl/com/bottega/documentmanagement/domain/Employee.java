@@ -27,6 +27,10 @@ public class Employee {
 
     private Employee() {}
 
+    public Employee(EmployeeId employeeId) {
+        this.employeeId = employeeId;
+    }
+
     public Employee(String login, String hashedPassword, EmployeeId employeeId) {
         this.login = login;
         this.hashedPassword = hashedPassword;

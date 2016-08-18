@@ -6,10 +6,14 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.Assert.*;
 import static pl.com.bottega.documentmanagement.domain.DocumentStatus.DRAFT;
+import static pl.com.bottega.documentmanagement.domain.DocumentStatus.PUBLISHED;
 
 /**
  * Created by Dell on 2016-07-31.
@@ -18,10 +22,10 @@ import static pl.com.bottega.documentmanagement.domain.DocumentStatus.DRAFT;
 public class DocumentTest {
 
     private final static Long EPS = 2L * 1000L; //epsilon
-    private String anyContent = "test content";
-    private String anyTitle = "test title";
-    private String newTitle = "new title";
-    private String newContent = "new content";
+    private final String anyContent = "test content";
+    private final String anyTitle = "test title";
+    private final String newTitle = "new title";
+    private final String newContent = "new content";
     private Document document;
 
     @Mock
@@ -32,6 +36,9 @@ public class DocumentTest {
 
     @Mock
     private Employee anyVerificator;
+
+    @Mock
+    private Reader reader;
 
     @Before
     public void setUp() {
@@ -142,5 +149,28 @@ public class DocumentTest {
             return;
         }
         fail("IllegalArgumentException excpected");
+    }
+
+    @Test
+    public void shouldPublishDocument() {
+        Set<Reader> readers = new HashSet<>(Arrays.asList(reader, reader));
+
+        document.publish(anyEmployee, readers);
+
+        assertEquals(PUBLISHED, document.getDocumentStatus());
+        assertEquals(readers, document.getReaders());
+        assertEquals(anyEmployee, document.getPublishedBy());
+        assertTrue(Math.abs(new Date().getTime() - document.getPublishedAt().getTime()) < EPS);
+    }
+
+    @Test
+    public void shouldRequirePublisher() {
+        try {
+            document.publish(null, null);
+        }
+        catch (NullPointerException ex) {
+            return;
+        }
+        fail("NullPointerException excpected");
     }
 }

@@ -2,11 +2,12 @@ package pl.com.bottega.documentmanagement.api;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.com.bottega.documentmanagement.domain.Document;
-import pl.com.bottega.documentmanagement.domain.DocumentNumber;
-import pl.com.bottega.documentmanagement.domain.DocumentNumberGenerator;
-import pl.com.bottega.documentmanagement.domain.EmployeeId;
+import pl.com.bottega.documentmanagement.domain.*;
 import pl.com.bottega.documentmanagement.domain.repositories.DocumentRepository;
+import pl.com.bottega.documentmanagement.domain.repositories.EmployeeRepository;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -20,12 +21,15 @@ public class DocumentFlowProcess {
     private DocumentRepository documentRepository;
     private UserManager userManager;
     private DocumentFactory documentFactory;
+    private EmployeeRepository employeeRepository;
 
-    public DocumentFlowProcess(DocumentRepository documentRepository, UserManager userManager, DocumentNumberGenerator documentNumberGenerator, DocumentFactory documentFactory) {
+    public DocumentFlowProcess(DocumentRepository documentRepository, UserManager userManager, DocumentNumberGenerator documentNumberGenerator,
+                               DocumentFactory documentFactory, EmployeeRepository employeeRepository) {
         this.documentRepository = documentRepository;
         this.userManager = userManager;
         this.documentNumberGenerator = documentNumberGenerator;
         this.documentFactory = documentFactory;
+        this.employeeRepository = employeeRepository;
     }
 
     @Transactional
@@ -66,8 +70,30 @@ public class DocumentFlowProcess {
 
     @Transactional
     @RequiresAuth(roles = "MANAGER")
-    public void publish(DocumentNumber documentNumber, Iterable<EmployeeId> ids) {
+    public void publish(DocumentNumber documentNumber, Set<Long> ids) {
         checkNotNull(documentNumber);
+
+        Document document = documentRepository.load(documentNumber);
+        Set<Reader> readers = addDocumentReaders(ids, document);
+        document.publish(userManager.currentEmployee(), readers);
+        documentRepository.save(document);
+    }
+
+    private Set<Reader> addDocumentReaders(Set<Long> ids, Document document) {
+        Set<Reader> readers = new HashSet<>();
+        for (Long id : ids) {
+            EmployeeId employeeId = new EmployeeId(id);
+            Employee employee = employeeRepository.findByEmployeeId(employeeId);
+            if (employee == null)
+                employee = createDigitalExcludedEmployee(employeeId);
+            readers.add(new Reader(document, employee));
+        }
+        return readers;
+    }
+
+    private Employee createDigitalExcludedEmployee(EmployeeId employeeId) {
+        userManager.signup(employeeId);
+        return employeeRepository.findByEmployeeId(employeeId);
     }
 
     @Transactional

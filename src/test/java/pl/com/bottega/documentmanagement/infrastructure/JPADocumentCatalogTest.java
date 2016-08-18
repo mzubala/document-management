@@ -47,7 +47,6 @@ public class JPADocumentCatalogTest {
     public void shouldFindDocumentByStatus() {
         //given
         Employee employee = new Employee("test login", "test password", new EmployeeId(8700L));
-//        employee.updateRoles(new HashSet<>(Arrays.asList(new Role("STAFF"))));
         Document documentDraft = new Document(new DocumentNumber("1"), "draft", "draft", employee);
         Document documentVerified = new Document(new DocumentNumber("2"), "verified", "verified", employee);
         entityManager.persist(employee);

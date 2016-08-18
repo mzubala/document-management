@@ -9,12 +9,14 @@ import pl.com.bottega.documentmanagement.api.DocumentFactory;
 import pl.com.bottega.documentmanagement.api.DocumentFlowProcess;
 import pl.com.bottega.documentmanagement.api.UserManager;
 import pl.com.bottega.documentmanagement.domain.repositories.DocumentRepository;
+import pl.com.bottega.documentmanagement.domain.repositories.EmployeeRepository;
 
-import java.util.Date;
+import java.util.*;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static pl.com.bottega.documentmanagement.domain.DocumentStatus.DRAFT;
+import static pl.com.bottega.documentmanagement.domain.DocumentStatus.PUBLISHED;
 import static pl.com.bottega.documentmanagement.domain.DocumentStatus.VERIFIED;
 
 /**
@@ -24,6 +26,7 @@ import static pl.com.bottega.documentmanagement.domain.DocumentStatus.VERIFIED;
 public class DocumentFlowProcessTest {
 
     private final static Long EPS = 2L * 1000L;
+    private final static Employee EMPLOYEE = new Employee(new EmployeeId(10L));
 
     private DocumentFlowProcess documentFlowProcess;
     private String anyContent = "Test content";
@@ -52,9 +55,18 @@ public class DocumentFlowProcessTest {
     @Mock
     private Document document;
 
+    @Mock
+    private EmployeeRepository employeeRepository;
+
+    @Mock
+    private Set<Long> ids = new HashSet<>();
+
+    @Mock
+    private EmployeeId employeeId;
+
     @Before
     public void setUp() {
-        documentFlowProcess = new DocumentFlowProcess(documentRepository, userManager, documentNumberGenerator, documentFactory);
+        documentFlowProcess = new DocumentFlowProcess(documentRepository, userManager, documentNumberGenerator, documentFactory, employeeRepository);
     }
 
     @Test
@@ -187,6 +199,49 @@ public class DocumentFlowProcessTest {
     public void shouldRequireDocumentNumberForDocumentArchive() {
         try {
             documentFlowProcess.archive(null);
+        }
+        catch (NullPointerException ex) {
+            return;
+        }
+        fail("NullPointerExceptionExpected");
+    }
+
+    @Test
+    public void shouldPublishDocument() {
+        Document document = new Document(new DocumentNumber("test number"), anyContent, anyTitle, employee);
+        Set<Long> ids = new LinkedHashSet<>(Arrays.asList(1L, 2L));
+        when(documentRepository.load(documentNumber)).thenReturn(document);
+        when(employeeRepository.findByEmployeeId(new EmployeeId(1L))).thenReturn(EMPLOYEE);//??
+        when(employeeRepository.findByEmployeeId(new EmployeeId(2L))).thenReturn(EMPLOYEE);//??
+        when(userManager.currentEmployee()).thenReturn(employee);
+
+        documentFlowProcess.publish(documentNumber, ids);
+
+        verify(documentRepository).save(document);
+        assertEquals(PUBLISHED, document.getDocumentStatus());
+        assertNotNull(document.getReaders());
+        assertEquals(2, document.getReaders().size());
+    }
+
+    @Test
+    public void shouldPublishDocumentWithDigitalExcludedEmployeeCreating() {
+        Document document = new Document(new DocumentNumber("test number"), anyContent, anyTitle, employee);
+        Set<Long> ids = new LinkedHashSet<>(Arrays.asList(1L, 8L));
+        when(documentRepository.load(documentNumber)).thenReturn(document);
+        when(userManager.currentEmployee()).thenReturn(employee);
+
+        documentFlowProcess.publish(documentNumber, ids);
+
+        verify(documentRepository).save(document);
+        assertEquals(PUBLISHED, document.getDocumentStatus());
+        assertNotNull(document.getReaders());
+        assertEquals(2, document.getReaders().size());
+    }
+
+    @Test
+    public void shouldRequireEmployeeForPublish() {
+        try {
+            documentFlowProcess.publish(null, ids);
         }
         catch (NullPointerException ex) {
             return;

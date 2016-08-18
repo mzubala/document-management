@@ -11,7 +11,9 @@ import pl.com.bottega.documentmanagement.domain.EmployeeId;
 import pl.com.bottega.documentmanagement.domain.Role;
 import pl.com.bottega.documentmanagement.domain.repositories.EmployeeRepository;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.Assert.*;
@@ -26,12 +28,12 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class UserManagerTest {
 
+    private static final Employee EMPLOYEE = new Employee(new EmployeeId(22L));
+
     private UserManager userManager;
     private String occupiedLogin = "occupied login";
     private String anyPassword = "test password";
     private String freeLogin = "free login";
-
-    private EmployeeFactory employeeFactoryClass = Mockito.mock(EmployeeFactory.class);
 
     @Mock
     private EmployeeRepository employeeRepository;
@@ -53,6 +55,9 @@ public class UserManagerTest {
 
     @Mock
     private Collection<Role> existingRoles;
+
+    @Mock
+    private Set<String> roleNames;
 
     @Before
     public void setUp() {
@@ -87,6 +92,34 @@ public class UserManagerTest {
         verify(employeeRepository).save(employee);
         assertTrue(signupResultDto.isSuccess());
         assertNull(signupResultDto.getFailureReason());
+    }
+
+    @Test
+    public void shouldSignupDigitalExcludedEmployee() {
+        //given
+        when(employeeRepository.findByEmployeeId(anyEmployeeId)).thenReturn(null);
+        when(employeeFactory.create(null, null, anyEmployeeId)).thenReturn(employee);
+
+        //when
+        SignupResultDto signupResultDto = userManager.signup(anyEmployeeId);
+
+        //then
+        verify(employeeRepository).save(employee);
+        assertTrue(signupResultDto.isSuccess());
+        assertNull(signupResultDto.getFailureReason());
+    }
+
+    @Test
+    public void shouldNotSignupDigitalExcludedEmployee() {
+        //given
+        when(employeeRepository.findByEmployeeId(anyEmployeeId)).thenReturn(employee);
+
+        //when
+        SignupResultDto signupResultDto = userManager.signup(anyEmployeeId);
+
+        //then
+        assertFalse(signupResultDto.isSuccess());
+        assertEquals("employee registered", signupResultDto.getFailureReason());
     }
 
     @Test
@@ -180,16 +213,49 @@ public class UserManagerTest {
 
     @Test
     public void shouldUpdateRoles() {
-//        when(employeeRepository.findByEmployeeId(anyEmployeeId)).thenReturn(employee);
-//        when(employeeRepository.getRoles(roles)).thenReturn(existingRoles);
-//        when(mock(Set.class).addAll(existingRoles)).thenReturn(true);
+        Set<Role> existingRoles = new HashSet<>(Arrays.asList(new Role("STAFF"), new Role("MANAGER")));
+        Set<String> roleNames = new HashSet<>(Arrays.asList("STAFF", "MANAGER"));
+        when(employeeRepository.findByEmployeeId(anyEmployeeId)).thenReturn(EMPLOYEE);
+        when(employeeRepository.getRoles(roleNames)).thenReturn(existingRoles);
 
-//        userManager.updateRoles(anyEmployeeId, roles);
+        userManager.updateRoles(anyEmployeeId, roleNames);
+
+        assertEquals(2, EMPLOYEE.getRole().size());
+        assertTrue(EMPLOYEE.getRole().contains(new Role("STAFF")));
+        assertTrue(EMPLOYEE.getRole().contains(new Role("MANAGER")));
+    }
+
+    @Test
+    public void shouldUpdateRolesAndAddNewRoleNameToRoleTable() {
+        Set<Role> existingRoles = new HashSet<>(Arrays.asList(new Role("STAFF")));
+        Set<String> roleNames = new HashSet<>(Arrays.asList("STAFF", "MANAGER"));
+        when(employeeRepository.findByEmployeeId(anyEmployeeId)).thenReturn(EMPLOYEE);
+        when(employeeRepository.getRoles(roleNames)).thenReturn(existingRoles);
+
+        userManager.updateRoles(anyEmployeeId, roleNames);
+
+        assertEquals(2, EMPLOYEE.getRole().size());
+        assertTrue(EMPLOYEE.getRole().contains(new Role("STAFF")));
+        assertTrue(EMPLOYEE.getRole().contains(new Role("MANAGER")));
     }
 
     @Test
     public void shouldDeleteFormerRoles() {
+        Set<Role> existingRoles = new HashSet<>(Arrays.asList(new Role("STAFF"), new Role("MANAGER")));
+        Set<String> roleNames = new HashSet<>(Arrays.asList("STAFF", "MANAGER"));
+        when(employeeRepository.findByEmployeeId(anyEmployeeId)).thenReturn(EMPLOYEE);
+        when(employeeRepository.getRoles(roleNames)).thenReturn(existingRoles);
+        userManager.updateRoles(anyEmployeeId, roleNames);
 
+        Set<Role> existingRoles2 = new HashSet<>(Arrays.asList(new Role("STAFF")));
+        Set<String> roleNames2 = new HashSet<>(Arrays.asList("STAFF"));
+        when(employeeRepository.findByEmployeeId(anyEmployeeId)).thenReturn(EMPLOYEE);
+        when(employeeRepository.getRoles(roleNames)).thenReturn(existingRoles2);
+
+        userManager.updateRoles(anyEmployeeId, roleNames2);
+
+        assertEquals(1, EMPLOYEE.getRole().size());
+        assertTrue(EMPLOYEE.getRole().contains(new Role("STAFF")));
     }
 
     @Test
