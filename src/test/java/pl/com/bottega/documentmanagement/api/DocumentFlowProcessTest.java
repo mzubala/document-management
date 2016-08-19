@@ -39,6 +39,9 @@ public class DocumentFlowProcessTest {
     private EmployeeRepository employeeRepository;
 
     @Mock
+    private EmployeeFactory employeeFactory;
+
+    @Mock
     private Set<EmployeeId> employeeIdsObligatedToRead;
 
     @Mock
@@ -46,6 +49,8 @@ public class DocumentFlowProcessTest {
 
     @Mock
     private Employee creator;
+    @Mock
+    private Employee publisher;
     @Mock
     private DocumentNumber freeDocumentNumber;
     @Mock
@@ -59,7 +64,7 @@ public class DocumentFlowProcessTest {
     @Test
     public void shouldCreateDocument(){
         //given
-        DocumentFlowProcess documentFlowProcess = new DocumentFlowProcess(documentRepository, documentFactory, userManager, documentNumberGenerator);
+        DocumentFlowProcess documentFlowProcess = new DocumentFlowProcess(documentRepository, documentFactory, userManager, documentNumberGenerator, employeeFactory, employeeRepository);
         Document document = new Document (freeDocumentNumber, anyContent, anyTitle, creator);
 
         when(documentNumberGenerator.generate()).thenReturn(freeDocumentNumber);
@@ -83,7 +88,7 @@ public class DocumentFlowProcessTest {
     @Test
     public void shouldFailedIfContentIsNull(){
         //given
-        DocumentFlowProcess documentFlowProcess = new DocumentFlowProcess(documentRepository, documentFactory, userManager, documentNumberGenerator);
+        DocumentFlowProcess documentFlowProcess = new DocumentFlowProcess(documentRepository, documentFactory, userManager, documentNumberGenerator, employeeFactory, employeeRepository);
 
         try{
             documentFlowProcess.create(anyTitle, null);
@@ -98,7 +103,7 @@ public class DocumentFlowProcessTest {
     @Test
     public void shouldFailedIfTitleIsNull(){
         //given
-        DocumentFlowProcess documentFlowProcess = new DocumentFlowProcess(documentRepository, documentFactory, userManager, documentNumberGenerator);
+        DocumentFlowProcess documentFlowProcess = new DocumentFlowProcess(documentRepository, documentFactory, userManager, documentNumberGenerator, employeeFactory, employeeRepository);
 
         try{
             documentFlowProcess.create(anyTitle, null);
@@ -114,7 +119,7 @@ public class DocumentFlowProcessTest {
     @Test
     public void shouldChangeDocument(){
         //given
-        DocumentFlowProcess documentFlowProcess = new DocumentFlowProcess(documentRepository, documentFactory, userManager, documentNumberGenerator);
+        DocumentFlowProcess documentFlowProcess = new DocumentFlowProcess(documentRepository, documentFactory, userManager, documentNumberGenerator, employeeFactory, employeeRepository);
         Document document = new Document(occupiedDocumentNumber, anyContent, anyTitle, creator);
         when(documentRepository.load(occupiedDocumentNumber)).thenReturn(document);
 
@@ -130,16 +135,16 @@ public class DocumentFlowProcessTest {
     @Test
     public void shouldPublishDocument(){
         //given
-        DocumentFlowProcess documentFlowProcess = new DocumentFlowProcess(documentRepository, documentFactory, userManager, documentNumberGenerator);
+        DocumentFlowProcess documentFlowProcess = new DocumentFlowProcess(documentRepository, documentFactory, userManager, documentNumberGenerator, employeeFactory, employeeRepository);
         Document document = new Document(occupiedDocumentNumber, anyContent, anyTitle, creator);
         when(documentRepository.load(occupiedDocumentNumber)).thenReturn(document);
+        when(userManager.currentEmployee()).thenReturn(publisher);
         when(employeeRepository.findByEmployeeIds(employeeIdsObligatedToRead)).thenReturn(employeeObligatedToRead);
 
         //when
         documentFlowProcess.publish(occupiedDocumentNumber,employeeIdsObligatedToRead);
 
         //then
-        verify(documentRepository).save(document);
         assertEquals(DocumentStatus.PUBLISHED, document.documentStatus());
 
     }

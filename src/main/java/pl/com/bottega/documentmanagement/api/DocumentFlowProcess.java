@@ -26,11 +26,13 @@ public class DocumentFlowProcess {
     private Reader reader;
 
     @Autowired
-    public DocumentFlowProcess(DocumentRepository documentRepository, DocumentFactory documentFactory, UserManager userManager, DocumentNumberGenerator documentNumberGenerator) {
+    public DocumentFlowProcess(DocumentRepository documentRepository, DocumentFactory documentFactory, UserManager userManager, DocumentNumberGenerator documentNumberGenerator, EmployeeFactory employeeFactory, EmployeeRepository employeeRepository) {
         this.documentNumberGenerator = documentNumberGenerator;
         this.documentFactory = documentFactory;
         this.documentRepository = documentRepository;
         this.userManager = userManager;
+        this.employeeFactory = employeeFactory;
+        this.employeeRepository = employeeRepository;
     }
 
     @Transactional
@@ -73,14 +75,6 @@ public class DocumentFlowProcess {
         Document document = documentRepository.load(documentNumber);
         Collection<Employee> employeesObligatedToRead = employeeRepository.findByEmployeeIds(employeeIds);
 
-        Employee employeeWithOnlyId;
-
-        for(EmployeeId employeeId: employeeIds) {
-            if (!employeesObligatedToRead.contains(employeeRepository.findByEmployeeId(employeeId))) {
-                employeeWithOnlyId = employeeFactory.create(null, null, employeeId);
-                employeesObligatedToRead.add(employeeWithOnlyId);
-            }
-        }
         document.publish(userManager.currentEmployee(), employeesObligatedToRead);
     }
 

@@ -79,4 +79,8 @@ public class JPAEmployeeRepository implements EmployeeRepository {
         return entityManager.createQuery(criteriaQuery).getResultList();
     }
 
+ /*   @Override
+    public List <Employee> findByEmployeeIds(Set<EmployeeId> readersIds){
+        return entityManager.createQuery("SELECT e FROM Employee e WHERE employeeId =: readersIds").getResultList();
+    }*/
 }
