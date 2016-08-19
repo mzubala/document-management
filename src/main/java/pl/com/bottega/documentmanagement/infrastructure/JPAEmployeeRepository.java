@@ -1,10 +1,7 @@
 package pl.com.bottega.documentmanagement.infrastructure;
 
 import org.springframework.stereotype.Repository;
-import pl.com.bottega.documentmanagement.domain.Employee;
-import pl.com.bottega.documentmanagement.domain.EmployeeId;
-import pl.com.bottega.documentmanagement.domain.Role;
-import pl.com.bottega.documentmanagement.domain.Role_;
+import pl.com.bottega.documentmanagement.domain.*;
 import pl.com.bottega.documentmanagement.domain.repositories.EmployeeRepository;
 
 import javax.persistence.EntityManager;
@@ -66,6 +63,16 @@ public class JPAEmployeeRepository implements EmployeeRepository {
         Root<Role> root = criteriaQuery.from(Role.class);
         criteriaQuery.select(root);
         criteriaQuery.where(root.get(Role_.name).in(roleNames));
+        return entityManager.createQuery(criteriaQuery).getResultList();
+    }
+
+    @Override
+    public Collection<Employee> find(Set<EmployeeId> ids) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Employee> criteriaQuery = criteriaBuilder.createQuery(Employee.class);
+        Root<Employee> root = criteriaQuery.from(Employee.class);
+        criteriaQuery.select(root);
+        criteriaQuery.where(root.get(Employee_.employeeId).in(ids));
         return entityManager.createQuery(criteriaQuery).getResultList();
     }
 }

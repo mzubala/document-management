@@ -110,12 +110,19 @@ public class Document {
         throw new IllegalArgumentException("Reader has no access");
     }
 
-    public void publish(Employee employee, Set<Reader> readers) {
+    public void publish(Employee employee, Collection<Employee> readers) {
         checkNotNull(employee);
         this.documentStatus = PUBLISHED;
         this.publishedBy = employee;
         this.publishedAt = new Date();
-        this.readers = readers;
+        this.readers = createReaders(readers);
+    }
+
+    private Set<Reader> createReaders(Collection<Employee> employees) {
+        Set<Reader> readers = new HashSet<>();
+        for (Employee e : employees)
+            readers.add(new Reader(this, e));
+        return readers;
     }
 
     public DocumentNumber getNumber() {

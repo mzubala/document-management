@@ -64,7 +64,7 @@ public class ReadingConfirmatorTest {
     public void shouldConfirmDocument() {
         Document document = new Document(anyDocumentNumber, "", "", anyConfirmator);
         Reader reader = new Reader(document, anyEmployee);
-        Set<Reader> readers = new HashSet<>(Arrays.asList(reader));
+        Set<Employee> readers = new HashSet<>(Arrays.asList(anyEmployee));
         document.publish(anyEmployee, readers);
 
         when(documentRepository.load(anyDocumentNumber)).thenReturn(document);
@@ -83,7 +83,7 @@ public class ReadingConfirmatorTest {
     public void shouldConfirmDocumentByOtherEmployee() {
         Document document = new Document(anyDocumentNumber, "", "", anyConfirmator);
         Reader reader = new Reader(document, anyEmployee);
-        Set<Reader> readers = new HashSet<>(Arrays.asList(reader));
+        Set<Employee> readers = new HashSet<>(Arrays.asList(anyEmployee));
         document.publish(anyEmployee, readers);
 
         when(documentRepository.load(anyDocumentNumber)).thenReturn(document);
@@ -102,7 +102,7 @@ public class ReadingConfirmatorTest {
     @Test
     public void shouldNotConfirmDocumentBecauseEmployeeIsNotAReader() {
         Document document = new Document(anyDocumentNumber, "", "", anyConfirmator);
-        Set<Reader> readers = new HashSet<>(Arrays.asList(anyReader, anyReader));
+        Set<Employee> readers = new HashSet<>(Arrays.asList(anyEmployee, anyEmployee));
         document.publish(anyEmployee, readers);
 
         when(documentRepository.load(anyDocumentNumber)).thenReturn(document);
@@ -120,7 +120,7 @@ public class ReadingConfirmatorTest {
     @Test
     public void shouldNotConfirmDocumentByOtherBecauseEmployeeIsNotAReader() {
         Document document = new Document(anyDocumentNumber, "", "", anyConfirmator);
-        Set<Reader> readers = new HashSet<>(Arrays.asList(anyReader, anyReader));
+        Set<Employee> readers = new HashSet<>(Arrays.asList(anyEmployee, anyEmployee));
         document.publish(anyEmployee, readers);
 
         when(documentRepository.load(anyDocumentNumber)).thenReturn(document);

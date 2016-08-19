@@ -3,6 +3,7 @@ package pl.com.bottega.documentmanagement.controller;
 import org.springframework.web.bind.annotation.*;
 import pl.com.bottega.documentmanagement.api.DocumentFlowProcess;
 import pl.com.bottega.documentmanagement.domain.DocumentNumber;
+import pl.com.bottega.documentmanagement.domain.EmployeeId;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -22,9 +23,9 @@ public class PublicationController {
 
     @PutMapping
     public void publish(@PathVariable String documentNumber, @RequestBody PublicationsRequest publicationsRequest) {
-        Set<Long> ids = new HashSet<>();
+        Set<EmployeeId> ids = new HashSet<>();
         for (Long id : publicationsRequest.getEmployeeIds())
-            ids.add(id);
+            ids.add(new EmployeeId(id));
         documentFlowProcess.publish(new DocumentNumber(documentNumber), ids);
     }
 

@@ -21,4 +21,6 @@ public interface EmployeeRepository {
     Employee findByLoginAndPassword(String login, String hashedPassword);
 
     Collection<Role> getRoles(Set<String> roleNames);
+
+    Collection<Employee> find(Set<EmployeeId> ids);
 }

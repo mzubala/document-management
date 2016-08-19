@@ -156,7 +156,7 @@ public class DocumentTest {
 
     @Test
     public void shouldPublishDocument() {
-        Set<Reader> readers = new HashSet<>(Arrays.asList(anyReader, anyReader));
+        Set<Employee> readers = new HashSet<>(Arrays.asList(anyEmployee, anyEmployee));
 
         document.publish(anyEmployee, readers);
 
@@ -180,7 +180,7 @@ public class DocumentTest {
     @Test
     public void shouldConfirmDocumentReading() {
         Reader reader = new Reader(document, anyEmployee);
-        Set<Reader> readers = new HashSet<>(Arrays.asList(reader, anyReader));
+        Set<Employee> readers = new HashSet<>(Arrays.asList(anyEmployee, anyEmployee));
         document.publish(anyEmployee, readers);
 
         document.confirm(anyEmployee);
@@ -196,7 +196,7 @@ public class DocumentTest {
     public void shouldFailConfirmBecauseEmployeeIsNotAReader() {
         Employee notReader = new Employee(anyEmployeeId);
         Reader reader = new Reader(document, anyEmployee);
-        Set<Reader> readers = new HashSet<>(Arrays.asList(reader, anyReader));
+        Set<Employee> readers = new HashSet<>(Arrays.asList(anyEmployee, anyEmployee));
         document.publish(anyEmployee, readers);
 
 
@@ -213,7 +213,7 @@ public class DocumentTest {
     public void shouldConfirmByOtherEmployeeDocumentReading() {
         Employee confirmatorManager = new Employee(anyEmployeeId);
         Reader reader = new Reader(document, anyEmployee);
-        Set<Reader> readers = new HashSet<>(Arrays.asList(reader, anyReader));
+        Set<Employee> readers = new HashSet<>(Arrays.asList(anyEmployee, anyEmployee));
         document.publish(anyEmployee, readers);
 
         document.confirm(confirmatorManager, anyEmployee);
@@ -229,7 +229,7 @@ public class DocumentTest {
     public void shouldFailConfirmDocumentReadingByOtherEmployeeBecauseOtherEmployeeIsNotAReader() {
         Employee notReader = new Employee(anyEmployeeId);
         Reader reader = new Reader(document, anyEmployee);
-        Set<Reader> readers = new HashSet<>(Arrays.asList(reader, anyReader));
+        Set<Employee> readers = new HashSet<>(Arrays.asList(anyEmployee, anyEmployee));
         document.publish(anyEmployee, readers);
 
         try {

@@ -6,7 +6,9 @@ import pl.com.bottega.documentmanagement.domain.*;
 import pl.com.bottega.documentmanagement.domain.repositories.DocumentRepository;
 import pl.com.bottega.documentmanagement.domain.repositories.EmployeeRepository;
 
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -17,17 +19,14 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @Service
 public class DocumentFlowProcess {
 
-    private DocumentNumberGenerator documentNumberGenerator;
     private DocumentRepository documentRepository;
     private UserManager userManager;
     private DocumentFactory documentFactory;
     private EmployeeRepository employeeRepository;
 
-    public DocumentFlowProcess(DocumentRepository documentRepository, UserManager userManager, DocumentNumberGenerator documentNumberGenerator,
-                               DocumentFactory documentFactory, EmployeeRepository employeeRepository) {
+    public DocumentFlowProcess(DocumentRepository documentRepository, UserManager userManager, DocumentFactory documentFactory, EmployeeRepository employeeRepository) {
         this.documentRepository = documentRepository;
         this.userManager = userManager;
-        this.documentNumberGenerator = documentNumberGenerator;
         this.documentFactory = documentFactory;
         this.employeeRepository = employeeRepository;
     }
@@ -38,12 +37,9 @@ public class DocumentFlowProcess {
         checkNotNull(title);
         checkNotNull(content);
 
-        DocumentNumber documentNumber = documentNumberGenerator.generate();
-        Document document = documentFactory.create(documentNumber, content, title, userManager.currentEmployee());
-
+        Document document = documentFactory.create(content, title);
         documentRepository.save(document);
-
-        return documentNumber;
+        return document.getNumber();
     }
 
     @Transactional
@@ -70,26 +66,27 @@ public class DocumentFlowProcess {
 
     @Transactional
     @RequiresAuth(roles = "MANAGER")
-    public void publish(DocumentNumber documentNumber, Set<Long> ids) {
+    public void publish(DocumentNumber documentNumber, Set<EmployeeId> ids) {
         checkNotNull(documentNumber);
 
         Document document = documentRepository.load(documentNumber);
-        Set<Reader> readers = addDocumentReaders(ids, document);
-        document.publish(userManager.currentEmployee(), readers);
+//        Set<Employee> employees = addDocumentReaders(ids, document);
+        Collection<Employee> employees = employeeRepository.find(ids);
+        document.publish(userManager.currentEmployee(), employees);
         documentRepository.save(document);
     }
 
-    private Set<Reader> addDocumentReaders(Set<Long> ids, Document document) {
-        Set<Reader> readers = new HashSet<>();
-        for (Long id : ids) {
-            EmployeeId employeeId = new EmployeeId(id);
-            Employee employee = employeeRepository.findByEmployeeId(employeeId);
-            if (employee == null)
-                employee = createDigitalExcludedEmployee(employeeId);
-            readers.add(new Reader(document, employee));
-        }
-        return readers;
-    }
+//    private Set<Employee> addDocumentReaders(Set<Long> ids, Document document) {
+//        Set<Employee> employees = new HashSet<>();
+//        for (Long id : ids) {
+//            EmployeeId employeeId = new EmployeeId(id);
+//            Employee employee = employeeRepository.findByEmployeeId(employeeId);
+//            if (employee == null)
+//                employee = createDigitalExcludedEmployee(employeeId);
+//            employees.add(employee);
+//        }
+//        return employees;
+//    }
 
     private Employee createDigitalExcludedEmployee(EmployeeId employeeId) {
         userManager.signup(employeeId);
