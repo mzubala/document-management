@@ -18,6 +18,12 @@ public class ReadingConfirmator {
     private UserManager userManager;
     private EmployeeRepository employeeRepository;
 
+    public ReadingConfirmator (DocumentRepository documentRepository, UserManager userManager, EmployeeRepository employeeRepository){
+        this.documentRepository = documentRepository;
+        this.userManager = userManager;
+        this.employeeRepository = employeeRepository;
+    }
+
     public void confirm(DocumentNumber documentNumber) {
         checkNotNull(documentNumber);
 

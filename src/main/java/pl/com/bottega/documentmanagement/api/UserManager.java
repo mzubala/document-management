@@ -43,14 +43,14 @@ public class UserManager {
        Employee employee = employeeRepository.findByEmployeeId(employeeId);
         if (employee == null)
             return setupNewAccount(login, password, employeeId);
-        else if (employee.isRegistered())
+        if (employee.isRegistered())
             return failed("Employee already registered");
-        else {
-            employee.setupAccount (login, password);
-            employeeRepository.save(employee);
-            return success();
+        if(employeeRepository.isLoginOccupied(login))
+            return failed("login occupied");
+        employee.setupAccount (login, password);
+        employeeRepository.save(employee);
+        return success();
         }
-    }
 
     private SignupResultDto setupNewAccount(String login, String password, EmployeeId employeeId) {
         if(employeeRepository.isLoginOccupied(login))

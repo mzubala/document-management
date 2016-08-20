@@ -64,22 +64,16 @@ public class DocumentFlowProcessTest {
     @Test
     public void shouldCreateDocument(){
         //given
-        DocumentFlowProcess documentFlowProcess = new DocumentFlowProcess(documentRepository, documentFactory, userManager, documentNumberGenerator, employeeFactory, employeeRepository);
-        Document document = new Document (freeDocumentNumber, anyContent, anyTitle, creator);
-
-        when(documentNumberGenerator.generate()).thenReturn(freeDocumentNumber);
-        when(documentRepository.load(freeDocumentNumber)).thenReturn(null);
-        when(userManager.currentEmployee()).thenReturn(creator);
-        when(documentFactory.create(freeDocumentNumber, anyContent, anyTitle, creator)).thenReturn(document);
+        DocumentFlowProcess documentFlowProcess = new DocumentFlowProcess(documentRepository, documentFactory, userManager, employeeRepository);
+        when(documentFactory.create(anyContent, anyTitle)).thenReturn(document);
+        when(document.number()).thenReturn(freeDocumentNumber);
 
         //when
         DocumentNumber result = documentFlowProcess.create(anyTitle, anyContent);
 
-        verify(documentRepository).save(document);
         //then
-        assertEquals(anyTitle, document.title());
-        assertEquals(anyContent, document.content());
-        assertEquals(freeDocumentNumber, document.number());
+        verify(documentRepository).save(document);
+        assertEquals(result, freeDocumentNumber);
         assertEquals(userManager.currentEmployee(), document.creator());
 
     }
@@ -88,7 +82,7 @@ public class DocumentFlowProcessTest {
     @Test
     public void shouldFailedIfContentIsNull(){
         //given
-        DocumentFlowProcess documentFlowProcess = new DocumentFlowProcess(documentRepository, documentFactory, userManager, documentNumberGenerator, employeeFactory, employeeRepository);
+        DocumentFlowProcess documentFlowProcess = new DocumentFlowProcess(documentRepository, documentFactory, userManager, employeeRepository);
 
         try{
             documentFlowProcess.create(anyTitle, null);
@@ -103,7 +97,7 @@ public class DocumentFlowProcessTest {
     @Test
     public void shouldFailedIfTitleIsNull(){
         //given
-        DocumentFlowProcess documentFlowProcess = new DocumentFlowProcess(documentRepository, documentFactory, userManager, documentNumberGenerator, employeeFactory, employeeRepository);
+        DocumentFlowProcess documentFlowProcess = new DocumentFlowProcess(documentRepository, documentFactory, userManager, employeeRepository);
 
         try{
             documentFlowProcess.create(anyTitle, null);
@@ -119,7 +113,7 @@ public class DocumentFlowProcessTest {
     @Test
     public void shouldChangeDocument(){
         //given
-        DocumentFlowProcess documentFlowProcess = new DocumentFlowProcess(documentRepository, documentFactory, userManager, documentNumberGenerator, employeeFactory, employeeRepository);
+        DocumentFlowProcess documentFlowProcess = new DocumentFlowProcess(documentRepository, documentFactory, userManager, employeeRepository);
         Document document = new Document(occupiedDocumentNumber, anyContent, anyTitle, creator);
         when(documentRepository.load(occupiedDocumentNumber)).thenReturn(document);
 
@@ -135,7 +129,7 @@ public class DocumentFlowProcessTest {
     @Test
     public void shouldPublishDocument(){
         //given
-        DocumentFlowProcess documentFlowProcess = new DocumentFlowProcess(documentRepository, documentFactory, userManager, documentNumberGenerator, employeeFactory, employeeRepository);
+        DocumentFlowProcess documentFlowProcess = new DocumentFlowProcess(documentRepository, documentFactory, userManager, employeeRepository);
         Document document = new Document(occupiedDocumentNumber, anyContent, anyTitle, creator);
         when(documentRepository.load(occupiedDocumentNumber)).thenReturn(document);
         when(userManager.currentEmployee()).thenReturn(publisher);
@@ -146,7 +140,7 @@ public class DocumentFlowProcessTest {
 
         //then
         assertEquals(DocumentStatus.PUBLISHED, document.documentStatus());
-
     }
+
 
 }

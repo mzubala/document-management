@@ -25,8 +25,8 @@ public class ConfirmationsController {
         readingConfirmator.confirm(new DocumentNumber(nr));
     }
 
-    @PutMapping ("/documents/{nr}/confirmations")
-    public void create(@PathVariable String nr, Long forId){
+    @PutMapping ("/documents/{nr}/confirmations/{forId}")
+    public void create(@PathVariable String nr, @PathVariable Long forId){
         readingConfirmator.confirm(new DocumentNumber(nr), new EmployeeId(forId));
     }
 

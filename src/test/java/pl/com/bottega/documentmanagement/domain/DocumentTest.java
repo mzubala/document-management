@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.Set;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 import static junit.framework.TestCase.*;
 
 /**
@@ -30,6 +31,8 @@ public class DocumentTest {
 
     @Mock
     private Set <Employee> employeesObligatedToRead;
+    @Mock
+    private Employee employeeWhoRead;
 
 
     private String anyContent = "test content";
@@ -127,10 +130,12 @@ public class DocumentTest {
     public void shouldConfirm(){
         //given
         Document document = new Document(anyNumber,anyContent, anyTitle, anyEmployee);
+        document.publish(anyEmployee, employeesObligatedToRead);
+
         //when
-        document.confirm(anyEmployee);
+        for (Employee employeeWhoRead: employeesObligatedToRead)
+                document.confirm(employeeWhoRead);
         //then
         assertTrue(reader.confirmed);
-
     }
 }

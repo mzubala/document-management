@@ -1,9 +1,7 @@
 package pl.com.bottega.documentmanagement.domain;
 
 import javax.persistence.*;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Set;
+import java.util.*;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -27,9 +25,11 @@ public class Document {
     @ManyToOne
     private Employee verificator;
     @ManyToOne
+    private Employee employeeWhoDelete;
+    @ManyToOne
     private Employee publisher;
-    @OneToMany
-    private Set <Reader> readers;
+    @OneToMany (mappedBy = "document", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set <Reader> readers = new HashSet<>();
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date createdAt, updatedAt, verificatedAt, publishedAt;
     private Boolean deleted;
@@ -69,14 +69,31 @@ public class Document {
         this.verificatedAt = new Date();
     }
 
-    public void publish(Employee publisher, Collection<Employee> employees) {
-        checkArgument(publisher!=null);
+    public void publish(Employee publisher, Collection<Employee> readers) {
+//        checkArgument(readers !=null && readers.size() >0);
+//        checkState(documentStatus.equals(DocumentStatus.VERIFIED));
+
+      /*  Set<Reader> newReaders = readers.stream().map(employee -> new Reader(this, readers)).collect(Collectors.toSet());
+        setReaders(newReaders);*/
         this.publisher = publisher;
         documentStatus = documentStatus.PUBLISHED;
         this.publishedAt = new Date();
+        //this.readers = createReaders(readers);
     }
 
-    public void confirm(Employee confirmator) {
+    private void setReaders(Set<Reader> newReaders) {
+        if(readers==null)
+            new HashSet<>();
+    }
+
+  /*  private Set<Reader> createReaders(Collection<Employee> employees) {
+        Set<Reader> readers = new HashSet<>();
+        for(Employee e: employees)
+            readers.add(new Reader(this, e));
+        return readers;
+    }*/
+
+/*    public void confirm(Employee confirmator) {
         checkArgument(confirmator != null);
 
         Employee employeeEligibleToConfirm;
@@ -89,8 +106,6 @@ public class Document {
             }
         }
     }
-
-
     public void confirm(Employee confirmator, Employee forEmployee) {
         checkArgument(confirmator!=null);
         checkArgument(forEmployee!=null);
@@ -104,11 +119,34 @@ public class Document {
                 throw new IllegalArgumentException("Employee is not entitled to read document!");
             }
         }
+    }*/
+
+    public void confirm(Employee confirmator) throws IllegalArgumentException {
+        for (Iterator<Reader> it = readers.iterator(); it.hasNext();) {
+            Reader reader = it.next();
+            if (reader.equals(new Reader(this, confirmator))) {
+                reader.confirm();
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Reader has no access");
     }
 
+    public void confirm(Employee confirmator, Employee forEmployee) throws IllegalArgumentException {
+        for (Iterator<Reader> it = readers.iterator(); it.hasNext();) {
+            Reader reader = it.next();
+            if (reader.equals(new Reader(this, forEmployee))) {
+                reader.confirm(confirmator);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Reader has no access");
+    }
 
     public void delete() {
         this.deleted = true;
+        this.employeeWhoDelete = employeeWhoDelete;
+
     }
 
     public void tag (Set<Tag> tags){

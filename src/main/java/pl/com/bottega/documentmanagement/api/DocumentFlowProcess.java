@@ -17,21 +17,19 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @Service
 public class DocumentFlowProcess {
 
-    private DocumentNumberGenerator documentNumberGenerator;
     private DocumentRepository documentRepository;
     private UserManager userManager;
     private EmployeeRepository employeeRepository;
-    private EmployeeFactory employeeFactory;
+    //private EmployeeFactory employeeFactory;
     private DocumentFactory documentFactory;
     private Reader reader;
 
     @Autowired
-    public DocumentFlowProcess(DocumentRepository documentRepository, DocumentFactory documentFactory, UserManager userManager, DocumentNumberGenerator documentNumberGenerator, EmployeeFactory employeeFactory, EmployeeRepository employeeRepository) {
-        this.documentNumberGenerator = documentNumberGenerator;
+    public DocumentFlowProcess(DocumentRepository documentRepository, DocumentFactory documentFactory, UserManager userManager, EmployeeRepository employeeRepository) {
         this.documentFactory = documentFactory;
         this.documentRepository = documentRepository;
         this.userManager = userManager;
-        this.employeeFactory = employeeFactory;
+        //this.employeeFactory = employeeFactory;
         this.employeeRepository = employeeRepository;
     }
 
@@ -41,7 +39,7 @@ public class DocumentFlowProcess {
         checkNotNull(title);
         checkNotNull(content);
 
-        Document document = documentFactory.create( documentNumberGenerator.generate(),content, title, userManager.currentEmployee());
+        Document document = documentFactory.create(content, title);
         documentRepository.save(document);
         return document.number();
     }
@@ -75,7 +73,12 @@ public class DocumentFlowProcess {
         Document document = documentRepository.load(documentNumber);
         Collection<Employee> employeesObligatedToRead = employeeRepository.findByEmployeeIds(employeeIds);
 
+      /*  employeeIds.forEach(employeeId-> {
+            if(!employeesObligatedToRead.stream().anyMatch(employee -> employee.emplo))
+        });*/
+
         document.publish(userManager.currentEmployee(), employeesObligatedToRead);
+        documentRepository.save(document);
     }
 
     

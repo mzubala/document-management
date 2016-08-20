@@ -1,6 +1,6 @@
 package pl.com.bottega.documentmanagement.domain;
 
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import java.util.Date;
 
 /**
@@ -8,11 +8,20 @@ import java.util.Date;
  */
 
 public class Reader<S> {
-    Document document;
+    @Id
+    @GeneratedValue
+    private Long id;
+
     @ManyToOne
+    Document document;
+    @ManyToOne (cascade = CascadeType.ALL)
     Employee employee;
+
     boolean confirmed;
+
+    @ManyToOne
     Employee confirmedBy;
+    @Temporal(TemporalType.TIMESTAMP)
     Date confirmedAt;
 
 
@@ -57,12 +66,10 @@ public class Reader<S> {
     }
 
 
-    public Reader(Document document, Employee employee, boolean confirmed, Employee confirmedBy, Date confirmedAt) {
+    public Reader(Document document, Employee employee) {
         this.document = document;
         this.employee = employee;
-        this.confirmed = confirmed;
-        this.confirmedBy = confirmedBy;
-        this.confirmedAt = confirmedAt;
+        this.confirmed = false;
     }
     public void confirm() {
         confirmed = true;
