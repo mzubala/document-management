@@ -1,6 +1,7 @@
 package pl.com.bottega.documentmanagement.api;
 
 import com.google.common.collect.Sets;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.com.bottega.documentmanagement.domain.*;
@@ -20,13 +21,16 @@ public class NPlus1SelectSimulator {
     @PersistenceContext
     private EntityManager entityManager;
 
+    @Autowired
+    private PrintCostCalculator printCostCalculator;
+
     @Transactional
     public void insertTestData() {
         Employee employee = new Employee(randomString(), randomString(), new EmployeeId(12382L));
         entityManager.persist(employee);
         for(int i = 0; i < 1000; i++) {
             Document d = new Document(
-                new DocumentNumber(randomString()), randomString(), randomString(), employee
+                new DocumentNumber(randomString()), randomString(), randomString(), employee, printCostCalculator
             );
             d.tag(Sets.newHashSet(new Tag("one"), new Tag("two"), new Tag("three")));
             entityManager.persist(d);

@@ -9,6 +9,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 import pl.com.bottega.documentmanagement.api.DocumentDto;
 import pl.com.bottega.documentmanagement.api.DocumentFlowProcess;
 import pl.com.bottega.documentmanagement.api.DocumentsCatalog;
@@ -51,6 +52,7 @@ public class DocumentFlowAcceptanceTest {
     }
 
     @Test
+    @Transactional
     public void shouldCreateDocument() {
         //given
         loginAs("STAFF", "EDITOR");
@@ -67,6 +69,7 @@ public class DocumentFlowAcceptanceTest {
     }
 
     @Test
+    @Transactional
     public void shouldVerifyDocument() {
         // given
         loginAs("STAFF", "MANAGER", "EDITOR");
@@ -80,7 +83,7 @@ public class DocumentFlowAcceptanceTest {
         assertEquals(DocumentStatus.VERIFIED.name(), dto.getStatus());
     }
 
-    public void loginAs(String... roles) {
+    private void loginAs(String... roles) {
         userManager.signup(anyLogin, anyPassword, anyEmployeeId);
         userManager.login("admin", "admin");
         userManager.updateRoles(anyEmployeeId, Sets.newHashSet(roles));
