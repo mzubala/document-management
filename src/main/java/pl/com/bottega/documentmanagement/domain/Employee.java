@@ -1,5 +1,6 @@
 package pl.com.bottega.documentmanagement.domain;
 
+import com.google.common.base.Objects;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
@@ -32,6 +33,10 @@ public class Employee {
         this.employeeId = employeeId;
     }
 
+    public Employee(EmployeeId employeeId) {
+        this.employeeId = employeeId;
+    }
+
     public boolean isRegistered() {
         return login != null;
     }
@@ -51,4 +56,22 @@ public class Employee {
             return true;
         return !Arrays.stream(roleNames).anyMatch((roleName) -> !roles.contains(new Role(roleName)));
     }
+
+    public EmployeeId employeeId() {
+        return employeeId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Employee employee = (Employee) o;
+        return Objects.equal(employeeId, employee.employeeId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(employeeId);
+    }
+
 }

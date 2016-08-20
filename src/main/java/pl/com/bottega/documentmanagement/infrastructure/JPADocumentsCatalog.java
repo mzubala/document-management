@@ -56,7 +56,7 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
     }
 
     @Override
-    //@RequiresAuth(roles = "STAFF")
+    @RequiresAuth(roles = "STAFF")
     public DocumentSearchResults find(DocumentCriteria documentCriteria) {
         checkNotNull(documentCriteria);
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();

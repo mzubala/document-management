@@ -1,10 +1,14 @@
 package pl.com.bottega.documentmanagement.domain;
 
 import javax.persistence.*;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkState;
 
 /**
  * Created by maciuch on 12.06.16.
@@ -42,6 +46,14 @@ public class Document {
     @ManyToMany(cascade = CascadeType.ALL)
     private Set<Tag> tags;
 
+    @OneToMany(mappedBy = "document", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Reader> readers;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Employee publisher;
+
+    private Date publishedAt;
+
     private Document() {
     }
 
@@ -69,12 +81,14 @@ public class Document {
         this.verifiedAt = new Date();
     }
 
-    public void confirm(Employee conirmator) {
-
+    public void confirm(Employee confirmator) {
+        Reader reader = reader(confirmator);
+        reader.confirm();
     }
 
     public void confirm(Employee confirmator, Employee forEmployee) {
-
+        Reader reader = reader(forEmployee);
+        reader.confirm(confirmator);
     }
 
     public void delete(Employee deletor) {
@@ -121,4 +135,50 @@ public class Document {
     public Date verifiedAt() {
         return verifiedAt;
     }
+
+    public Date updatedAt() {
+        return updatedAt;
+    }
+
+    public Employee deletor() {
+        return deletor;
+    }
+
+    public void publish(Employee publisher, Set<Employee> employees) {
+        checkArgument(employees != null && employees.size() > 0);
+        checkState(status.equals(DocumentStatus.VERIFIED));
+        Set<Reader> newReaders = employees.stream().map((employee) -> new Reader(this, employee)).collect(Collectors.toSet());
+        setReaders(newReaders);
+        this.publishedAt = new Date();
+        this.publisher = publisher;
+        this.status = DocumentStatus.PUBLISHED;
+    }
+
+    private void setReaders(Set<Reader> newReaders) {
+        if(readers == null)
+            readers = new HashSet<>();
+        else
+            readers.clear();
+        this.readers.addAll(newReaders);
+    }
+
+    public Set<Reader> readers() {
+        return Collections.unmodifiableSet(readers);
+    }
+
+    public Employee publisher() {
+        return publisher;
+    }
+
+    public Date publishedAt() {
+       return publishedAt;
+    }
+
+    public Reader reader(Employee employee) {
+        return readers().stream().
+                filter((reader) -> reader.concernsEmployee(employee)).
+                findFirst().orElseThrow(() -> new IllegalArgumentException());
+    }
+
+
 }

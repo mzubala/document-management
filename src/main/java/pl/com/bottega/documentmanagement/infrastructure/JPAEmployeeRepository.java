@@ -1,5 +1,6 @@
 package pl.com.bottega.documentmanagement.infrastructure;
 
+import com.google.common.collect.Sets;
 import org.springframework.stereotype.Repository;
 import pl.com.bottega.documentmanagement.domain.Employee;
 import pl.com.bottega.documentmanagement.domain.EmployeeId;
@@ -9,6 +10,7 @@ import pl.com.bottega.documentmanagement.domain.repositories.EmployeeRepository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -69,5 +71,12 @@ public class JPAEmployeeRepository implements EmployeeRepository {
         criteriaQuery.select(root);
         criteriaQuery.where(root.get(Role_.name).in(roleNames));
         return entityManager.createQuery(criteriaQuery).getResultList();
+    }
+
+    @Override
+    public Set<Employee> findByEmployeeIds(Iterable<EmployeeId> ids) {
+        Query q = entityManager.createQuery("FROM Employee WHERE employeeId in :ids");
+        q.setParameter("ids", ids);
+        return Sets.newHashSet(q.getResultList());
     }
 }
