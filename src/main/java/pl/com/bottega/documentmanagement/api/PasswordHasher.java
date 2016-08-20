@@ -5,7 +5,7 @@ import com.google.common.hash.Hashing;
 import org.springframework.stereotype.Service;
 
 /**
- * Created by anna on 31.07.2016.
+ * Created by maciuch on 31.07.16.
  */
 @Service
 public class PasswordHasher {
@@ -13,4 +13,5 @@ public class PasswordHasher {
     public String hashedPassword(String password) {
         return Hashing.sha1().hashString(password, Charsets.UTF_8).toString();
     }
+
 }

@@ -42,13 +42,13 @@ public class UserManager {
         Employee employee = employeeRepository.findByEmployeeId(employeeId);
         if (employee == null)
             return setupNewAccount(login, password, employeeId);
-        else if (employee.isRegistered())
+        if (employee.isRegistered())
             return failed("employee registered");
-        else {
-            employee.setupAccount(login, password);
-            employeeRepository.save(employee);
-            return success();
-        }
+        if (employeeRepository.isLoginOccupied(login))
+            return failed("login occupied");
+        employee.setupAccount(login, password);
+        employeeRepository.save(employee);
+        return success();
     }
 
     private SignupResultDto setupNewAccount(String login, String password, EmployeeId employeeId) {
@@ -69,9 +69,8 @@ public class UserManager {
         return new SignupResultDto();
     }
 
-
     public SignupResultDto login(String login, String password) {
-        this.currentEmployee = employeeRepository.findByLoginAndPassword(login, password);
+        this.currentEmployee = employeeRepository.findByLoginAndPassword(login, passwordHasher.hashedPassword(password));
         if (this.currentEmployee == null)
             return failed("login or password incorrect");
         else
@@ -91,6 +90,13 @@ public class UserManager {
     public void updateRoles(EmployeeId employeeId, Set<String> roleNames) {
         Employee employee = employeeRepository.findByEmployeeId(employeeId);
         employee.updateRoles(getRoles(roleNames));
+    }
+
+    @Transactional
+    public void createAdmin() {
+        Employee employee = new Employee("admin", passwordHasher.hashedPassword("admin"), new EmployeeId(0L));
+        employee.updateRoles(getRoles(Sets.newHashSet("ADMIN")));
+        employeeRepository.save(employee);
     }
 
     private Set<Role> getRoles(String... roleNames) {

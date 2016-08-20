@@ -1,48 +1,51 @@
 package pl.com.bottega.documentmanagement.domain;
 
+import com.google.common.collect.Sets;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.validator.ValidateWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.omg.CORBA.PUBLIC_MEMBER;
 
 import java.util.Date;
+import java.util.Set;
 
+import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
-
+import static pl.com.bottega.documentmanagement.utils.Assert.assertDatesEqual;
 
 /**
- * Created by anna on 31.07.2016.
+ * Created by maciuch on 31.07.16.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class DocumentTest {
 
-    private static final long EPS = 2L * 1000L;
     @Mock
     private DocumentNumber anyNumber;
 
     @Mock
     private Employee anyEmployee;
 
+    @Mock
+    private Employee otherEmployee;
+
     private String anyContent = "test content";
 
     private String anyTitle = "test title";
 
+    private String newTitle = "new title";
+
+    private String newContent = "new content";
+    private static Long EPS = 2L * 1000L;
 
     @Test
     public void shouldCreateDocumentWithInitialState() {
-        //given
-        DocumentNumber number = mock(DocumentNumber.class);
-        String content = "test content";
-        String title = "test title";
-        Employee employee = mock(Employee.class);
+        // given
 
-        //when
+        // when
         Document document = new Document(anyNumber, anyContent, anyTitle, anyEmployee);
 
-        //then
+        // then
         assertEquals(anyNumber, document.number());
         assertEquals(anyContent, document.content());
         assertEquals(anyTitle, document.title());
@@ -55,11 +58,12 @@ public class DocumentTest {
     public void shouldVerifyDocument() {
         //given
         Document document = new Document(anyNumber, anyContent, anyTitle, anyEmployee);
+
         //when
         document.verify(anyEmployee);
 
         //then
-        assertTrue(new Date().getTime() - document.verifiedAt().getTime() < EPS);
+        assertDatesEqual(new Date(), document.verifiedAt());
         assertEquals(DocumentStatus.VERIFIED, document.status());
         assertEquals(anyEmployee, document.verificator());
     }
@@ -69,8 +73,9 @@ public class DocumentTest {
         //given
         Document document = new Document(anyNumber, anyContent, anyTitle, anyEmployee);
 
-        //when
+        // when
         document.verify(null);
+
     }
 
     @Test
@@ -78,13 +83,137 @@ public class DocumentTest {
         //given
         Document document = new Document(anyNumber, anyContent, anyTitle, anyEmployee);
 
-        //when
+        // when
         try {
             document.verify(null);
-        }
-        catch(IllegalArgumentException ex) {
+        } catch (IllegalArgumentException ex) {
             return;
         }
         fail("IllegalArgumentException expected");
     }
+
+    @Test
+    public void shouldChangeDocument() {
+        //given
+        Document document = new Document(anyNumber, anyContent, anyTitle, anyEmployee);
+
+        //when
+        document.change(newTitle, newContent);
+
+        //then
+        assertEquals(newTitle, document.title());
+        assertEquals(newContent, document.content());
+        assertDatesEqual(new Date(), document.updatedAt());
+    }
+
+    @Test
+    public void shouldChangeStatusToDraftAfterUpdate() {
+        //given
+        Document document = new Document(anyNumber, anyContent, anyTitle, anyEmployee);
+        document.verify(anyEmployee);
+
+        //when
+        document.change(newTitle, newContent);
+
+        //then
+        assertEquals(DocumentStatus.DRAFT, document.status());
+    }
+
+    @Test
+    public void shouldDeleteDocument() {
+        //given
+        Document document = new Document(anyNumber, anyContent, anyTitle, anyEmployee);
+
+        //when
+        document.delete(anyEmployee);
+
+        //then
+        assertTrue(document.deleted());
+        assertEquals(anyEmployee, document.deletor());
+    }
+
+    @Test
+    public void shouldPublishDocument() {
+        //given
+        Document document = new Document(anyNumber, anyContent, anyTitle, anyEmployee);
+        document.verify(anyEmployee);
+
+        //when
+        Set<Employee> readers = Sets.newHashSet(anyEmployee, otherEmployee);
+        document.publish(anyEmployee, readers);
+
+        //then
+        assertEquals(Sets.newHashSet(new Reader(document, anyEmployee), new Reader(document, otherEmployee)), document.readers());
+        document.readers().stream().forEach((reader) -> assertFalse(reader.confirmed()));
+        assertEquals(anyEmployee, document.publisher());
+        assertDatesEqual(new Date(), document.publishedAt());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldNotAllowPublishingForNoEmployees() {
+        //given
+        Document document = new Document(anyNumber, anyContent, anyTitle, anyEmployee);
+
+        //when
+        document.publish(anyEmployee, Sets.newHashSet());
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldNotAllowPublishingUnverifiedDocument() {
+        //given
+        Document document = new Document(anyNumber, anyContent, anyTitle, anyEmployee);
+
+        //when
+        Set<Employee> readers = Sets.newHashSet(anyEmployee, otherEmployee);
+        document.publish(anyEmployee, readers);
+    }
+
+    @Test
+    public void shouldConfirmDocument() {
+        //given
+        Document document = new Document(anyNumber, anyContent, anyTitle, anyEmployee);
+        document.verify(anyEmployee);
+        Set<Employee> readers = Sets.newHashSet(otherEmployee);
+        document.publish(anyEmployee, readers);
+
+        //when
+        document.confirm(otherEmployee);
+
+        //then
+        Reader reader = document.reader(otherEmployee);
+        assertTrue(reader.confirmed());
+        assertDatesEqual(new Date(), reader.confirmedAt());
+    }
+
+    @Test
+    public void shouldConfirmDocumentForOtherEmployee() {
+        //given
+        Document document = new Document(anyNumber, anyContent, anyTitle, anyEmployee);
+        document.verify(anyEmployee);
+        Set<Employee> readers = Sets.newHashSet(otherEmployee);
+        document.publish(anyEmployee, readers);
+
+        //when
+        document.confirm(anyEmployee, otherEmployee);
+
+        //then
+        Reader reader = document.reader(otherEmployee);
+        assertTrue(reader.confirmed());
+        assertDatesEqual(new Date(), reader.confirmedAt());
+        assertEquals(anyEmployee, reader.confirmedBy());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldNotConfirmDocumentForNonReaderEmployee() {
+        //given
+        Document document = new Document(anyNumber, anyContent, anyTitle, anyEmployee);
+        document.verify(anyEmployee);
+        Set<Employee> readers = Sets.newHashSet(anyEmployee);
+        document.publish(anyEmployee, readers);
+
+        //when
+        document.confirm(otherEmployee);
+
+    }
+
 }

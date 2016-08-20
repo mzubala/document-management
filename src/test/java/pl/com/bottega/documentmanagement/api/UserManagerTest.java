@@ -1,29 +1,37 @@
 package pl.com.bottega.documentmanagement.api;
 
+import com.google.common.collect.Sets;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import pl.com.bottega.documentmanagement.domain.Employee;
 import pl.com.bottega.documentmanagement.domain.EmployeeId;
+import pl.com.bottega.documentmanagement.domain.Role;
 import pl.com.bottega.documentmanagement.domain.repositories.EmployeeRepository;
+
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Created by anna on 31.07.2016.
+ * Created by maciuch on 31.07.16.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class UserManagerTest {
+
+    private UserManager userManager;
 
     @Mock
     private EmployeeRepository employeeRepository;
 
     private String occupiedLogin = "occupied login";
-    private String anyPassword = "test";
     private String freeLogin = "free login";
+    private String anyPassword = "test";
 
     @Mock
     private EmployeeId anyEmployeeId;
@@ -37,36 +45,138 @@ public class UserManagerTest {
     @Mock
     private Employee employee;
 
+    private SignupResultDto signupResultDto;
+
+    private String hashedPassword = "hashed";
+    private String[] roles = {"r", "a", "b"};
+
+    @Before
+    public void setUp() throws Exception {
+        userManager = new UserManager(employeeRepository, employeeFactory, passwordHasher);
+    }
+
     @Test
-    public void shouldFailSignUpWhenLoginIsOccupiec() {
-        //given
-        UserManager userManager = new UserManager(employeeRepository, employeeFactory, passwordHasher);
+    public void shouldFailSignupWhenLoginIsOccupied() {
+        // given
         when(employeeRepository.findByEmployeeId(anyEmployeeId)).thenReturn(null);
         when(employeeRepository.isLoginOccupied(occupiedLogin)).thenReturn(true);
 
-        //when
-        SignupResultDto signupResultDto = userManager.signup(occupiedLogin, anyPassword, anyEmployeeId);
+        // when
+        signupResultDto = userManager.signup(occupiedLogin, anyPassword, anyEmployeeId);
 
-        //then
-        assertFalse(signupResultDto.isSuccess());
-        assertEquals("login is occupied", signupResultDto.getFailureReason());
+        // then
+        assertFailedSignup("login is occupied");
     }
-
 
     @Test
     public void shouldSignupEmployeeWhenIdAndLoginAreFree() {
-        //given
-        UserManager userManager = new UserManager(employeeRepository, employeeFactory, passwordHasher);
+        // given
         when(employeeRepository.findByEmployeeId(anyEmployeeId)).thenReturn(null);
         when(employeeRepository.isLoginOccupied(freeLogin)).thenReturn(false);
         when(employeeFactory.create(freeLogin, anyPassword, anyEmployeeId)).thenReturn(employee);
 
-        //when
-        SignupResultDto signupResultDto = userManager.signup(freeLogin, anyPassword, anyEmployeeId);
+        // when
+        signupResultDto = userManager.signup(freeLogin, anyPassword, anyEmployeeId);
+
+        // then
+        verify(employeeRepository).save(employee);
+        assertSignupSuccess();
+    }
+
+    @Test
+    public void shouldFailSignupWhenEmployeeHasAlreadySignedUp() {
+        //given
+        when(employeeRepository.findByEmployeeId(anyEmployeeId)).thenReturn(employee);
+        when(employee.isRegistered()).thenReturn(true);
+
+        // when
+        signupResultDto = userManager.signup(freeLogin, anyPassword, anyEmployeeId);
 
         //then
+        assertFailedSignup("employee registered");
+    }
+
+    @Test
+    public void shouldSetupAccountForExistingEmployeeWithoutLogin() {
+        //given
+        when(employeeRepository.findByEmployeeId(anyEmployeeId)).thenReturn(employee);
+        when(employee.isRegistered()).thenReturn(false);
+
+        // when
+        signupResultDto = userManager.signup(freeLogin, anyPassword, anyEmployeeId);
+
+        //then
+        verify(employee).setupAccount(freeLogin, anyPassword);
         verify(employeeRepository).save(employee);
+        assertSignupSuccess();
+    }
+
+    @Test
+    public void shouldNotSetupAccountForExisitingEmployeeIfLoginIsOccupied() {
+        //given
+        when(employeeRepository.findByEmployeeId(anyEmployeeId)).thenReturn(employee);
+        when(employee.isRegistered()).thenReturn(false);
+        when(employeeRepository.isLoginOccupied(occupiedLogin)).thenReturn(true);
+
+        // when
+        signupResultDto = userManager.signup(occupiedLogin, anyPassword, anyEmployeeId);
+
+        //then
+        assertFailedSignup("login occupied");
+    }
+
+    @Test
+    public void shouldLoginUser() {
+        //given
+        when(passwordHasher.hashedPassword(anyPassword)).thenReturn(hashedPassword);
+        when(employeeRepository.findByLoginAndPassword(freeLogin, hashedPassword)).thenReturn(employee);
+        when(employee.hasRoles(roles)).thenReturn(true);
+
+        //when
+        signupResultDto = userManager.login(freeLogin, anyPassword);
+
+        //then
+        assertSignupSuccess();
+        assertEquals(employee, userManager.currentEmployee());
+        assertTrue(userManager.isAuthenticated(roles));
+    }
+
+    @Test
+    public void shouldFailLoginWhenIncorrectCredentials() {
+        //given
+        when(passwordHasher.hashedPassword(anyPassword)).thenReturn(hashedPassword);
+        when(employeeRepository.findByLoginAndPassword(freeLogin, hashedPassword)).thenReturn(null);
+
+        //when
+        signupResultDto = userManager.login(freeLogin, anyPassword);
+
+        //then
+        assertNull(userManager.currentEmployee());
+        assertFailedSignup("login or password incorrect");
+        assertFalse(userManager.isAuthenticated(roles));
+    }
+
+    @Test
+    public void shouldUpdateRoles() {
+        //given
+        when(employeeRepository.findByEmployeeId(anyEmployeeId)).thenReturn(employee);
+        when(employeeRepository.getRoles(Sets.newHashSet(roles[0]))).thenReturn(Sets.newHashSet(new Role(roles[0])));
+
+        //when
+        userManager.updateRoles(anyEmployeeId, Sets.newHashSet(roles));
+
+        //then
+        verify(employee).updateRoles(Arrays.stream(roles).map(Role::new).collect(Collectors.toSet()));
+    }
+
+    private void assertFailedSignup(String failureReason) {
+        assertFalse(signupResultDto.isSuccess());
+        assertEquals(failureReason, signupResultDto.getFailureReason());
+    }
+
+    private void assertSignupSuccess() {
         assertTrue(signupResultDto.isSuccess());
         assertNull(signupResultDto.getFailureReason());
     }
+
 }

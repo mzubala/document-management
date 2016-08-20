@@ -1,13 +1,12 @@
 package pl.com.bottega.documentmanagement.api;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.com.bottega.documentmanagement.domain.Document;
-import pl.com.bottega.documentmanagement.domain.DocumentNumber;
-import pl.com.bottega.documentmanagement.domain.DocumentNumberGenerator;
-import pl.com.bottega.documentmanagement.domain.EmployeeId;
+import pl.com.bottega.documentmanagement.domain.*;
 import pl.com.bottega.documentmanagement.domain.repositories.DocumentRepository;
+import pl.com.bottega.documentmanagement.domain.repositories.EmployeeRepository;
+
+import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -17,28 +16,17 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @Service
 public class DocumentFlowProcess {
 
-    /*@Autowired
-    public void setDocumentNumberGenerator(DocumentNumberGenerator documentNumberGenerator) {
-        this.documentNumberGenerator = documentNumberGenerator;
-    }
-
-    @Autowired
-    public void setDocumentRepository(DocumentRepository documentRepository) {
-        this.documentRepository = documentRepository;
-    }
-    @Autowired
-    public void setUserManager(UserManager userManager) {
-        this.userManager = userManager;
-    }*/
-
-    private DocumentNumberGenerator documentNumberGenerator;
+    private DocumentFactory documentFactory;
     private DocumentRepository documentRepository;
+    private EmployeeRepository employeeRepository;
     private UserManager userManager;
 
-    public DocumentFlowProcess(DocumentRepository documentRepository, UserManager userManager, DocumentNumberGenerator documentNumberGenerator) {
+    public DocumentFlowProcess(DocumentRepository documentRepository, UserManager userManager,
+                               DocumentFactory documentFactory, EmployeeRepository employeeRepository) {
         this.documentRepository = documentRepository;
         this.userManager = userManager;
-        this.documentNumberGenerator = documentNumberGenerator;
+        this.documentFactory = documentFactory;
+        this.employeeRepository = employeeRepository;
     }
 
     @Transactional
@@ -47,10 +35,9 @@ public class DocumentFlowProcess {
         checkNotNull(title);
         checkNotNull(content);
 
-        DocumentNumber documentNumber = documentNumberGenerator.generate();
-        Document document = new Document(documentNumber, title, content, userManager.currentEmployee());
+        Document document = documentFactory.create(title, content);
         documentRepository.save(document);
-        return documentNumber;
+        return document.number();
     }
 
     @Transactional
@@ -75,8 +62,21 @@ public class DocumentFlowProcess {
         documentRepository.save(document);
     }
 
+    @Transactional
+    @RequiresAuth(roles = "MANAGER")
     public void publish(DocumentNumber documentNumber, Iterable<EmployeeId> ids) {
         checkNotNull(documentNumber);
+        Document document = documentRepository.load(documentNumber);
+        document.publish(userManager.currentEmployee(), getEmployees(ids));
+    }
+
+    private Set<Employee> getEmployees(Iterable<EmployeeId> ids) {
+        Set<Employee> employees = employeeRepository.findByEmployeeIds(ids);
+        ids.forEach((id) -> {
+            if (!employees.stream().anyMatch((employee) -> employee.employeeId().equals(id)))
+                employees.add(new Employee(id));
+        });
+        return employees;
     }
 
     @Transactional
@@ -86,12 +86,6 @@ public class DocumentFlowProcess {
         Document document = documentRepository.load(documentNumber);
         document.delete(userManager.currentEmployee());
         documentRepository.save(document);
-    }
-
-    public DocumentNumber createNewVersion(DocumentNumber documentNumber) {
-        checkNotNull(documentNumber);
-
-        return null;
     }
 
 }

@@ -9,7 +9,7 @@ import pl.com.bottega.documentmanagement.domain.EmployeeId;
 import pl.com.bottega.documentmanagement.domain.Role;
 
 /**
- * Created by anna on 31.07.2016.
+ * Created by maciuch on 31.07.16.
  */
 @Service
 public class EmployeeFactory {
@@ -22,10 +22,9 @@ public class EmployeeFactory {
         this.passwordHasher = passwordHasher;
     }
 
-
     public Employee create(String login, String password, EmployeeId employeeId) {
         Employee employee = new Employee(login, passwordHasher.hashedPassword(password), employeeId);
-        //employee.updateRoles(Sets.newHashSet(new Role(INITIAL_ROLE)));
         return employee;
     }
+
 }
