@@ -92,6 +92,13 @@ public class UserManager {
         employee.updateRoles(getRoles(roleNames));
     }
 
+    @Transactional
+    public void createAdmin() {
+        Employee employee = new Employee("admin", passwordHasher.hashedPassword("admin"), new EmployeeId(0L));
+        employee.updateRoles(getRoles(Sets.newHashSet("ADMIN")));
+        employeeRepository.save(employee);
+    }
+
     private Set<Role> getRoles(String... roleNames) {
         return getRoles(Sets.newHashSet(roleNames));
     }

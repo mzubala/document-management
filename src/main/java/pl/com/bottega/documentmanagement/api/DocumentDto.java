@@ -1,5 +1,6 @@
 package pl.com.bottega.documentmanagement.api;
 
+import com.google.common.base.Objects;
 import pl.com.bottega.documentmanagement.domain.DocumentStatus;
 
 import java.util.Date;
@@ -79,5 +80,26 @@ public class DocumentDto {
 
     public Date getUpdatedAt() {
         return updatedAt;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DocumentDto that = (DocumentDto) o;
+        return Objects.equal(number, that.number) &&
+                Objects.equal(title, that.title) &&
+                Objects.equal(content, that.content) &&
+                Objects.equal(status, that.status) &&
+                Objects.equal(creatorId, that.creatorId) &&
+                Objects.equal(verificatorId, that.verificatorId) &&
+                Objects.equal(createdAt, that.createdAt) &&
+                Objects.equal(verificatedAt, that.verificatedAt) &&
+                Objects.equal(updatedAt, that.updatedAt);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(number, title, content, status, creatorId, verificatorId, createdAt, verificatedAt, updatedAt);
     }
 }

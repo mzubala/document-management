@@ -21,7 +21,7 @@ public class DocumentFactory {
     }
 
     public Document create(String title, String content) {
-        return new Document(documentNumberGenerator.generate(), title, content, userManager.currentEmployee());
+        return new Document(documentNumberGenerator.generate(), content, title, userManager.currentEmployee());
     }
 
 }
