@@ -1,6 +1,7 @@
 package pl.com.bottega.documentmanagement.domain;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -19,6 +20,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @Entity
 public class Document {
 
+    private static final int CHARS_PER_PAGE = 1000;
     @Id
     @GeneratedValue
     private Long id;
@@ -30,6 +32,8 @@ public class Document {
     private String title;
 
     private boolean deleted;
+
+    private BigDecimal printingCost;
 
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date createdAt, verifiedAt, updatedAt;
@@ -60,14 +64,20 @@ public class Document {
     private Document() {
     }
 
-    public Document(DocumentNumber documentNumber, String content, String title, Employee creator) {
+    public Document(DocumentNumber documentNumber, String content, String title, Employee creator, PrintCostCalculator printCostCalculator) {
         this.documentNumber = documentNumber;
         this.content = content;
         this.title = title;
         this.creator = creator;
+        this.printingCost = printCostCalculator.cost(pagesCount());
         this.status = DocumentStatus.DRAFT;
         this.createdAt = new Date();
         this.deleted = false;
+    }
+
+    private int pagesCount() {
+        return content.length() / CHARS_PER_PAGE + (content.length() % CHARS_PER_PAGE == 0 ? 0 : 1);
+        //return  Math.ceil((double) content.length()) / CHARS_PER_PAGE);
     }
 
     public void change(String title, String content) {
