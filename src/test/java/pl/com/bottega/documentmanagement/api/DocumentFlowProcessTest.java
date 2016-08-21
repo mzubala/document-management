@@ -70,9 +70,18 @@ public class DocumentFlowProcessTest {
     @Mock
     private PrintingCostCalculator printingCostCalculator;
 
+    @Mock
+    private HRSystemFasade hrSystemFasade;
+
+    @Mock
+    private MailingFasade mailingFasade;
+
+    @Mock
+    private PrintSystemFasade printSystemFasade;
+
     @Before
     public void setUp() {
-        documentFlowProcess = new DocumentFlowProcess(documentRepository, userManager, documentFactory, employeeRepository);
+        documentFlowProcess = new DocumentFlowProcess(documentRepository, userManager, documentFactory, employeeRepository, hrSystemFasade, mailingFasade, printSystemFasade);
     }
 
     @Test
@@ -170,6 +179,16 @@ public class DocumentFlowProcessTest {
     }
 
     @Test
+    public void shouldSendPrintRequestForEmployeesWithoutEmail() {
+
+    }
+
+    @Test
+    public void shouldSendPublicationEmailsToEmployeeWithEmail() {
+
+    }
+
+//    @Test
     public void shouldPublishDocumentWithDigitalExcludedEmployeeCreating() {
         Document document = new Document(new DocumentNumber("test number"), anyContent, anyTitle, employee, printingCostCalculator);
         Set<Long> ids = new LinkedHashSet<>(Arrays.asList(1L, 8L));

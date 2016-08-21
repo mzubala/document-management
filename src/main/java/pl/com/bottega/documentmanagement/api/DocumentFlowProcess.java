@@ -9,6 +9,7 @@ import pl.com.bottega.documentmanagement.domain.repositories.EmployeeRepository;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -22,12 +23,19 @@ public class DocumentFlowProcess {
     private UserManager userManager;
     private DocumentFactory documentFactory;
     private EmployeeRepository employeeRepository;
+    private HRSystemFasade hrSystemFasade;
+    private MailingFasade mailingFasade;
+    private PrintSystemFasade printSystemFasade;
 
-    public DocumentFlowProcess(DocumentRepository documentRepository, UserManager userManager, DocumentFactory documentFactory, EmployeeRepository employeeRepository) {
+    public DocumentFlowProcess(DocumentRepository documentRepository, UserManager userManager, DocumentFactory documentFactory, EmployeeRepository employeeRepository,
+                               HRSystemFasade hrSystemFasade, MailingFasade mailingFasade, PrintSystemFasade printSystemFasade) {
         this.documentRepository = documentRepository;
         this.userManager = userManager;
         this.documentFactory = documentFactory;
         this.employeeRepository = employeeRepository;
+        this.hrSystemFasade = hrSystemFasade;
+        this.mailingFasade = mailingFasade;
+        this.printSystemFasade = printSystemFasade;
     }
 
     @Transactional
@@ -73,6 +81,9 @@ public class DocumentFlowProcess {
 //        Collection<Employee> employees = employeeRepository.findByEmployeeIds(ids);
         document.publish(userManager.currentEmployee(), getEmployees(ids));
         documentRepository.save(document);
+        Set<EmployeeDetails> employeeDetailsSet = hrSystemFasade.getEmployeeDetails(ids);
+        sendEmailsAboutPublishedDocument(document, employeeDetailsSet);
+        printDocument(document, employeeDetailsSet);
     }
 
     private Collection<Employee> getEmployees(Set<EmployeeId> ids) {
@@ -94,6 +105,16 @@ public class DocumentFlowProcess {
             employees.add(employee);
         }
         return employees;
+    }
+
+    private void sendEmailsAboutPublishedDocument(Document document, Set<EmployeeDetails> employeeDetailsSet) {
+        Set<EmployeeDetails> employeesWithMail = employeeDetailsSet.stream().filter(EmployeeDetails::hasEmail).collect(Collectors.toSet());
+        mailingFasade.sendDocumentPublishedEmails(document, employeesWithMail);
+    }
+
+    private void printDocument(Document document, Set<EmployeeDetails> employeeDetailsSet) {
+        Set<EmployeeDetails> employeesWithoutMail = employeeDetailsSet.stream().filter((employeeDetails -> !employeeDetails.hasEmail())).collect(Collectors.toSet());
+        printSystemFasade.printDocument(document, employeesWithoutMail);
     }
 
     private Employee createDigitalExcludedEmployee(EmployeeId employeeId) {
