@@ -41,7 +41,7 @@ public class ReadingConfirmatorTest {
     private DocumentNumber anyDocumentNumber;
 
     @Mock
-    private Document anyDocument;
+    private Document document;
 
     @Mock
     private Employee anyEmployee;
@@ -55,6 +55,15 @@ public class ReadingConfirmatorTest {
     @Mock
     private EmployeeId anyEmployeeId;
 
+    @Mock
+    private EmployeeId otherEmployeeId;
+
+    @Mock
+    private Employee otherEmployee;
+
+    @Mock
+    private PrintingCostCalculator printingCostCalculator;
+
     @Before
     public void setUp() {
         readingConfirmator = new ReadingConfirmator(documentRepository, userManager, employeeRepository);
@@ -62,46 +71,30 @@ public class ReadingConfirmatorTest {
 
     @Test
     public void shouldConfirmDocument() {
-        Document document = new Document(anyDocumentNumber, "", "", anyConfirmator);
-        Reader reader = new Reader(document, anyEmployee);
-        Set<Employee> readers = new HashSet<>(Arrays.asList(anyEmployee));
-        document.publish(anyEmployee, readers);
-
         when(documentRepository.load(anyDocumentNumber)).thenReturn(document);
         when(userManager.currentEmployee()).thenReturn(anyEmployee);
 
         readingConfirmator.confirm(anyDocumentNumber);
 
-        verify(documentRepository).save(document);
-        assertTrue(reader.isConfirmed());
-        assertTrue(Math.abs(new Date().getTime() - reader.getConfirmedAt().getTime()) < EPS);
-        assertNull(reader.getConfirmedBy());
-        assertEquals(anyEmployee, reader.getEmployee());
+        verify(document).confirm(anyEmployee);
     }
 
     @Test
     public void shouldConfirmDocumentByOtherEmployee() {
-        Document document = new Document(anyDocumentNumber, "", "", anyConfirmator);
-        Reader reader = new Reader(document, anyEmployee);
-        Set<Employee> readers = new HashSet<>(Arrays.asList(anyEmployee));
-        document.publish(anyEmployee, readers);
-
         when(documentRepository.load(anyDocumentNumber)).thenReturn(document);
-        when(userManager.currentEmployee()).thenReturn(anyConfirmator);
-        when(employeeRepository.findByEmployeeId(anyEmployeeId)).thenReturn(anyEmployee);
+        when(userManager.currentEmployee()).thenReturn(anyEmployee);
+        when(employeeRepository.findByEmployeeId(otherEmployeeId)).thenReturn(otherEmployee);
 
-        readingConfirmator.confirm(anyDocumentNumber, anyEmployeeId);
+        //when
+        readingConfirmator.confirm(anyDocumentNumber, otherEmployeeId);
 
-        verify(documentRepository).save(document);
-        assertTrue(reader.isConfirmed());
-        assertTrue(Math.abs(new Date().getTime() - reader.getConfirmedAt().getTime()) < EPS);
-        assertEquals(anyConfirmator, reader.getConfirmedBy());
-        assertEquals(anyEmployee, reader.getEmployee());
+        //then
+        verify(document).confirm(anyEmployee, otherEmployee);
     }
 
     @Test
     public void shouldNotConfirmDocumentBecauseEmployeeIsNotAReader() {
-        Document document = new Document(anyDocumentNumber, "", "", anyConfirmator);
+        Document document = new Document(anyDocumentNumber, "", "", anyConfirmator, printingCostCalculator);
         Set<Employee> readers = new HashSet<>(Arrays.asList(anyEmployee, anyEmployee));
         document.publish(anyEmployee, readers);
 
@@ -119,7 +112,7 @@ public class ReadingConfirmatorTest {
 
     @Test
     public void shouldNotConfirmDocumentByOtherBecauseEmployeeIsNotAReader() {
-        Document document = new Document(anyDocumentNumber, "", "", anyConfirmator);
+        Document document = new Document(anyDocumentNumber, "", "", anyConfirmator, printingCostCalculator);
         Set<Employee> readers = new HashSet<>(Arrays.asList(anyEmployee, anyEmployee));
         document.publish(anyEmployee, readers);
 

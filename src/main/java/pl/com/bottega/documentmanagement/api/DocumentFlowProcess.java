@@ -8,7 +8,6 @@ import pl.com.bottega.documentmanagement.domain.repositories.EmployeeRepository;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -71,22 +70,31 @@ public class DocumentFlowProcess {
 
         Document document = documentRepository.load(documentNumber);
 //        Set<Employee> employees = addDocumentReaders(ids, document);
-        Collection<Employee> employees = employeeRepository.find(ids);
-        document.publish(userManager.currentEmployee(), employees);
+//        Collection<Employee> employees = employeeRepository.findByEmployeeIds(ids);
+        document.publish(userManager.currentEmployee(), getEmployees(ids));
         documentRepository.save(document);
     }
 
-//    private Set<Employee> addDocumentReaders(Set<Long> ids, Document document) {
-//        Set<Employee> employees = new HashSet<>();
-//        for (Long id : ids) {
-//            EmployeeId employeeId = new EmployeeId(id);
-//            Employee employee = employeeRepository.findByEmployeeId(employeeId);
-//            if (employee == null)
-//                employee = createDigitalExcludedEmployee(employeeId);
-//            employees.add(employee);
-//        }
-//        return employees;
-//    }
+    private Collection<Employee> getEmployees(Set<EmployeeId> ids) {
+        Collection<Employee> employees = employeeRepository.findByEmployeeIds(ids);
+        ids.forEach((id) -> {
+        if (!employees.stream().anyMatch((employee) -> employee.getEmployeeId().equals(id)))
+            employees.add(new Employee(id));
+            });
+        return employees;
+    }
+
+    private Set<Employee> addDocumentReaders(Set<Long> ids, Document document) {
+        Set<Employee> employees = new HashSet<>();
+        for (Long id : ids) {
+            EmployeeId employeeId = new EmployeeId(id);
+            Employee employee = employeeRepository.findByEmployeeId(employeeId);
+            if (employee == null)
+                employee = createDigitalExcludedEmployee(employeeId);
+            employees.add(employee);
+        }
+        return employees;
+    }
 
     private Employee createDigitalExcludedEmployee(EmployeeId employeeId) {
         userManager.signup(employeeId);

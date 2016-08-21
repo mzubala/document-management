@@ -152,7 +152,7 @@ public class JPQLDocumentsCatalog implements DocumentsCatalog {
 //    @Override
 //    @Transactional
 //    @RequiresAuth
-//    public DocumentSearchResults find(pl.com.bottega.documentmanagement.api.DocumentCriteria documentCriteria) {
+//    public DocumentSearchResults findByEmployeeIds(pl.com.bottega.documentmanagement.api.DocumentCriteria documentCriteria) {
 //        checkNotNull(documentCriteria);
 //        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 //        CriteriaQuery<DocumentDto> query = builder.createQuery(DocumentDto.class);

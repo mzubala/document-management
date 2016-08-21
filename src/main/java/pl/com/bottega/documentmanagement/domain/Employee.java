@@ -57,6 +57,22 @@ public class Employee {
         this.roles = newRoles;
     }
 
+    public EmployeeId getEmployeeId() {
+        return employeeId;
+    }
+
+    public String getHashedPassword() {
+        return hashedPassword;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
     public Set<Role> getRole() {
         return roles;
     }
@@ -68,20 +84,11 @@ public class Employee {
 
         Employee employee = (Employee) o;
 
-        if (employeeId != null ? !employeeId.equals(employee.employeeId) : employee.employeeId != null) return false;
-        if (hashedPassword != null ? !hashedPassword.equals(employee.hashedPassword) : employee.hashedPassword != null)
-            return false;
-        if (login != null ? !login.equals(employee.login) : employee.login != null) return false;
-        return roles != null ? roles.equals(employee.roles) : employee.roles == null;
-
+        return employeeId != null ? employeeId.equals(employee.employeeId) : employee.employeeId == null;
     }
 
     @Override
     public int hashCode() {
-        int result = employeeId != null ? employeeId.hashCode() : 0;
-        result = 31 * result + (hashedPassword != null ? hashedPassword.hashCode() : 0);
-        result = 31 * result + (login != null ? login.hashCode() : 0);
-        result = 31 * result + (roles != null ? roles.hashCode() : 0);
-        return result;
+        return employeeId != null ? employeeId.hashCode() : 0;
     }
 }

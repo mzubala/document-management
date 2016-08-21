@@ -21,6 +21,9 @@
     <bean id="documentNumberGenerator" class="${documentNumberGeneratorClass}">
     </bean>
 
+    <bean id="printingCostCalculator" class="${printingCostCalculator}">
+    </bean>
+
     <bean id="documentRepository" class="pl.com.bottega.documentmanagement.infrastructure.JPADocumentRepository"/>
 
     <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">

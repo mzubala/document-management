@@ -16,7 +16,7 @@ public class Reader {
     @ManyToOne
     private Document document;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private Employee employee;
 
     private boolean confirmed;

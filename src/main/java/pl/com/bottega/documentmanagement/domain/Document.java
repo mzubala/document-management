@@ -3,6 +3,7 @@ package pl.com.bottega.documentmanagement.domain;
 import javax.persistence.*;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import java.math.BigDecimal;
 import java.util.*;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -14,6 +15,8 @@ import static pl.com.bottega.documentmanagement.domain.DocumentStatus.*;
  */
 @Entity
 public class Document {
+
+    private static final int CHARS_PER_PAGE = 1000;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -58,12 +61,14 @@ public class Document {
     @ManyToOne
     private Employee publishedBy;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "document", cascade = CascadeType.ALL)
     private Set<Reader> readers = new HashSet<>();
 
-    public Document() {}
+    private BigDecimal printingCost;
 
-    public Document(DocumentNumber documentNumber, String content, String title, Employee creator) {
+    private Document() {}
+
+    public Document(DocumentNumber documentNumber, String content, String title, Employee creator, PrintingCostCalculator printingCostCalculator) {
         this.number = documentNumber;
         this.content = content;
         this.title = title;
@@ -71,6 +76,11 @@ public class Document {
         this.documentStatus = DRAFT;
         this.createAt = new Date();
         this.deleted = false;
+        this.printingCost = printingCostCalculator.calculate(pagesCount());
+    }
+
+    private int pagesCount() {
+        return content.length() / CHARS_PER_PAGE + (content.length() % CHARS_PER_PAGE == 0 ? 0 : 1);
     }
 
     public void change(String title, String content) {
@@ -79,6 +89,7 @@ public class Document {
         this.content = content;
         this.documentStatus = DRAFT;
         this.updatedAt = new Date();
+//        this.printingCost = printingCostCalculator.calculate(pagesCount());
     }
 
     public void verify(Employee employee) {

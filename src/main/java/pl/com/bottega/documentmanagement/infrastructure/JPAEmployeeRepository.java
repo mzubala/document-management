@@ -67,7 +67,7 @@ public class JPAEmployeeRepository implements EmployeeRepository {
     }
 
     @Override
-    public Collection<Employee> find(Set<EmployeeId> ids) {
+    public Collection<Employee> findByEmployeeIds(Set<EmployeeId> ids) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Employee> criteriaQuery = criteriaBuilder.createQuery(Employee.class);
         Root<Employee> root = criteriaQuery.from(Employee.class);

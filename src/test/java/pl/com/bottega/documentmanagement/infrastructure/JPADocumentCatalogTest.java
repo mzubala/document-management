@@ -42,13 +42,16 @@ public class JPADocumentCatalogTest {
     @PersistenceContext
     private EntityManager entityManager;
 
+    @Autowired
+    private PrintingCostCalculator printingCostCalculator;
+
     @Test
     @Transactional
     public void shouldFindDocumentByStatus() {
         //given
         Employee employee = new Employee("test login", "test password", new EmployeeId(8700L));
-        Document documentDraft = new Document(new DocumentNumber("1"), "draft", "draft", employee);
-        Document documentVerified = new Document(new DocumentNumber("2"), "verified", "verified", employee);
+        Document documentDraft = new Document(new DocumentNumber("1"), "draft", "draft", employee, printingCostCalculator);
+        Document documentVerified = new Document(new DocumentNumber("2"), "verified", "verified", employee, printingCostCalculator);
         entityManager.persist(employee);
         entityManager.persist(documentDraft);
         documentVerified.verify(employee);

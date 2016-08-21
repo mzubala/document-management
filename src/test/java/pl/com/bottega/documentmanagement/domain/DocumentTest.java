@@ -43,9 +43,12 @@ public class DocumentTest {
     @Mock
     private EmployeeId anyEmployeeId;
 
+    @Mock
+    private PrintingCostCalculator printingCostCalculator;
+
     @Before
     public void setUp() {
-        document = new Document(anyNumber, anyContent, anyTitle, anyEmployee);
+        document = new Document(anyNumber, anyContent, anyTitle, anyEmployee, printingCostCalculator);
     }
 
     @Test

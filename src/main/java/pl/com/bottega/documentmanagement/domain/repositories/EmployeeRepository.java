@@ -22,5 +22,5 @@ public interface EmployeeRepository {
 
     Collection<Role> getRoles(Set<String> roleNames);
 
-    Collection<Employee> find(Set<EmployeeId> ids);
+    Collection<Employee> findByEmployeeIds(Set<EmployeeId> ids);
 }

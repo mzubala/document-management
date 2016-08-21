@@ -119,10 +119,18 @@ public class UserManager {
     }
 
     @Transactional
+    @RequiresAuth(roles = "ADMIN")
     public void updateRoles(EmployeeId employeeId, Set<String> roleNames) {
         checkArgument(!(employeeId == null || roleNames == null));
         Employee employee = employeeRepository.findByEmployeeId(employeeId);
         Set<Role> roles = getRoles(roleNames);
         employee.updateRoles(roles);
+    }
+
+    @Transactional
+    public void createAdmin() {
+        Employee employee = new Employee("admin", passwordHasher.hashedPassword("admin"), new EmployeeId(0L));
+        employee.updateRoles(getRoles(Sets.newHashSet("ADMIN")));
+        employeeRepository.save(employee);
     }
 }
