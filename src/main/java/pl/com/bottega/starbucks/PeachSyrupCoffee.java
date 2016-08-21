@@ -5,15 +5,15 @@ import java.math.BigDecimal;
 /**
  * Created by maciuch on 21.08.16.
  */
-public class PeachSyrup extends CoffeeDecorator {
+public class PeachSyrupCoffee extends CoffeeDecorator {
 
-    PeachSyrup(Coffee coffee) {
+    PeachSyrupCoffee(Coffee coffee) {
         super(coffee);
     }
 
     @Override
     public BigDecimal cost() {
-        return coffee.cost().add(new BigDecimal(1.0));
+        return coffee.cost().add(new BigDecimal(1.5));
     }
 
     @Override

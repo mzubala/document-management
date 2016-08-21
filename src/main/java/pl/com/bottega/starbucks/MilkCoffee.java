@@ -5,9 +5,9 @@ import java.math.BigDecimal;
 /**
  * Created by maciuch on 21.08.16.
  */
-public class Milk extends CoffeeDecorator {
+public class MilkCoffee extends CoffeeDecorator {
 
-    Milk(Coffee coffee) {
+    MilkCoffee(Coffee coffee) {
         super(coffee);
     }
 
