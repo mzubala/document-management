@@ -53,9 +53,19 @@ public class DocumentFlowProcessTest {
     @Mock
     private Employee employee;
 
+    @Mock
+    private MailingFacade mailingFacade;
+
+    @Mock
+    private PrintSystemFacade printSystemFacade;
+
+    @Mock
+    private HRSystemFacade hrSystemFacade;
+
     @Before
     public void setUp() throws Exception {
-        documentFlowProcess = new DocumentFlowProcess(documentRepository, userManager, documentFactory, employeeRepository);
+        documentFlowProcess = new DocumentFlowProcess(documentRepository, userManager,
+                documentFactory, employeeRepository, hrSystemFacade, printSystemFacade, mailingFacade);
     }
 
     @Test
@@ -112,6 +122,16 @@ public class DocumentFlowProcessTest {
 
         //then
         verify(document).publish(employee, employeeIds.stream().map(Employee::new).collect(Collectors.toSet()));
+    }
+
+    @Test
+    public void shouldSendPrintRequestForEmployeesWithoutEmail() {
+
+    }
+
+    @Test
+    public void shouldSendPublicationEmailsToEmployeesWithEmail() {
+
     }
 
     @Test
