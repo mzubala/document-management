@@ -27,10 +27,17 @@ public class Employee {
 
     private Employee(){}
 
+    public Employee(EmployeeId employeeId){
+        this.employeeId = employeeId;
+    }
+
     public Employee(String login, String hashedPassword, EmployeeId employeeId) {
         this.login = login;
         this.hashedPassword = hashedPassword;
         this.employeeId = employeeId;
+    }
+    public EmployeeId employeeId() {
+        return employeeId;
     }
 
     public boolean isRegistered(){
@@ -53,5 +60,19 @@ public class Employee {
 
     public void updateRoles(Set<Role> newRole) {
         this.roles = newRole;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Employee employee = (Employee) o;
+        return employeeId.equals(employee.employeeId);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return employeeId.hashCode();
     }
 }

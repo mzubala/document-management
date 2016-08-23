@@ -20,6 +20,8 @@ public class EmployeeFactory {
     }
 
     public Employee create(String login, String password, EmployeeId employeeId){
+        if (login == null && password == null)
+            return new Employee(employeeId);
         Employee employee = new Employee(login,passwordHasher.hashedPassword(password),employeeId);
         return employee;
     }

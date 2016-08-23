@@ -1,10 +1,7 @@
 package pl.com.bottega.documentmanagement.infrastructure;
 
 import org.springframework.stereotype.Component;
-import pl.com.bottega.documentmanagement.api.DocumentCriteria;
-import pl.com.bottega.documentmanagement.api.DocumentDto;
-import pl.com.bottega.documentmanagement.api.DocumentSearchResults;
-import pl.com.bottega.documentmanagement.api.DocumentsCatalog;
+import pl.com.bottega.documentmanagement.api.*;
 import pl.com.bottega.documentmanagement.domain.*;
 
 import javax.persistence.EntityManager;
@@ -28,6 +25,7 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
 
 
     @Override
+    @RequiresAuth(roles = "STAFF")
     public DocumentDto get(DocumentNumber documentNumber) {
         checkNotNull(documentNumber);
 
@@ -38,15 +36,20 @@ public class JPADocumentsCatalog implements DocumentsCatalog {
                 "WHERE () AND () AND ()";
 
         */
+        checkNotNull(documentNumber);
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<DocumentDto> query = builder.createQuery(DocumentDto.class);
         Root<Document> root = query.from(Document.class);
-        query.where(builder.equal(root.get(Document_.documentNumber), documentNumber));
-        selectDocumentDto(builder,query,root);
+        query.where(builder.and(
+                builder.equal(root.get(Document_.documentNumber), documentNumber)),
+                builder.not(root.get(Document_.deleted))
+        );
+        selectDocumentDto(builder, query, root);
         return entityManager.createQuery(query).getSingleResult();
     }
 
     @Override
+    @RequiresAuth(roles = "STAFF")
     public DocumentSearchResults find(DocumentCriteria documentCriteria) {
         checkNotNull(documentCriteria);
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();

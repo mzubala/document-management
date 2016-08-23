@@ -1,10 +1,15 @@
 package pl.com.bottega.documentmanagement.domain;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkState;
 
 
 /**
@@ -12,6 +17,8 @@ import static com.google.common.base.Preconditions.checkArgument;
  */
 @Entity
 public class Document {
+
+    private static final int CHARS_PER_PAGE = 1000;
 
     @Id
     @GeneratedValue
@@ -23,9 +30,9 @@ public class Document {
 
     @Enumerated(EnumType.STRING)
     private DocumentStatus documentStatus;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Employee creator;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Employee verifier;
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
@@ -38,15 +45,25 @@ public class Document {
      * true if document is deleted
      */
     private Boolean deleted;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Employee deletedBy;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date publishedAt;
+    @ManyToOne
+    private Employee publisher;
 
     @ManyToMany(cascade = CascadeType.ALL) //zapis dokumentu pociagnie zapis tagów
     private Set<Tag> tags;
+    @OneToMany(mappedBy = "document", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Reader> readers;
+
+    private BigDecimal printingCost;
 
     private Document(){}
 
-    public Document(DocumentNumber documentNumber, String content, String title, Employee creator) {
+    public Document(DocumentNumber documentNumber, String content, String title, Employee creator,
+                    PrintCostCalculator printCostCalculator) {
         this.documentNumber = documentNumber;
         this.content = content;
         this.title = title;
@@ -54,7 +71,12 @@ public class Document {
         this.documentStatus = DocumentStatus.DRAFT;
         this.createdAt = new Date();
         this.deleted = false;
+        this.printingCost = printCostCalculator.cost(pagesCount());
 
+    }
+    private int pagesCount() {
+        return content.length() / CHARS_PER_PAGE + content.length()% CHARS_PER_PAGE == 0 ? 0:1;
+        //return  Math.ceil((double)content.length()/CHARS_PER_PAGE);
     }
 
     public void change(String title, String content) {
@@ -62,7 +84,6 @@ public class Document {
         this.content = content;
         this.documentStatus = DocumentStatus.DRAFT;
         this.updatedAt = new Date();
-
     }
 
     public void verify(Employee employee) {
@@ -70,20 +91,48 @@ public class Document {
         this.verifier = employee;
         this.documentStatus = DocumentStatus.VERIFIED;
         this.verificationAt = new Date();
-
     }
 
-    public void confirm(Employee conirmator) {
-
+    public void confirm(Employee confirmator) {
+        Reader reader = reader(confirmator);
+        reader.confirm();
     }
 
     public void confirm(Employee confirmator, Employee forEmployee) {
-
+        Reader reader = reader(forEmployee);
+        reader.confirm(confirmator);
     }
 
     public void archive(Employee employee){
         this.deleted = true;
         this.deletedBy = employee;
+    }
+
+    public void publish(Employee publisher, Set<Employee> employees){
+        checkArgument(employees != null && employees.size() > 0);
+        checkState(documentStatus.equals(DocumentStatus.VERIFIED));
+        Set<Reader> newReaders = employees.stream().map((employee) -> new Reader(this, employee)).collect(Collectors.toSet());
+        setReaders(newReaders);
+        this.publishedAt = new Date();
+        this.publisher = publisher;
+        this.documentStatus = DocumentStatus.PUBLISHED;
+    }
+    private void setReaders(Set<Reader> newReaders) {
+        if(readers == null)
+            readers = new HashSet<>();
+        else
+            readers.clear();
+        this.readers.addAll(newReaders);
+    }
+
+    public Set<Reader> readers() {
+        return Collections.unmodifiableSet(readers);
+    }
+
+    public Reader reader(Employee employee) {
+        return readers().stream().
+                filter((reader) -> reader.concernsEmployee(employee)).
+                findFirst().orElseThrow(() -> new IllegalArgumentException());
     }
 
     public Boolean getDeleted() {
@@ -128,5 +177,21 @@ public class Document {
 
     public Date verificationAt() {
         return verificationAt;
+    }
+
+    public Date getPublishedAt() {
+        return publishedAt;
+    }
+
+    public void setPublishedAt(Date publishedAt) {
+        this.publishedAt = publishedAt;
+    }
+
+    public Employee getPublisher() {
+        return publisher;
+    }
+
+    public void setPublisher(Employee publisher) {
+        this.publisher = publisher;
     }
 }

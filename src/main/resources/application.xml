@@ -22,6 +22,7 @@
     <bean id="documentNumberGenerator" class="pl.com.bottega.documentmanagement.domain.ISODocumentNumberGenerator">
     </bean>
 
+    <bean id="printCostCalculator" class="${printCostCalculator}"/>
 
     <!-- tworzenie deklaracji zależności-->
     <!--bean id="employeeRepository" class="pl.com.bottega.documentmanagement.infrastructure.FakeEmployeeRepository">
