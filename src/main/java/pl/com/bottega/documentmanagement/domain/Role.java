@@ -4,6 +4,7 @@ import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 
@@ -11,7 +12,7 @@ import javax.persistence.Id;
 public class Role {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     @NaturalId
     private String name;
@@ -35,12 +36,13 @@ public class Role {
 
         Role role = (Role) o;
 
-        return name != null ? name.equals(role.name) : role.name == null;
+        return name.equals(role.name);
 
     }
 
     @Override
     public int hashCode() {
-        return name != null ? name.hashCode() : 0;
+        return name.hashCode();
     }
+
 }

@@ -2,10 +2,7 @@ package pl.com.bottega.documentmanagement.domain;
 
 import org.hibernate.annotations.NaturalId;
 
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToMany;
+import javax.persistence.*;
 import java.util.Collection;
 import java.util.Set;
 
@@ -21,11 +18,11 @@ public class Employee {
     private String hashedPassword;
     @NaturalId
     private String login;
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Collection<Role> roles;
 
 
-    private Employee(){}
+    public Employee(){}
 
     public Employee(EmployeeId employeeId){
         this.employeeId = employeeId;

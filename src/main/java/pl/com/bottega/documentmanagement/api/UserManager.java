@@ -2,8 +2,6 @@ package pl.com.bottega.documentmanagement.api;
 
 import com.google.common.collect.Sets;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +20,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Created by maciuch on 12.06.16.
  */
 @Service
-@Scope (value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS) //!!!!!!
+//@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS) //!!!!!!
 public class UserManager {
 
     private EmployeeRepository employeeRepository;
