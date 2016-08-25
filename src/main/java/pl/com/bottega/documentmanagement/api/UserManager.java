@@ -21,7 +21,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Created by maciuch on 12.06.16.
  */
 @Service
-@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
+//@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class UserManager {
 
     private static final String INITIAL_ROLE = "STAFF";

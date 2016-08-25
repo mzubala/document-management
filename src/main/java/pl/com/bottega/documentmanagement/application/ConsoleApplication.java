@@ -20,7 +20,13 @@ public abstract class ConsoleApplication {
         }
     }
 
-    protected abstract void execute(String cmd);
+    private void execute(String cmd) {
+        CommandFactory commandFactory = commandFactory();
+        Command command = commandFactory.createCommand(cmd);
+        command.execute();
+    }
+
+    protected abstract CommandFactory commandFactory();
 
     private void printMenu() {
         Collection<String> menuItems = menuItems();

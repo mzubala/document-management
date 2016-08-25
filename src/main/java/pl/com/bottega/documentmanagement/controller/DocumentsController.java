@@ -2,7 +2,6 @@ package pl.com.bottega.documentmanagement.controller;
 
 import org.springframework.web.bind.annotation.*;
 import pl.com.bottega.documentmanagement.api.*;
-import pl.com.bottega.documentmanagement.domain.Document;
 import pl.com.bottega.documentmanagement.domain.DocumentNumber;
 import pl.com.bottega.documentmanagement.domain.EmployeeId;
 
