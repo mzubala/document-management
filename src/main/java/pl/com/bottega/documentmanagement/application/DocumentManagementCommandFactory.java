@@ -15,7 +15,6 @@ public class DocumentManagementCommandFactory implements CommandFactory {
     }
 
     @Override
-
     public Command createCommand(String command) {
         SpringCommand springCommand;
         if (command.equals("1"))
