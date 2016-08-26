@@ -1,6 +1,6 @@
-package pl.com.bottega.documentmanagement.domain.coffeeChains;
+package pl.com.bottega.documentmanagement.domain.coffeechains;
 
-import static pl.com.bottega.documentmanagement.domain.coffeeChains.Size.MEDIUM;
+import static pl.com.bottega.documentmanagement.domain.coffeechains.Size.MEDIUM;
 
 /**
  * Created by Dell on 2016-08-26.

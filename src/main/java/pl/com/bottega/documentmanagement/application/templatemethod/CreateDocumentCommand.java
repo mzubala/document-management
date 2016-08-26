@@ -1,4 +1,4 @@
-package pl.com.bottega.documentmanagement.application;
+package pl.com.bottega.documentmanagement.application.templatemethod;
 
 import pl.com.bottega.documentmanagement.api.DocumentFlowProcess;
 import pl.com.bottega.documentmanagement.domain.DocumentNumber;

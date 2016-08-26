@@ -1,4 +1,4 @@
-package pl.com.bottega.documentmanagement.application;
+package pl.com.bottega.documentmanagement.application.templatemethod;
 
 import com.google.common.collect.Lists;
 import org.springframework.context.ApplicationContext;

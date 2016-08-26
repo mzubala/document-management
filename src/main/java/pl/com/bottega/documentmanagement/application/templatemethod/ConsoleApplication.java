@@ -1,4 +1,4 @@
-package pl.com.bottega.documentmanagement.application;
+package pl.com.bottega.documentmanagement.application.templatemethod;
 
 import java.util.Collection;
 import java.util.Scanner;

@@ -1,6 +1,6 @@
-package pl.com.bottega.documentmanagement.domain.coffeeChains;
+package pl.com.bottega.documentmanagement.domain.coffeechains;
 
-import static pl.com.bottega.documentmanagement.domain.coffeeChains.Ingredients.MILK;
+import static pl.com.bottega.documentmanagement.domain.coffeechains.Ingredients.MILK;
 
 /**
  * Created by Dell on 2016-08-26.

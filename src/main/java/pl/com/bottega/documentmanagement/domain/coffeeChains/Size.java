@@ -1,4 +1,4 @@
-package pl.com.bottega.documentmanagement.domain.coffeeChains;
+package pl.com.bottega.documentmanagement.domain.coffeechains;
 
 /**
  * Created by Dell on 2016-08-26.

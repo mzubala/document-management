@@ -1,11 +1,12 @@
-package pl.com.bottega.documentmanagement.application;
+package pl.com.bottega.documentmanagement.application.templatemethod;
 
 import org.springframework.context.ApplicationContext;
+import pl.com.bottega.documentmanagement.application.templatemethod.Command;
 
 /**
  * Created by Dell on 2016-08-21.
  */
-public abstract class SpringCommand implements Command{
+public abstract class SpringCommand implements Command {
 
     private ApplicationContext applicationContext;
 
