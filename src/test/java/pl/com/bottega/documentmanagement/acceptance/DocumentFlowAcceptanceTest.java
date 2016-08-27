@@ -1,7 +1,6 @@
 package pl.com.bottega.documentmanagement.acceptance;
 
 import com.google.common.collect.Sets;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -74,7 +73,7 @@ public class DocumentFlowAcceptanceTest {
     @Test
     @Transactional
     public void shouldVerifyDocument() {
-        DocumentNumber nr = createDocument();
+        DocumentNumber nr = givenAnyDocument();
 
         documentFlowProcess.verify(nr);
 
@@ -85,7 +84,7 @@ public class DocumentFlowAcceptanceTest {
     @Test
     @Transactional
     public void shouldPublishDocument() {
-        DocumentNumber nr = createDocument();
+        DocumentNumber nr = givenAnyDocument();
         //todo mock method sending emails
         //todo mock method printing documents
 
@@ -98,7 +97,7 @@ public class DocumentFlowAcceptanceTest {
     @Test(expected = NoResultException.class)
     @Transactional
     public void shouldNotGetArchivedDocument() {
-        DocumentNumber nr = createDocument();
+        DocumentNumber nr = givenAnyDocument();
         documentFlowProcess.archive(nr);
 
         DocumentDto dto = documentsCatalog.get(nr);
@@ -107,7 +106,7 @@ public class DocumentFlowAcceptanceTest {
     @Test
     @Transactional
     public void shouldConfirmDocumentHasBeenRead() {
-        DocumentNumber nr = createDocument();
+        DocumentNumber nr = givenAnyDocument();
         documentFlowProcess.publish(nr, readers);
 
         readingConfirmator.confirm(nr);
@@ -118,7 +117,7 @@ public class DocumentFlowAcceptanceTest {
     @Test
     @Transactional
     public void shouldConfirmDocumentByOtherEmployee() {
-        DocumentNumber nr = createDocument();
+        DocumentNumber nr = givenAnyDocument();
         documentFlowProcess.publish(nr, readers);
 
         readingConfirmator.confirm(nr, new EmployeeId(10L));
@@ -131,15 +130,13 @@ public class DocumentFlowAcceptanceTest {
         SignupResultDto result = userManager.signup(anyLogin, anyPassword, anyEmployeeId);
 
         assertTrue(result.isSuccess());
-        SignupResultDto shouldLogin = userManager.login(anyLogin, anyPassword);
-        assertTrue(shouldLogin.isSuccess());
+        SignupResultDto loginResult = userManager.login(anyLogin, anyPassword);
+        assertTrue(loginResult.isSuccess());
 
     }
 
-    private DocumentNumber createDocument() {
+    private DocumentNumber givenAnyDocument() {
         loginAs("STAFF", "EDITOR", "MANAGER");
-        //todo mock method sending emails
-        //todo mock method printing documents
         return documentFlowProcess.create(anyTitle, anyContent);
     }
 
