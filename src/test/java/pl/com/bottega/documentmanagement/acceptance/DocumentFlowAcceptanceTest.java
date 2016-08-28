@@ -25,7 +25,7 @@ import static org.junit.Assert.assertEquals;
 import static pl.com.bottega.documentmanagement.utils.Assert.assertDatesEqual;
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration({"/application.xml"})
+@ContextConfiguration({"/application.xml", "/test-context.xml"})
 @TestPropertySource({"/jdbc-test.properties", "/hibernate-test.properties"})
 @WebAppConfiguration
 public class DocumentFlowAcceptanceTest {
