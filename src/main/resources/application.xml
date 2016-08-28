@@ -45,6 +45,22 @@
         <property name="entityManagerFactory" ref="entityManagerFactory"/>
     </bean>
 
+    <bean id="documentListenerManager" class="pl.com.bottega.documentmanagement.api.DocumentListenerManager">
+        <constructor-arg index="0">
+            <list>
+                <bean id="documentPrinter" class="pl.com.bottega.documentmanagement.api.events.DocumentPrinter">
+                    <constructor-arg index="0" ref="printSystemFacadeImpl"></constructor-arg>
+                    <constructor-arg index="1" ref="HRSystemFacadeImpl"></constructor-arg>
+                </bean>
+                <bean id="documentPublishedNotifier"
+                      class="pl.com.bottega.documentmanagement.api.events.DocumentPublishedNotifier">
+                    <constructor-arg index="0" ref="mailingFacadeImpl"></constructor-arg>
+                    <constructor-arg index="1" ref="HRSystemFacadeImpl"></constructor-arg>
+                </bean>
+            </list>
+        </constructor-arg>
+    </bean>
+
     <aop:config>
         <aop:aspect id="a1" ref="authAspect">
             <aop:pointcut id="authMethod"
