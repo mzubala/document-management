@@ -5,7 +5,7 @@ package pl.com.bottega.documentmanagement.application.mars;
  */
 public enum Direction {
 
-    NORTH(1), NORTH_EAST(2), EAST(3), SOUTH_EAST(4), SOUTH(5), SOUTH_WEST(6), WEST(7), NORTH_WEST(8);
+    NORTH(1), NORTHEAST(2), EAST(3), SOUTHEAST(4), SOUTH(5), SOUTHWEST(6), WEST(7), NORTHWEST(8);
 
     private int direction;
 

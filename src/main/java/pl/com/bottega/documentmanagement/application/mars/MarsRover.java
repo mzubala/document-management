@@ -19,20 +19,28 @@ public class MarsRover {
         switch (direction) {
             case NORTH:
                 position = new Position(position.getX(), position.getY() + 1);
-            case NORTH_EAST:
+                break;
+            case NORTHEAST:
                 position = new Position(position.getX() + 1, position.getY() + 1);
+                break;
             case EAST:
                 position = new Position(position.getX() + 1, position.getY());
-            case SOUTH_EAST:
+                break;
+            case SOUTHEAST:
                 position = new Position(position.getX() + 1, position.getY() - 1);
+                break;
             case SOUTH:
                 position = new Position(position.getX(), position.getY() - 1);
-            case SOUTH_WEST:
+                break;
+            case SOUTHWEST:
                 position = new Position(position.getX() - 1, position.getY() - 1);
+                break;
             case WEST:
                 position = new Position(position.getX() - 1, position.getY());
-            case NORTH_WEST:
+                break;
+            case NORTHWEST:
                 position = new Position(position.getX() - 1, position.getY() + 1);
+                break;
         }
 
     }
