@@ -18,6 +18,21 @@
 
     <context:property-placeholder location="classpath:application.properties,classpath:jdbc.properties"/>
 
+    <bean id="documentListenerManager" class="pl.com.bottega.documentmanagement.api.DocumentListenerManager">
+        <constructor-arg index="0">
+            <list>
+                <bean id="documentPrinter" class="pl.com.bottega.documentmanagement.api.events.DocumentPrinter">
+                    <constructor-arg index="0" ref="printSystemFasadeImpl"></constructor-arg>
+                    <constructor-arg index="1" ref="HRSystemFacadeImpl"></constructor-arg>
+                </bean>
+                <bean id="documentPublishedNotifier" class="pl.com.bottega.documentmanagement.api.events.DocumentPublishedNotifier">
+                    <constructor-arg index="0" ref="mailingFasadeImpl"></constructor-arg>
+                    <constructor-arg index="1" ref="HRSystemFacadeImpl"></constructor-arg>
+                </bean>
+            </list>
+        </constructor-arg>
+    </bean>
+
     <bean id="documentNumberGenerator" class="${documentNumberGeneratorClass}">
     </bean>
 

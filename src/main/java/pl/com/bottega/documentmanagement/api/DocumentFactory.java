@@ -14,15 +14,19 @@ public class DocumentFactory {
     private DocumentNumberGenerator documentNumberGenerator;
     private UserManager userManager;
     private PrintingCostCalculator printingCostCalculator;
+    private DocumentListenerManager documentListenerManager;
 
-    public DocumentFactory(DocumentNumberGenerator documentNumberGenerator, UserManager userManager, PrintingCostCalculator printingCostCalculator) {
+    public DocumentFactory(DocumentNumberGenerator documentNumberGenerator, UserManager userManager, PrintingCostCalculator printingCostCalculator, DocumentListenerManager documentListenerManager) {
         this.documentNumberGenerator = documentNumberGenerator;
         this.userManager = userManager;
         this.printingCostCalculator = printingCostCalculator;
+        this.documentListenerManager = documentListenerManager;
     }
 
     public Document create(String content, String title) {
-        return new Document(documentNumberGenerator.generate(), content, title, userManager.currentEmployee(), printingCostCalculator);
+        Document document = new Document(documentNumberGenerator.generate(), content, title, userManager.currentEmployee(), printingCostCalculator);
+        documentListenerManager.subscribeListeners(document);
+        return document;
     }
 
 }

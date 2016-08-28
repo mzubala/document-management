@@ -23,19 +23,12 @@ public class DocumentFlowProcess {
     private UserManager userManager;
     private DocumentFactory documentFactory;
     private EmployeeRepository employeeRepository;
-    private HRSystemFasade hrSystemFasade;
-    private MailingFasade mailingFasade;
-    private PrintSystemFasade printSystemFasade;
 
-    public DocumentFlowProcess(DocumentRepository documentRepository, UserManager userManager, DocumentFactory documentFactory, EmployeeRepository employeeRepository,
-                               HRSystemFasade hrSystemFasade, MailingFasade mailingFasade, PrintSystemFasade printSystemFasade) {
+    public DocumentFlowProcess(DocumentRepository documentRepository, UserManager userManager, DocumentFactory documentFactory, EmployeeRepository employeeRepository) {
         this.documentRepository = documentRepository;
         this.userManager = userManager;
         this.documentFactory = documentFactory;
         this.employeeRepository = employeeRepository;
-        this.hrSystemFasade = hrSystemFasade;
-        this.mailingFasade = mailingFasade;
-        this.printSystemFasade = printSystemFasade;
     }
 
     @Transactional
@@ -77,13 +70,8 @@ public class DocumentFlowProcess {
         checkNotNull(documentNumber);
 
         Document document = documentRepository.load(documentNumber);
-//        Set<Employee> employees = addDocumentReaders(ids, document);
-//        Collection<Employee> employees = employeeRepository.findByEmployeeIds(ids);
         document.publish(userManager.currentEmployee(), getEmployees(ids));
         documentRepository.save(document);
-        Set<EmployeeDetails> employeeDetailsSet = hrSystemFasade.getEmployeeDetails(ids);
-        sendEmailsAboutPublishedDocument(document, employeeDetailsSet);
-        printDocument(document, employeeDetailsSet);
     }
 
     private Collection<Employee> getEmployees(Set<EmployeeId> ids) {
@@ -93,28 +81,6 @@ public class DocumentFlowProcess {
             employees.add(new Employee(id));
             });
         return employees;
-    }
-
-    private Set<Employee> addDocumentReaders(Set<Long> ids, Document document) {
-        Set<Employee> employees = new HashSet<>();
-        for (Long id : ids) {
-            EmployeeId employeeId = new EmployeeId(id);
-            Employee employee = employeeRepository.findByEmployeeId(employeeId);
-            if (employee == null)
-                employee = createDigitalExcludedEmployee(employeeId);
-            employees.add(employee);
-        }
-        return employees;
-    }
-
-    private void sendEmailsAboutPublishedDocument(Document document, Set<EmployeeDetails> employeeDetailsSet) {
-        Set<EmployeeDetails> employeesWithMail = employeeDetailsSet.stream().filter(EmployeeDetails::hasEmail).collect(Collectors.toSet());
-        mailingFasade.sendDocumentPublishedEmails(document, employeesWithMail);
-    }
-
-    private void printDocument(Document document, Set<EmployeeDetails> employeeDetailsSet) {
-        Set<EmployeeDetails> employeesWithoutMail = employeeDetailsSet.stream().filter((employeeDetails -> !employeeDetails.hasEmail())).collect(Collectors.toSet());
-        printSystemFasade.printDocument(document, employeesWithoutMail);
     }
 
     private Employee createDigitalExcludedEmployee(EmployeeId employeeId) {

@@ -1,5 +1,7 @@
 package pl.com.bottega.documentmanagement.domain;
 
+import pl.com.bottega.documentmanagement.domain.events.DocumentListener;
+
 import javax.persistence.*;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -65,6 +67,9 @@ public class Document {
     private Set<Reader> readers = new HashSet<>();
 
     private BigDecimal printingCost;
+
+    @Transient
+    private Collection<DocumentListener> documentListeners = new HashSet<>();
 
     private Document() {}
 
@@ -216,6 +221,10 @@ public class Document {
 
     public boolean isDeleted() {
         return deleted;
+    }
+
+    public void subscribeDocumentListener(DocumentListener documentListener) {
+        documentListeners.add(documentListener);
     }
 
     @Override

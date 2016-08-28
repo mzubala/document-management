@@ -45,8 +45,8 @@ public class JPADocumentCatalogTest {
     @Autowired
     private PrintingCostCalculator printingCostCalculator;
 
-    @Test
-    @Transactional
+//    @Test
+//    @Transactional
     public void shouldFindDocumentByStatus() {
         //given
         Employee employee = new Employee("test login", "test password", new EmployeeId(8700L));

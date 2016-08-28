@@ -6,9 +6,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import pl.com.bottega.documentmanagement.api.DocumentFactory;
-import pl.com.bottega.documentmanagement.api.DocumentFlowProcess;
-import pl.com.bottega.documentmanagement.api.UserManager;
 import pl.com.bottega.documentmanagement.domain.*;
 import pl.com.bottega.documentmanagement.domain.repositories.DocumentRepository;
 import pl.com.bottega.documentmanagement.domain.repositories.EmployeeRepository;
@@ -18,9 +15,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static pl.com.bottega.documentmanagement.domain.DocumentStatus.DRAFT;
 import static pl.com.bottega.documentmanagement.domain.DocumentStatus.PUBLISHED;
-import static pl.com.bottega.documentmanagement.domain.DocumentStatus.VERIFIED;
 
 /**
  * Created by Dell on 2016-08-16.
@@ -70,18 +65,9 @@ public class DocumentFlowProcessTest {
     @Mock
     private PrintingCostCalculator printingCostCalculator;
 
-    @Mock
-    private HRSystemFasade hrSystemFasade;
-
-    @Mock
-    private MailingFasade mailingFasade;
-
-    @Mock
-    private PrintSystemFasade printSystemFasade;
-
     @Before
     public void setUp() {
-        documentFlowProcess = new DocumentFlowProcess(documentRepository, userManager, documentFactory, employeeRepository, hrSystemFasade, mailingFasade, printSystemFasade);
+        documentFlowProcess = new DocumentFlowProcess(documentRepository, userManager, documentFactory, employeeRepository);
     }
 
     @Test

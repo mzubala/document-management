@@ -90,4 +90,8 @@ public class Reader {
         result = 31 * result + (confirmedAt != null ? confirmedAt.hashCode() : 0);
         return result;
     }
+
+    public EmployeeId getEmployeeId() {
+        return employee.getEmployeeId();
+    }
 }
