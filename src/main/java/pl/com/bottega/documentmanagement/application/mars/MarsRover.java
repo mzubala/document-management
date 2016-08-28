@@ -5,7 +5,7 @@ import static pl.com.bottega.documentmanagement.application.mars.Direction.NORTH
 /**
  * Created by Dell on 2016-08-28.
  */
-public class MarsRover {
+class MarsRover {
 
     private Position position;
     private Direction direction;

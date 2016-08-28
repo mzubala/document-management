@@ -3,7 +3,7 @@ package pl.com.bottega.documentmanagement.application.mars;
 /**
  * Created by Dell on 2016-08-28.
  */
-public enum Direction {
+enum Direction {
 
     NORTH(1), NORTHEAST(2), EAST(3), SOUTHEAST(4), SOUTH(5), SOUTHWEST(6), WEST(7), NORTHWEST(8);
 

@@ -3,7 +3,7 @@ package pl.com.bottega.documentmanagement.application.mars;
 /**
  * Created by Dell on 2016-08-28.
  */
-public class Position {
+class Position {
 
     private int x;
     private int y;

@@ -1,6 +1,7 @@
 package pl.com.bottega.documentmanagement.application.mars;
 
 import java.util.Scanner;
+import pl.com.bottega.documentmanagement.application.marsstatepattern.MarsRover;
 
 /**
  * Created by Dell on 2016-08-28.
