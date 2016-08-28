@@ -1,11 +1,10 @@
 package pl.com.bottega.documentmanagement.domain;
 
+import pl.com.bottega.documentmanagement.domain.events.DocumentListener;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -58,6 +57,9 @@ public class Document {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Employee publisher;
+
+    @Transient
+    private Collection<DocumentListener> documentListeners = new HashSet<>();
 
     private Date publishedAt;
 
@@ -165,6 +167,12 @@ public class Document {
         this.publishedAt = new Date();
         this.publisher = publisher;
         this.status = DocumentStatus.PUBLISHED;
+        notifyDocumentPublished();
+    }
+
+    private void notifyDocumentPublished() {
+        for (DocumentListener listener : documentListeners)
+            listener.published(this);
     }
 
     private void setReaders(Set<Reader> newReaders) {
@@ -193,5 +201,8 @@ public class Document {
                 findFirst().orElseThrow(() -> new IllegalArgumentException());
     }
 
+    public void subscribeDocumentListener(DocumentListener documentListener){
+        documentListeners.add(documentListener);
+    }
 
 }

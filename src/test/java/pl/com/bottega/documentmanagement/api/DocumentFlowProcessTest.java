@@ -53,18 +53,9 @@ public class DocumentFlowProcessTest {
     @Mock
     private Employee employee;
 
-    @Mock
-    private MailingFacade mailingFacade;
-
-    @Mock
-    private PrintSystemFacade printSystemFacade;
-
-    @Mock
-    private HRSystemFacade hrSystemFacade;
-
     @Before
     public void setUp() throws Exception {
-        documentFlowProcess = new DocumentFlowProcess(documentRepository, userManager, documentFactory, employeeRepository, hrSystemFacade, printSystemFacade, mailingFacade);
+        documentFlowProcess = new DocumentFlowProcess(documentRepository, userManager, documentFactory, employeeRepository);
     }
 
     @Test
