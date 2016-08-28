@@ -141,6 +141,15 @@ public class Document {
         return readers;
     }
 
+    public void export(DocumentBuilder builder) {
+        builder.start();
+        builder.addTitile(title);
+        builder.addContent(content);
+        builder.createdAt(createAt);
+        builder.addStatus(documentStatus.name());
+        builder.end();
+    }
+
     public DocumentNumber getNumber() {
         return number;
     }
