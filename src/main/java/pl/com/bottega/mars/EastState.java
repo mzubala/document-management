@@ -13,17 +13,17 @@ public class EastState extends MarsRoverState {
     @Override
     public void move() {
         Position position = marsRover.position();
-        marsRover.setPosition(new Position(position.x() - 1, position.y()));
+        marsRover.setPosition(new Position(position.x() + 1, position.y()));
     }
 
     @Override
     public void rotateRight() {
-        marsRover.setState(new NorthEastState(marsRover));
+        marsRover.setState(new SouthEastState(marsRover));
     }
 
     @Override
     public void rotateLeft() {
-        marsRover.setState(new SouthEastState(marsRover));
+        marsRover.setState(new NorthEastState(marsRover));
     }
 
     @Override
