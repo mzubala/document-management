@@ -1,13 +1,13 @@
 package pl.com.bottega.documentmanagement.api;
 
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import pl.com.bottega.documentmanagement.domain.Employee;
 import pl.com.bottega.documentmanagement.domain.EmployeeId;
 
 /**
  * Created by Dell on 2016-07-31.
  */
-@Service
+@Component
 public class EmployeeFactory {
 
     private PasswordHasher passwordHasher;

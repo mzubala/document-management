@@ -100,6 +100,7 @@ public class UserManager {
         return new SignupResultDto();
     }
 
+    @Transactional
     public SignupResultDto login(String login, String password) {
         checkArgument(!(login == null || password == null));
         String hashedPassword = passwordHasher.hashedPassword(password);

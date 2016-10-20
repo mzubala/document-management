@@ -30,7 +30,7 @@ public class NPlus1SelectSimulator {
 
     @Transactional
     public void insertTestData() {
-        Employee employee = new Employee(randomString(), randomString(), new EmployeeId(135L));
+        Employee employee = new Employee(randomString(), randomString(), new EmployeeId(140L));
         entityManager.persist(employee);
         for (int i = 0; i < 1000; i++) {
             Document d = new Document(new DocumentNumber(randomString()), randomString(), randomString(), employee, printingCostCalculator);
@@ -41,7 +41,7 @@ public class NPlus1SelectSimulator {
 
     @Transactional
     public void simulate() {
-        Query query = entityManager.createQuery("FROM Document d JOIN FETCH d.tags", Document.class).setMaxResults(3);
+        Query query = entityManager.createQuery("FROM Document d JOIN FETCH d.tags", Document.class).setMaxResults(13);
         List<Document> documents = query.getResultList();
         for (Document d : documents) {
             System.out.print(d.toString() + " ");

@@ -17,6 +17,8 @@ public class ErrorsHandler {
     public ResponseEntity<String> handlerAuthRequiredException() {
         HttpHeaders headers = new HttpHeaders();
         headers.set(HttpHeaders.CONTENT_TYPE, "application/json");
+
+
         return new ResponseEntity<String>(
                 "{'error': 'authentication required'}",
                 headers,

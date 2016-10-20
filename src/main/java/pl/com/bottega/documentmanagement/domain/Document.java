@@ -63,7 +63,7 @@ public class Document {
     @ManyToOne
     private Employee publishedBy;
 
-    @OneToMany(mappedBy = "document", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "document", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Reader> readers = new HashSet<>();
 
     private BigDecimal printingCost;

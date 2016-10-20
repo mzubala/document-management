@@ -176,12 +176,12 @@ public class DocumentFlowProcessTest {
 
 //    @Test
     public void shouldPublishDocumentWithDigitalExcludedEmployeeCreating() {
-        Document document = new Document(new DocumentNumber("test number"), anyContent, anyTitle, employee, printingCostCalculator);
-        Set<Long> ids = new LinkedHashSet<>(Arrays.asList(1L, 8L));
+//        Document document = new Document(new DocumentNumber("test number"), anyContent, anyTitle, employee, printingCostCalculator);
+        Set<EmployeeId> employeeIds = Sets.newHashSet(1L, 2L).stream().map(EmployeeId::new).collect(Collectors.toSet());
         when(documentRepository.load(documentNumber)).thenReturn(document);
         when(userManager.currentEmployee()).thenReturn(employee);
 
-//        documentFlowProcess.publish(documentNumber, ids);
+        documentFlowProcess.publish(documentNumber, ids);
 
         verify(documentRepository).save(document);
         assertEquals(PUBLISHED, document.getDocumentStatus());

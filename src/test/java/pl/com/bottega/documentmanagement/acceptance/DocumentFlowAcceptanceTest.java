@@ -10,6 +10,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+import pl.com.bottega.documentmanagement.acceptance.mock.MockEmailFacade;
 import pl.com.bottega.documentmanagement.api.*;
 import pl.com.bottega.documentmanagement.domain.DocumentNumber;
 import pl.com.bottega.documentmanagement.domain.EmployeeId;
@@ -27,7 +28,7 @@ import static pl.com.bottega.documentmanagement.domain.DocumentStatus.VERIFIED;
  * Created by Dell on 2016-08-20.
  */
 @RunWith(SpringRunner.class)
-@ContextConfiguration({"/application.xml"})
+@ContextConfiguration({"/application.xml", "/test-content.xml"})
 @TestPropertySource({"/jdbc-test.properties", "/hibernate-test.properties"})
 @WebAppConfiguration
 public class DocumentFlowAcceptanceTest {
@@ -85,13 +86,13 @@ public class DocumentFlowAcceptanceTest {
     @Transactional
     public void shouldPublishDocument() {
         DocumentNumber nr = givenAnyDocument();
-        //todo mock method sending emails
-        //todo mock method printing documents
 
         documentFlowProcess.publish(nr, readers);
 
         DocumentDto dto = documentsCatalog.get(nr);
         assertEquals(PUBLISHED.toString(), dto.getStatus());
+        MockEmailFacade mockEmailFacade = new MockEmailFacade();
+//        mockEmailFacade.verify();
     }
 
     @Test(expected = NoResultException.class)
