@@ -77,4 +77,7 @@ public class Reader {
         this.confirmedBy = confirmator;
     }
 
+    public EmployeeId employeeId() {
+        return employee.employeeId();
+    }
 }

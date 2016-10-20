@@ -3,12 +3,12 @@ package pl.com.bottega.documentmanagement.coffeeChainOfResponsibility;
 /**
  * Created by bartosz.paszkowski on 24.08.2016.
  */
-public class SmallChainCoffee implements ChainCoffeeMaker {
+public class SmallChainCoffee implements IngredientPrim {
 
-    private ChainCoffeeMaker chainCoffeeMaker;
+    private IngredientPrim chainCoffeeMaker;
 
     @Override
-    public void setNextChain(ChainCoffeeMaker nextInChain) {
+    public void setNextChain(IngredientPrim nextInChain) {
         this.chainCoffeeMaker = nextInChain;
     }
 
@@ -17,7 +17,7 @@ public class SmallChainCoffee implements ChainCoffeeMaker {
         if (request.getName().contains("small")){
             int price = request.getCost();
             request.setCost(price + 5);
-            //chainCoffeeMaker.costCoffee(request);
+            chainCoffeeMaker.costCoffee(request);
         }
             else{
             chainCoffeeMaker.costCoffee(request);

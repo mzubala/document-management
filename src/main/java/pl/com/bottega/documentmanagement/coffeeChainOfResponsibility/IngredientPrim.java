@@ -3,10 +3,10 @@ package pl.com.bottega.documentmanagement.coffeeChainOfResponsibility;
 /**
  * Created by bartosz.paszkowski on 24.08.2016.
  */
-public interface ChainCoffeeMaker{
+public interface IngredientPrim {
 
 
-    void setNextChain(ChainCoffeeMaker nextInChain);
+    void setNextChain(IngredientPrim nextInChain);
     void costCoffee(ChainCoffee request);
     //String nameCoffee(ChainCoffee chainCoffee){}
 }

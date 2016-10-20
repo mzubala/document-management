@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import pl.com.bottega.documentmanagement.domain.*;
+import pl.com.bottega.documentmanagement.domain.events.DocumentListener;
 import pl.com.bottega.documentmanagement.domain.repositories.DocumentRepository;
 import pl.com.bottega.documentmanagement.domain.repositories.EmployeeRepository;
 
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -48,16 +50,15 @@ public class DocumentFlowProcessTest {
     @Mock
     private EmployeeRepository employeeRepository;
     @Mock
-    private MailingFacade mailingFacade;
-    @Mock
-    private PrintSystemFacade printSystemFacade;
-    @Mock
-    private HRSystemFacade hrSystemFacade;
+    PrintCostCalculator printCostCalculator;
+
+
+
 
     @Before
     public void setUp(){
-        documentFlowProcess = new DocumentFlowProcess(documentNumberGenerator,documentRepository,userManager,documentFactory, employeeRepository,
-                hrSystemFacade, printSystemFacade, mailingFacade);
+        documentFlowProcess = new DocumentFlowProcess(documentNumberGenerator,documentRepository,
+                userManager,documentFactory, employeeRepository);
     }
 
     @Test
@@ -123,6 +124,26 @@ public class DocumentFlowProcessTest {
         //then
         verify(document).publish(employee, employeeIds.stream().map(Employee::new).collect(Collectors.toSet()));
     }
+
+    @Test
+    public void shouldNotifyAboutPublishing(){
+        //given
+        Document document = new Document(documentNumber,anyContent, anyTitle,employee,printCostCalculator);
+        document.verify(employee);
+        DocumentListener firstListener = mock(DocumentListener.class);
+        DocumentListener secondListener = mock(DocumentListener.class);
+        document.subscribeDocumentListener(firstListener);
+        document.subscribeDocumentListener(secondListener);
+
+        //when
+        document.publish(employee, Sets.newHashSet(employee));
+
+        //then
+        verify(firstListener).published(document);
+        verify(secondListener).published(document);
+
+    }
+
     @Test
     public void shouldArchiveDocument() {
         //given

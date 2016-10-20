@@ -69,6 +69,24 @@
         <property name="entityManagerFactory" ref="entityManagerFactory"/>
     </bean>
 
+    <!--definiujemy zależności listenerów-->
+    <!--to jest fajny bean, wstrzykiwanie zalezności przez konstruktor-->
+    <bean id="documentListenerManager" class="pl.com.bottega.documentmanagement.api.DocumentListenerManager">
+        <constructor-arg index="0">
+            <list>
+                <bean id="documentPrinter" class="pl.com.bottega.documentmanagement.api.events.DocumentPrinter">
+                    <constructor-arg index="0" ref="printSystemFacadeImpl"/>
+                    <constructor-arg index="1" ref="HRSystemFacadeImpl"/>
+                </bean>
+                <bean id="documentPublishedNotifier" class="pl.com.bottega.documentmanagement.api.events.DocumentPublishedNotifier">
+                    <constructor-arg index="0" ref="mailingFacadeImpl"/>
+                    <constructor-arg index="1" ref="HRSystemFacadeImpl"/>
+                </bean>
+            </list>
+        </constructor-arg>
+    </bean>
+
+
     <!--tworzymy aspekt i punkt przecięcia i co zrobić przed wywołaniem metody z punktu przeciecia-->
     <aop:config>
         <aop:aspect id="authMethodAspect" ref="authAspect">

@@ -8,6 +8,7 @@ import pl.com.bottega.documentmanagement.infrastructure.ErrorRegistry2;
 public class SingletonTest {
     public static void main(String[] args) {
         System.out.println("Singleton Test");
-        ErrorRegistry2.getInstance();
+        ErrorRegistry2 eerror = ErrorRegistry2.getInstance();
+        eerror.registerError("str");
     }
 }

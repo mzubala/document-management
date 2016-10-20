@@ -1,11 +1,10 @@
 package pl.com.bottega.documentmanagement.domain;
 
+import pl.com.bottega.documentmanagement.domain.events.DocumentListener;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -60,7 +59,10 @@ public class Document {
 
     private BigDecimal printingCost;
 
-    private Document(){}
+    @Transient // ta adnotacja mówi że obiekt jest ulotnyi nie powinno się mapować do bazy danych
+    private Collection<DocumentListener> documentListeners = new HashSet<>();
+
+    public Document(){}
 
     public Document(DocumentNumber documentNumber, String content, String title, Employee creator,
                     PrintCostCalculator printCostCalculator) {
@@ -116,23 +118,23 @@ public class Document {
         this.publishedAt = new Date();
         this.publisher = publisher;
         this.documentStatus = DocumentStatus.PUBLISHED;
+        notifyDocumentPublished();
     }
-    private void setReaders(Set<Reader> newReaders) {
-        if(readers == null)
-            readers = new HashSet<>();
-        else
-            readers.clear();
-        this.readers.addAll(newReaders);
-    }
+
 
     public Set<Reader> readers() {
         return Collections.unmodifiableSet(readers);
     }
 
+
     public Reader reader(Employee employee) {
         return readers().stream().
                 filter((reader) -> reader.concernsEmployee(employee)).
                 findFirst().orElseThrow(() -> new IllegalArgumentException());
+    }
+
+    public void subscribeDocumentListener(DocumentListener documentListener){
+        documentListeners.add(documentListener);
     }
 
     public Boolean getDeleted() {
@@ -193,5 +195,29 @@ public class Document {
 
     public void setPublisher(Employee publisher) {
         this.publisher = publisher;
+    }
+
+    public void export(DocumentBuilder builder){
+        builder.start();
+        builder.addTitle(title);
+        builder.addContent(content);
+        builder.addCreatedAt(createdAt);
+        builder.addStatus(documentStatus.name());
+        builder.end();
+
+    }
+
+
+    private void notifyDocumentPublished() {
+        for (DocumentListener listener : documentListeners){
+            listener.published(this);
+        }
+    }
+    private void setReaders(Set<Reader> newReaders) {
+        if(readers == null)
+            readers = new HashSet<>();
+        else
+            readers.clear();
+        this.readers.addAll(newReaders);
     }
 }

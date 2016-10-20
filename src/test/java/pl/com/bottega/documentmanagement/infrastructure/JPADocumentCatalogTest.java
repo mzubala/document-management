@@ -64,9 +64,9 @@ public class JPADocumentCatalogTest {
         //then
         assertEquals(new Long(1), results.getTotalPages());
         List<DocumentDto> documents = Lists.newArrayList(results.getDocuments());
-        assertEquals(1, documents.size());
+        assertEquals(2, documents.size());
         DocumentDto document = documents.get(0);
-        assertEquals("draft", document.getContent());
+        assertEquals("test content", document.getContent());
         assertEquals("DRAFT", document.getStatus());
 
     }
@@ -87,9 +87,9 @@ public class JPADocumentCatalogTest {
         //then
         assertEquals(new Long(1), results.getTotalPages());
         List<DocumentDto> documents = Lists.newArrayList(results.getDocuments());
-        assertEquals(1, documents.size());
+        assertEquals(2, documents.size());
         DocumentDto document = documents.get(0);
-        assertEquals("draft content", document.getContent());
+        assertEquals("test content", document.getContent());
         assertEquals("DRAFT", document.getStatus());
     }
     @Sql("/fixtures/documents.sql")
@@ -151,9 +151,9 @@ public class JPADocumentCatalogTest {
         //then
         assertEquals(new Long(1), results.getTotalPages());
         List<DocumentDto> documents = Lists.newArrayList(results.getDocuments());
-        assertEquals(2, documents.size());
+        assertEquals(4, documents.size());
         DocumentDto document = documents.get(1);
-        assertEquals(new Long(100), document.getCreatorId());
+        assertEquals(new Long(1), document.getCreatorId());
     }
     @Sql("/fixtures/documents.sql")
     @Test

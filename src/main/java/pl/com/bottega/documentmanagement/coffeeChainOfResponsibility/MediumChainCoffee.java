@@ -3,12 +3,12 @@ package pl.com.bottega.documentmanagement.coffeeChainOfResponsibility;
 /**
  * Created by bartosz.paszkowski on 24.08.2016.
  */
-public class MediumChainCoffee implements ChainCoffeeMaker {
+public class MediumChainCoffee implements IngredientPrim {
 
-    private ChainCoffeeMaker chainCoffeeMaker;
+    private IngredientPrim chainCoffeeMaker;
 
     @Override
-    public void setNextChain(ChainCoffeeMaker nextInChain) {
+    public void setNextChain(IngredientPrim nextInChain) {
         this.chainCoffeeMaker = nextInChain;
     }
 
