@@ -1,4 +1,4 @@
-package pl.com.bottega.documentmanagement.coffeeChanv2;
+package pl.com.bottega.documentmanagement.coffeeChainOfResponsibility;
 
 import java.math.BigDecimal;
 

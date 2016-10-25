@@ -1,26 +1,26 @@
-package pl.com.bottega.documentmanagement.coffeeChanv2;
+package pl.com.bottega.documentmanagement.coffeeChainOfResponsibility;
 
 import java.math.BigDecimal;
 
 /**
  * Created by bartosz.paszkowski on 28.08.2016.
  */
-public class LargeCoffee extends Ingredient {
-    public LargeCoffee(Ingredient next) {
+public class Milk extends Ingredient{
+    public Milk(Ingredient next) {
         super(next);
     }
 
-    public LargeCoffee() {
+    public Milk() {
 
     }
 
     @Override
     protected String ingredientName() {
-        return "Big Coffee";
+        return "Milk";
     }
 
     @Override
     protected BigDecimal ingrediantCost() {
-        return new BigDecimal(5.0);
+        return new BigDecimal(2.0);
     }
 }

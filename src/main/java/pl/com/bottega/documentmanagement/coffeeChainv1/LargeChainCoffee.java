@@ -1,12 +1,11 @@
-package pl.com.bottega.documentmanagement.coffeeChainOfResponsibility;
+package pl.com.bottega.documentmanagement.coffeeChainv1;
 
 /**
  * Created by bartosz.paszkowski on 24.08.2016.
  */
-public class CoffeeWithMilk implements IngredientPrim {
+public class LargeChainCoffee implements IngredientPrim {
 
     private IngredientPrim chainCoffeeMaker;
-
 
     @Override
     public void setNextChain(IngredientPrim nextInChain) {
@@ -15,14 +14,13 @@ public class CoffeeWithMilk implements IngredientPrim {
 
     @Override
     public void costCoffee(ChainCoffee request) {
-        if (request.getName().contains("milk")){
+        if (request.getName().contains("large")){
             int price = request.getCost();
-            request.setCost(price + 2);
-
+            request.setCost(price + 9);
+            chainCoffeeMaker.costCoffee(request);
         }
         else{
             chainCoffeeMaker.costCoffee(request);
         }
     }
-
 }

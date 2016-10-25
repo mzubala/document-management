@@ -1,9 +1,9 @@
-package pl.com.bottega.documentmanagement.coffeeChainOfResponsibility;
+package pl.com.bottega.documentmanagement.coffeeChainv1;
 
 /**
  * Created by bartosz.paszkowski on 24.08.2016.
  */
-public class CoffeeWithSyrup implements IngredientPrim {
+public class MediumChainCoffee implements IngredientPrim {
 
     private IngredientPrim chainCoffeeMaker;
 
@@ -14,10 +14,9 @@ public class CoffeeWithSyrup implements IngredientPrim {
 
     @Override
     public void costCoffee(ChainCoffee request) {
-        if (request.getName().contains("syrup")){
+        if (request.getName().contains("medium")){
             int price = request.getCost();
-            request.setCost(price + 3);
-
+            request.setCost(price + 7);
         }
         else{
             chainCoffeeMaker.costCoffee(request);

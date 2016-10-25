@@ -1,4 +1,4 @@
-package pl.com.bottega.documentmanagement.coffeeChainOfResponsibility;
+package pl.com.bottega.documentmanagement.coffeeChainv1;
 
 /**
  * Created by bartosz.paszkowski on 24.08.2016.
